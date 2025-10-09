@@ -4,5 +4,6 @@ ThisBuild / scalaVersion := "3.3.6"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "PPS-24-whodunnit"
+    name := "PPS-24-whodunnit",
+    libraryDependencies += "org.scalatest" %% "scalatest-flatspec" % "3.2.19" % "test"
   )
