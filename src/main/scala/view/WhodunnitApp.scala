@@ -3,7 +3,6 @@ package view
 import scalafx.application.JFXApp3
 import scalafx.application.JFXApp3.PrimaryStage
 import scalafx.scene.Scene
-import view.HomepageScene
 import view.WhodunnitApp.stage
 
 object WhodunnitApp extends JFXApp3 {
@@ -11,7 +10,7 @@ object WhodunnitApp extends JFXApp3 {
   override def start(): Unit = {
     stage = new PrimaryStage {
       title = "Whodunnit"
-      scene = GameConfigurationScene
+      scene = HomepageScene
       resizable = true
       // 16:9 aspect ratio
       minWidth = 800

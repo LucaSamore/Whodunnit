@@ -193,6 +193,7 @@ object GameConfigurationScene extends Scene(1280, 720):
 
   private def handleCancel(): Unit =
     println("Cancel button clicked")
+    WhodunnitApp.changeScene(HomepageScene)
 
   private def handlePlay(): Unit =
     val selectedTheme = Option(themeComboBox.value.value).getOrElse("None")

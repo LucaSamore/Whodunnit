@@ -66,7 +66,7 @@ object HomepageScene extends Scene(sceneWidth, sceneHeight) {
       """
     onAction = _ => {
       println("Play Now clicked - Changing to Game scene")
-      //WhodunnitApp.changeScene(new GameScene())
+      WhodunnitApp.changeScene(GameConfigurationScene)
     }
   }
 
