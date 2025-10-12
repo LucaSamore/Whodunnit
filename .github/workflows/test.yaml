@@ -1,0 +1,63 @@
+name: Run tests
+
+on:
+  push:
+    branches: [main, dev]
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+      - 'LICENSE'
+      - 'docs/**'
+  pull_request:
+    branches: [main, dev]
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+      - 'LICENSE'
+      - 'docs/**'
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }} with JDK ${{ matrix.java }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        java: ['17', '21']
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
+          cache: 'sbt'
+
+      - name: Setup SBT
+        uses: sbt/setup-sbt@v1
+
+      - name: Run tests (Unix)
+        if: runner.os != 'Windows'
+        run: sbt test
+
+      - name: Run tests (Windows)
+        if: runner.os == 'Windows'
+        run: sbt test
+        shell: cmd
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}-jdk${{ matrix.java }}
+          path: |
+            target/**/test-reports/**
+            target/**/test-results/**
+          retention-days: 30
