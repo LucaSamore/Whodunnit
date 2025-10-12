@@ -11,7 +11,7 @@ object WhodunnitApp extends JFXApp3 {
   override def start(): Unit = {
     stage = new PrimaryStage {
       title = "Whodunnit"
-      scene = HomepageScene
+      scene = GameConfigurationScene
       resizable = true
       // 16:9 aspect ratio
       minWidth = 800
