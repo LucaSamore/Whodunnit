@@ -5,18 +5,36 @@ import scalafx.scene.Scene
 import scalafx.scene.control.Button
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.layout.{Background, BackgroundImage, BackgroundPosition, BackgroundRepeat, BackgroundSize, BorderPane, HBox, StackPane, VBox}
+import scalafx.scene.layout.{
+  Background,
+  BackgroundImage,
+  BackgroundPosition,
+  BackgroundRepeat,
+  BackgroundSize,
+  BorderPane,
+  HBox,
+  StackPane,
+  VBox
+}
 import scalafx.scene.paint.Color
 import scalafx.scene.paint.Color.*
 import scalafx.scene.text.{Font, FontWeight, Text, TextAlignment}
 
-private val sceneWidth = 1280
+private val sceneWidth  = 1280
 private val sceneHeight = 720
 
 object HomepageScene extends Scene(sceneWidth, sceneHeight) {
-  private val backgroundImage: Image = new Image(getClass.getResourceAsStream("/images/homepage/homepage_background.png"))
-  private val titleFont: Font = Font.loadFont(getClass.getResourceAsStream("/fonts/Pacifico-Regular.ttf"), 85)
-  private val homepageFont: Font = Font.loadFont(getClass.getResourceAsStream("/fonts/Pacifico-Regular.ttf"), 25)
+  private val backgroundImage: Image = new Image(
+    getClass.getResourceAsStream("/images/homepage/homepage_background.png")
+  )
+  private val titleFont: Font = Font.loadFont(
+    getClass.getResourceAsStream("/fonts/Pacifico-Regular.ttf"),
+    85
+  )
+  private val homepageFont: Font = Font.loadFont(
+    getClass.getResourceAsStream("/fonts/Pacifico-Regular.ttf"),
+    25
+  )
   private val dropShadow: DropShadow = new DropShadow {
     color = Color.web("#000000")
     radius = 5
@@ -66,7 +84,7 @@ object HomepageScene extends Scene(sceneWidth, sceneHeight) {
       """
     onAction = _ => {
       println("Play Now clicked - Changing to Game scene")
-      //WhodunnitApp.changeScene(new GameScene())
+      // WhodunnitApp.changeScene(new GameScene())
     }
   }
 
@@ -108,7 +126,7 @@ object HomepageScene extends Scene(sceneWidth, sceneHeight) {
       """
     onAction = _ => {
       println("History clicked - Changing to History scene")
-      //WhodunnitApp.changeScene(new HistoryScene())
+      // WhodunnitApp.changeScene(new HistoryScene())
     }
   }
 
@@ -121,9 +139,17 @@ object HomepageScene extends Scene(sceneWidth, sceneHeight) {
       BackgroundRepeat.NoRepeat,
       BackgroundRepeat.NoRepeat,
       BackgroundPosition.Center,
-      new BackgroundSize(BackgroundSize.Auto, BackgroundSize.Auto, true, true, false, true))
+      new BackgroundSize(
+        BackgroundSize.Auto,
+        BackgroundSize.Auto,
+        true,
+        true,
+        false,
+        true
+      )
+    )
     background = new Background(Array(bgImage))
-    val halfSceneWidth: Int = sceneWidth / 2
+    val halfSceneWidth: Int   = sceneWidth / 2
     val thirdSceneHeight: Int = sceneHeight / 3
 
     children = Seq(
@@ -134,7 +160,9 @@ object HomepageScene extends Scene(sceneWidth, sceneHeight) {
         top = howToPlayButton
 
         center = new ImageView {
-          image = new Image(getClass.getResourceAsStream("/images/homepage/investi_gator.png"))
+          image = new Image(
+            getClass.getResourceAsStream("/images/homepage/investi_gator.png")
+          )
           fitWidth = 500
           fitHeight = 500
           preserveRatio = true
