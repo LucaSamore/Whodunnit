@@ -1,4 +1,4 @@
-name: Run tests
+name: Run checks and tests
 
 on:
   push:
@@ -15,11 +15,40 @@ on:
       - '.gitignore'
       - 'LICENSE'
       - 'docs/**'
+  workflow_dispatch:
 
 jobs:
+  code-checks:
+    name: Check formatting and linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'sbt'
+
+      - name: Setup SBT
+        uses: sbt/setup-sbt@v1
+
+      - name: Check code formatting
+        run: sbt scalafmtCheckAll scalafmtSbtCheck
+
+      - name: Run linting checks
+        run: sbt "scalafix --check"
+        continue-on-error: true
+
   test:
     name: Test on ${{ matrix.os }} with JDK ${{ matrix.java }}
     runs-on: ${{ matrix.os }}
+    needs: code-checks
 
     strategy:
       matrix:
