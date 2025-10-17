@@ -13,14 +13,13 @@ import scalafx.scene.layout.{
   BackgroundSize,
   BorderPane,
   HBox,
-  StackPane,
   VBox
 }
 import scalafx.scene.paint.Color
 import scalafx.scene.paint.Color.*
 import scalafx.scene.text.{Font, FontWeight, Text, TextAlignment}
 
-private val sceneWidth  = 1280
+private val sceneWidth = 1280
 private val sceneHeight = 720
 
 object HomepageScene extends Scene(sceneWidth, sceneHeight) {
@@ -149,7 +148,7 @@ object HomepageScene extends Scene(sceneWidth, sceneHeight) {
       )
     )
     background = new Background(Array(bgImage))
-    val halfSceneWidth: Int   = sceneWidth / 2
+    val halfSceneWidth: Int = sceneWidth / 2
     val thirdSceneHeight: Int = sceneHeight / 3
 
     children = Seq(
