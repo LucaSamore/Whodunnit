@@ -1,6 +1,8 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / scalaVersion := "3.3.6"
 
+coverageExcludedPackages := ".*view.*"
+
 inThisBuild(
   List(
     scalaVersion := "3.3.6",
