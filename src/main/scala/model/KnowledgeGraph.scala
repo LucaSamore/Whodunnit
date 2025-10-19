@@ -20,7 +20,7 @@ abstract class BaseGraph extends Graph:
 
   override def nodes: Set[Node] = data.keys.toSet
 
-  override def addNode(n: Node): Unit = data addOne n -> List()
+  override def addNode(n: Node): Unit = data.addOne(n -> List())
 
   override def removeNode(n: Node): Unit =
     data.remove(n)
@@ -45,3 +45,21 @@ abstract class BaseGraph extends Graph:
     case _           => Set.empty
 
   override def isEmpty: Boolean = data.isEmpty
+
+trait KnowledgeGraph extends Graph:
+  type Edge <: { def semantic: String }
+
+trait CaseNodesAndEdges:
+  self: Graph =>
+  type Node = CaseEntity
+  type Edge = Link
+
+trait CaseEntity
+case class Link(semantic: String)
+
+class CaseKnowledgeGraph extends BaseGraph
+    with KnowledgeGraph
+    with CaseNodesAndEdges
+
+object CaseKnowledgeGraph:
+  def apply(): CaseKnowledgeGraph = new CaseKnowledgeGraph()
