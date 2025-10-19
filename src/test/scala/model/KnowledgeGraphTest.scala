@@ -68,3 +68,114 @@ class KnowledgeGraphTest extends AnyFlatSpec with Matchers:
     g.addEdge(1, "test", 2)
     g.addEdge(1, "test", 2)
     g.outEdges(1).size shouldBe 1
+
+  "Removing a node" should "make the graph empty if it was the only node" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.removeNode(1)
+    g.isEmpty shouldBe true
+
+  it should "remove the node from the graph" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.addNode(2)
+    g.removeNode(1)
+    g.nodes.contains(1) shouldBe false
+    g.nodes.size shouldBe 1
+
+  it should "remove all outgoing edges from the removed node" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.addNode(2)
+    g.addEdge(1, "test", 2)
+    g.removeNode(1)
+    g.outEdges(1).isEmpty shouldBe true
+
+  it should "remove all incoming edges to the removed node" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.addNode(2)
+    g.addNode(3)
+    g.addEdge(1, "edge1", 2)
+    g.addEdge(3, "edge2", 2)
+    g.removeNode(2)
+    g.outEdges(1).contains("edge1") shouldBe false
+    g.outEdges(3).contains("edge2") shouldBe false
+
+  it should "not affect other edges when removing a node" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.addNode(2)
+    g.addNode(3)
+    g.addEdge(1, "keep", 3)
+    g.addEdge(1, "remove", 2)
+    g.removeNode(2)
+    g.outEdges(1).contains("keep") shouldBe true
+    g.outEdges(1).size shouldBe 1
+
+  it should "do nothing when removing a non-existing node" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.removeNode(2)
+    g.nodes.size shouldBe 1
+    g.nodes.contains(1) shouldBe true
+
+  "In edges" should "be empty if no nodes point to it" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.addNode(2)
+    g.addEdge(1, "test", 2)
+    g.inEdges(1).isEmpty shouldBe true
+
+  it should "contain edges from nodes pointing to it" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.addNode(2)
+    g.addEdge(1, "test", 2)
+    g.inEdges(2).contains("test") shouldBe true
+
+  it should "contain all edges pointing to the node" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.addNode(2)
+    g.addNode(3)
+    g.addEdge(1, "edge1", 3)
+    g.addEdge(2, "edge2", 3)
+    g.inEdges(3).size shouldBe 2
+    g.inEdges(3).contains("edge1") shouldBe true
+    g.inEdges(3).contains("edge2") shouldBe true
+
+  it should "be empty for a node with no incoming edges" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.addNode(2)
+    g.addNode(3)
+    g.addEdge(2, "test", 3)
+    g.inEdges(1).isEmpty shouldBe true
+
+  it should "be empty for a non-existing node" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.inEdges(2).isEmpty shouldBe true
