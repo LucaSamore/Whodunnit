@@ -10,6 +10,7 @@ trait Graph:
   def addNode(n: Node): Unit
   def removeNode(n: Node): Unit
   def addEdge(n1: Node, e: Edge, n2: Node): Unit
+  def removeEdge(n1: Node, e: Edge, n2: Node): Unit
   def inEdges(n: Node): Set[Edge]
   def outEdges(n: Node): Set[Edge]
   def isEmpty: Boolean
@@ -26,8 +27,14 @@ abstract class BaseGraph extends Graph:
     data.mapValuesInPlace((_, edges) => edges.filterNot(_._1 == n))
 
   override def addEdge(n1: Node, e: Edge, n2: Node): Unit =
-    if data.contains(n1) && data.contains(n2) && !outEdges(n1).contains(e) then
+    if data.contains(n1) && data.contains(n2) && !data(n1).contains((n2, e))
+    then
       data.update(n1, (n2, e) :: data(n1))
+
+  override def removeEdge(n1: Node, e: Edge, n2: Node): Unit =
+    data.updateWith(n1):
+      case Some(edges) => Some(edges.filterNot(_ == (n2, e)))
+      case None        => None
 
   override def inEdges(n: Node): Set[Edge] = data.values.flatten.collect:
     case (target, edge) if target == n => edge

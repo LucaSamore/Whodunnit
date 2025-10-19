@@ -179,3 +179,78 @@ class KnowledgeGraphTest extends AnyFlatSpec with Matchers:
       override type Edge = String
     g.addNode(1)
     g.inEdges(2).isEmpty shouldBe true
+
+  "Removing an edge" should "remove the edge between two nodes" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.addNode(2)
+    g.addEdge(1, "test", 2)
+    g.removeEdge(1, "test", 2)
+    g.outEdges(1).contains("test") shouldBe false
+
+  it should "not affect other edges from the same source node" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.addNode(2)
+    g.addNode(3)
+    g.addEdge(1, "edge1", 2)
+    g.addEdge(1, "edge2", 3)
+    g.removeEdge(1, "edge1", 2)
+    g.outEdges(1).contains("edge2") shouldBe true
+    g.outEdges(1).size shouldBe 1
+
+  it should "not affect edges with the same label to different targets" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.addNode(2)
+    g.addNode(3)
+    g.addEdge(1, "test", 2)
+    g.addEdge(1, "test", 3)
+    g.removeEdge(1, "test", 2)
+    g.outEdges(1).contains("test") shouldBe true
+    g.outEdges(1).size shouldBe 1
+
+  it should "not affect edges from different source nodes" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.addNode(2)
+    g.addNode(3)
+    g.addEdge(1, "test", 3)
+    g.addEdge(2, "test", 3)
+    g.removeEdge(1, "test", 3)
+    g.outEdges(2).contains("test") shouldBe true
+
+  it should "do nothing when removing a non-existing edge" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.addNode(2)
+    g.addEdge(1, "test", 2)
+    g.removeEdge(1, "other", 2)
+    g.outEdges(1).contains("test") shouldBe true
+    g.outEdges(1).size shouldBe 1
+
+  it should "do nothing when source node does not exist" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(2)
+    g.removeEdge(1, "test", 2)
+    g.nodes.size shouldBe 1
+
+  it should "do nothing when target node does not exist" in:
+    val g = new BaseGraph:
+      override type Node = Int
+      override type Edge = String
+    g.addNode(1)
+    g.removeEdge(1, "test", 2)
+    g.outEdges(1).isEmpty shouldBe true
