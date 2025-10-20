@@ -46,7 +46,7 @@ class HomepageScene extends Scene(1280, 720):
     }
 
   private val playButton = new Button("Play Now\nas Investi-Gator"):
-    minWidth = 400
+    minWidth = actionButtonsWidth
     minHeight = 100
     textAlignment = TextAlignment.Center
     font = baseFont
@@ -62,11 +62,11 @@ class HomepageScene extends Scene(1280, 720):
       """
     onAction = _ => {
       println("Play Now clicked - Changing to Game scene")
-      // WhodunnitApp.changeScene(new GameScene)
+      WhodunnitApp.changeScene(new GameBoardScene)
     }
 
   private val resumeButton = new Button("Resume Game"):
-    minWidth = 400
+    minWidth = actionButtonsWidth
     minHeight = 70
     alignment = Pos.Center
     font = baseFont
@@ -86,7 +86,7 @@ class HomepageScene extends Scene(1280, 720):
     }
 
   private val historyButton = new Button("History"):
-    minWidth = 400
+    minWidth = actionButtonsWidth
     minHeight = 70
     alignment = Pos.Center
     font = baseFont
@@ -171,6 +171,7 @@ class HomepageScene extends Scene(1280, 720):
     val sceneHeight: Int = 720
     val halfSceneWidth: Int = sceneWidth / 2
     val thirdSceneHeight: Int = sceneHeight / 3
+    val actionButtonsWidth: Int = 400
     val backgroundImage: Image = new Image(
       getClass.getResourceAsStream("/images/homepage/homepage_background.png")
     )
