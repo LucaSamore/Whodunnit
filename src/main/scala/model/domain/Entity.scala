@@ -20,3 +20,8 @@ case class CaseFile(
     receiver: Option[Character],
     date: Option[Date]
 ) extends Entity
+
+case class CustomEntity(
+    entityType: String,
+    content: Option[String]
+) extends Entity
