@@ -1,4 +1,4 @@
-package model.domain
+package model.`case`
 
 trait Case:
   def plot: Plot
@@ -6,13 +6,10 @@ trait Case:
   def files: Set[CaseFile]
   def solution: Solution
 
-opaque type Plot = String
-
-object Plot:
-  def apply(text: String): Plot = text
-
-  extension (p: Plot)
-    def text: String = p
+final case class Plot(
+  title: String,
+  content: String
+)
 
 object Case:
   def apply(

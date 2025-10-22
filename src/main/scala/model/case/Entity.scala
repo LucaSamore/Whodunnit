@@ -7,12 +7,12 @@ import java.time.LocalDateTime
 
 sealed trait Entity
 
-case class Character(
+final case class Character(
     name: String,
     role: CaseRole
 ) extends Entity
 
-case class CaseFile(
+final case class CaseFile(
     title: String,
     content: String,
     kind: CaseFileType,
@@ -21,7 +21,7 @@ case class CaseFile(
     date: Option[LocalDateTime]
 ) extends Entity
 
-case class CustomEntity(
+final case class CustomEntity(
     entityType: String,
     content: Option[String]
 ) extends Entity
