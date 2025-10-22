@@ -39,19 +39,25 @@ object JsonParser extends Parser:
         case Failure(_) => Left(MissingFieldError("plot.title or plot.content"))
 
   private def extractCharacters(json: Value): Either[ParseError, Set[Character]] =
-    Try {
-      val array = json("characters").arr
-      array.map { charJson =>
-        val name = charJson("name").str
-        val roleStr = charJson("role").str
-        val role = parseRole(roleStr).getOrElse(
-          throw new Exception(s"Unknown role: $roleStr")
-        )
-        Character(name, role)
-      }.toSet
-    } match
-      case Success(chars) => Right(chars)
-      case Failure(e) => Left(InvalidFieldError("characters", e.getMessage))
+    if !json.obj.contains("characters") then
+      Left(MissingFieldError("characters"))
+    else
+      Try {
+        val array = json("characters").arr
+        if array.isEmpty then
+          throw new Exception("Characters list must not be empty")
+
+        array.map { charJson =>
+          val name = charJson("name").str
+          val roleStr = charJson("role").str
+          val role = parseRole(roleStr).getOrElse(
+            throw new Exception(s"Unknown role: $roleStr")
+          )
+          Character(name, role)
+        }.toSet
+      } match
+        case Success(chars) => Right(chars)
+        case Failure(e) => Left(InvalidFieldError("characters", e.getMessage))
 
   private def parseRole(roleStr: String): Option[CaseRole] =
     import CaseRole.*
@@ -63,7 +69,7 @@ object JsonParser extends Parser:
       case "Accomplice" => Some(Accomplice)
       case "Informant" => Some(Informant)
       case _ => None
-      
+
 sealed trait ParseError:
   def message: String
 

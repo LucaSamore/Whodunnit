@@ -15,7 +15,9 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
               "title": "Mystery at Dawn",
               "content": "A mysterious case begins"
             },
-            "characters": []
+            "characters": [
+              {"name": "Alice", "role": "Suspect"}
+            ]
           }
         """
 
@@ -97,7 +99,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         result shouldBe a[Right[_, _]]
         result.value.characters should have size 3
 
-      "handle missing characters field" in :
+      "handle missing characters field" in:
         val json =
           """
           {
@@ -114,7 +116,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         result.left.value shouldBe a[MissingFieldError]
         result.left.value.message should include("characters")
 
-      "handle empty characters array" in :
+      "handle empty characters array" in:
         val json =
           """
           {
@@ -131,3 +133,60 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         result shouldBe a[Left[_, _]]
         result.left.value shouldBe a[InvalidFieldError]
         result.left.value.message should include("must not be empty")
+
+    "handle missing name in character" in :
+      val json =
+        """
+        {
+           "plot": {
+             "title": "Mystery at Dawn",
+             "content": "A mysterious case begins"
+           },
+          "characters": [{"role": "Suspect"}],
+          "files": [],
+          "solution": {"prerequisite": [], "culprit": "", "motive": ""}
+        }
+      """
+
+      val result = JsonParser.parse(json)
+
+      result shouldBe a[Left[_, _]]
+      result.left.value shouldBe a[InvalidFieldError]
+
+    "handle invalid role in character" in :
+      val json =
+        """
+        {
+          "plot": {
+             "title": "Mystery at Dawn",
+             "content": "A mysterious case begins"
+           },
+          "characters": [{"name": "Alice", "role": "InvalidRole"}],
+          "files": [],
+          "solution": {"prerequisite": [], "culprit": "", "motive": ""}
+        }
+      """
+
+      val result = JsonParser.parse(json)
+
+      result shouldBe a[Left[_, _]]
+      result.left.value shouldBe a[InvalidFieldError]
+      result.left.value.message should include("Unknown role")
+
+    "handle missing characters field" in :
+      val json =
+        """
+        {
+          "plot": {
+             "title": "Mystery at Dawn",
+             "content": "A mysterious case begins"
+           },
+          "files": [],
+          "solution": {"prerequisite": [], "culprit": "", "motive": ""}
+        }
+      """
+
+      val result = JsonParser.parse(json)
+
+      result shouldBe a[Left[_, _]]
+      result.left.value shouldBe a[MissingFieldError]
