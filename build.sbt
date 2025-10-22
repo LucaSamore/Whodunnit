@@ -17,7 +17,8 @@ lazy val root = (project in file("."))
     name := "PPS-24-whodunnit",
     libraryDependencies ++= Seq(
       "org.scalafx" %% "scalafx" % "23.0.1-R34",
-      "org.scalatest" %% "scalatest-flatspec" % "3.2.19" % "test"
+      "org.scalatest" %% "scalatest" % "3.2.19" % "test",
+      "com.lihaoyi" %% "ujson" % "3.3.1"
     ),
     mainClass := Some("Launcher")
   )
