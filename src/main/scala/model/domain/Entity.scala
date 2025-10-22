@@ -3,7 +3,7 @@ package model.domain
 import model.domain.types.CaseRole
 import model.domain.types.CaseFileType
 
-import java.util.Date
+import java.time.LocalDateTime
 
 sealed trait Entity
 
@@ -18,7 +18,7 @@ case class CaseFile(
     kind: CaseFileType,
     sender: Option[Character],
     receiver: Option[Character],
-    date: Option[Date]
+    date: Option[LocalDateTime]
 ) extends Entity
 
 case class CustomEntity(
