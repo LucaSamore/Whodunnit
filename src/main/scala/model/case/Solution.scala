@@ -1,4 +1,4 @@
-package model.domain
+package model
 
 sealed trait Solution:
   def culprit: Character

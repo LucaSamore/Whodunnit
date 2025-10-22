@@ -1,7 +1,6 @@
 package model
 
 import model.`case`.*
-import model.types.CaseRole
 import ujson.*
 
 import scala.util.{Failure, Success, Try}

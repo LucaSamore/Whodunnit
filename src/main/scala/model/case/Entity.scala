@@ -1,7 +1,4 @@
-package model.domain
-
-import model.domain.types.CaseRole
-import model.domain.types.CaseFileType
+package model
 
 import java.time.LocalDateTime
 
@@ -25,3 +22,19 @@ final case class CustomEntity(
     entityType: String,
     content: Option[String]
 ) extends Entity
+
+enum CaseRole:
+  case Suspect
+  case Victim
+  case Witness
+  case Investigator
+  case Accomplice
+  case Informant
+
+enum CaseFileType:
+  case Message
+  case Email
+  case Interview
+  case Diary
+  case TextDocument
+  case Notes

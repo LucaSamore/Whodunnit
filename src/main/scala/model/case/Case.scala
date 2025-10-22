@@ -1,5 +1,7 @@
 package model.`case`
 
+import model.{CaseFile, Solution}
+
 trait Case:
   def plot: Plot
   def characters: Set[Character]
