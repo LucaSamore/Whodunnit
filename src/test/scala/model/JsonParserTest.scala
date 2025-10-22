@@ -36,3 +36,19 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         println(result)
         result.left.value shouldBe a[MissingFieldError]
         result.left.value.message should include("plot")
+
+      "handle invalid JSON syntax" in :
+        val json = """{plot: "invalid}"""
+
+        val result = JsonParser.parse(json)
+
+        result shouldBe a[Left[_, _]]
+        result.left.value shouldBe a[JsonSyntaxError]
+
+      "handle non-string plot value" in :
+        val json = """{"plot": 123}"""
+
+        val result = JsonParser.parse(json)
+
+        result shouldBe a[Left[_, _]]
+        result.left.value shouldBe a[MissingFieldError]
