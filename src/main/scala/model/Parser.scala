@@ -14,9 +14,10 @@ object JsonParser extends Parser:
       json <- parseJson(input.trim)
       plot <- extractPlot(json)
       characters <- extractCharacters(json)
+      caseFiles <- extractFiles(json, characters)
     yield Case(
       plot,
-      Set.empty,
+      caseFiles,
       characters,
       CaseSolution(Set.empty, Character("", CaseRole.Suspect), "")
     )
@@ -68,6 +69,55 @@ object JsonParser extends Parser:
       case "Investigator" => Some(Investigator)
       case "Accomplice" => Some(Accomplice)
       case "Informant" => Some(Informant)
+      case _ => None
+
+  private def extractFiles(json: Value, characters: Set[Character]): Either[ParseError, Set[CaseFile]] =
+    if !json.obj.contains("files") then
+      Left(MissingFieldError("files"))
+    else
+      Try {
+        val array = json("files").arr
+        array.map { fileJson =>
+          val title = fileJson("title").str
+          val content = fileJson("content").str
+          val kindStr = fileJson("kind").str
+          val kind = parseFileType(kindStr).getOrElse(
+            throw new Exception(s"Unknown file type: $kindStr")
+          )
+
+          val senderName = extractOptionalString(fileJson, "sender")
+          val receiverName = extractOptionalString(fileJson, "receiver")
+
+          val sender = senderName.flatMap(n => characters.find(_.name == n))
+          val receiver = receiverName.flatMap(n => characters.find(_.name == n))
+
+          val timestamp = extractOptionalString(fileJson, "date").flatMap(parseTimestamp)
+
+          CaseFile(title, content, kind, sender, receiver, timestamp)
+        }.toSet
+      } match
+        case Success(files) => Right(files)
+        case Failure(e) => Left(InvalidFieldError("files", e.getMessage))
+
+  private def extractOptionalString(json: Value, field: String): Option[String] =
+    json.obj.get(field).flatMap { v =>
+      if v.isNull then None else Some(v.str)
+    }
+
+  private def parseTimestamp(tsStr: String): Option[java.time.LocalDateTime] =
+    Try(java.time.LocalDateTime.parse(tsStr)) match
+      case Success(ts) => Some(ts)
+      case Failure(_)  => None
+
+  private def parseFileType(typeStr: String): Option[CaseFileType] =
+    import CaseFileType.*
+    typeStr match
+      case "Email" => Some(Email)
+      case "Message" => Some(Message)
+      case "Interview" => Some(Interview)
+      case "Diary" => Some(Diary)
+      case "TextDocument" => Some(TextDocument)
+      case "Notes" => Some(Notes)
       case _ => None
 
 sealed trait ParseError:

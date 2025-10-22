@@ -17,6 +17,16 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
             },
             "characters": [
               {"name": "Alice", "role": "Suspect"}
+            ],
+            "files": [
+              {
+                "title": "Email",
+                "kind": "Email",
+                "sender": "Alice",
+                "receiver": "Bob",
+                "date": "2025-10-20T14:30:00Z",
+                "content": "Threatening message"
+              }
             ]
           }
         """
@@ -67,6 +77,16 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
             },
             "characters": [
               {"name": "Alice", "role": "Suspect"}
+            ],
+            "files": [
+              {
+                "title": "Email",
+                "kind": "Email",
+                "sender": "Alice",
+                "receiver": "Bob",
+                "date": "2025-10-20T14:30:00Z",
+                "content": "Threatening message"
+              }
             ]
           }
         """
@@ -90,6 +110,16 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
               {"name": "Alice", "role": "Suspect"},
               {"name": "Bob", "role": "Victim"},
               {"name": "Charlie", "role": "Witness"}
+            ],
+            "files": [
+              {
+                "title": "Email",
+                "kind": "Email",
+                "sender": "Alice",
+                "receiver": "Bob",
+                "date": "2025-10-20T14:30:00Z",
+                "content": "Threatening message"
+              }
             ]
           }
         """
@@ -178,7 +208,10 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         val json =
           """
           {
-            "plot": "A case",
+            "plot": {
+               "title": "Mystery at Dawn",
+               "content": "A mysterious case begins"
+             },
             "characters": [
               {"name": "Alice", "role": "Suspect"},
               {"name": "Bob", "role": "Victim"}
@@ -208,8 +241,13 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         val json =
           """
           {
-            "plot": "A case",
-            "characters": [],
+            "plot": {
+               "title": "Mystery at Dawn",
+               "content": "A mysterious case begins"
+             },
+            "characters": [
+              {"name": "Alice", "role": "Suspect"}
+            ],
             "files": [
               {
                 "title": "Note",
@@ -231,7 +269,10 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         val json =
           """
           {
-            "plot": "A case",
+            "plot": {
+              "title": "Mystery at Dawn",
+              "content": "A mysterious case begins"
+            },
             "characters": [],
             "files": []
           }
@@ -239,5 +280,6 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
 
         val result = JsonParser.parse(json)
 
-        result shouldBe a[Right[_, _]]
-        result.value.files shouldBe empty
+        result shouldBe a[Left[_, _]]
+        result.left.value shouldBe a[InvalidFieldError]
+        result.left.value.message should include("must not be empty")
