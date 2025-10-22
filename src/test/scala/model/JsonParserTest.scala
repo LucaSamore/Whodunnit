@@ -134,59 +134,110 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         result.left.value shouldBe a[InvalidFieldError]
         result.left.value.message should include("must not be empty")
 
-    "handle missing name in character" in :
-      val json =
+      "handle missing name in character" in:
+        val json =
+          """
+          {
+             "plot": {
+               "title": "Mystery at Dawn",
+               "content": "A mysterious case begins"
+             },
+            "characters": [{"role": "Suspect"}],
+            "files": [],
+            "solution": {"prerequisite": [], "culprit": "", "motive": ""}
+          }
         """
-        {
-           "plot": {
-             "title": "Mystery at Dawn",
-             "content": "A mysterious case begins"
-           },
-          "characters": [{"role": "Suspect"}],
-          "files": [],
-          "solution": {"prerequisite": [], "culprit": "", "motive": ""}
-        }
-      """
 
-      val result = JsonParser.parse(json)
+        val result = JsonParser.parse(json)
 
-      result shouldBe a[Left[_, _]]
-      result.left.value shouldBe a[InvalidFieldError]
+        result shouldBe a[Left[_, _]]
+        result.left.value shouldBe a[InvalidFieldError]
 
-    "handle invalid role in character" in :
-      val json =
+      "handle invalid role in character" in:
+        val json =
+          """
+          {
+            "plot": {
+               "title": "Mystery at Dawn",
+               "content": "A mysterious case begins"
+             },
+            "characters": [{"name": "Alice", "role": "InvalidRole"}],
+            "files": [],
+            "solution": {"prerequisite": [], "culprit": "", "motive": ""}
+          }
         """
-        {
-          "plot": {
-             "title": "Mystery at Dawn",
-             "content": "A mysterious case begins"
-           },
-          "characters": [{"name": "Alice", "role": "InvalidRole"}],
-          "files": [],
-          "solution": {"prerequisite": [], "culprit": "", "motive": ""}
-        }
-      """
 
-      val result = JsonParser.parse(json)
+        val result = JsonParser.parse(json)
 
-      result shouldBe a[Left[_, _]]
-      result.left.value shouldBe a[InvalidFieldError]
-      result.left.value.message should include("Unknown role")
+        result shouldBe a[Left[_, _]]
+        result.left.value shouldBe a[InvalidFieldError]
+        result.left.value.message should include("Unknown role")
 
-    "handle missing characters field" in :
-      val json =
+    "parsing files" should :
+      "extract file with all fields present" in :
+        val json =
+          """
+          {
+            "plot": "A case",
+            "characters": [
+              {"name": "Alice", "role": "Suspect"},
+              {"name": "Bob", "role": "Victim"}
+            ],
+            "files": [
+              {
+                "title": "Email",
+                "kind": "Email",
+                "sender": "Alice",
+                "receiver": "Bob",
+                "date": "2025-10-20T14:30:00Z",
+                "content": "Threatening message"
+              }
+            ]
+          }
         """
-        {
-          "plot": {
-             "title": "Mystery at Dawn",
-             "content": "A mysterious case begins"
-           },
-          "files": [],
-          "solution": {"prerequisite": [], "culprit": "", "motive": ""}
-        }
-      """
 
-      val result = JsonParser.parse(json)
+        val result = JsonParser.parse(json)
 
-      result shouldBe a[Left[_, _]]
-      result.left.value shouldBe a[MissingFieldError]
+        result shouldBe a[Right[_, _]]
+        val case1 = result.value
+
+        println(case1.files)
+        case1.files should have size 1
+
+      "extract file with null optional fields" in :
+        val json =
+          """
+          {
+            "plot": "A case",
+            "characters": [],
+            "files": [
+              {
+                "title": "Note",
+                "kind": "Notes",
+                "sender": null,
+                "receiver": null,
+                "date": null,
+                "content": "Anonymous note"
+              }
+            ]
+          }
+        """
+
+        val result = JsonParser.parse(json)
+
+        result shouldBe a[Right[_, _]]
+
+      "handle empty files array" in :
+        val json =
+          """
+          {
+            "plot": "A case",
+            "characters": [],
+            "files": []
+          }
+        """
+
+        val result = JsonParser.parse(json)
+
+        result shouldBe a[Right[_, _]]
+        result.value.files shouldBe empty
