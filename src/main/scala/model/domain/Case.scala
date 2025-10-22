@@ -13,3 +13,18 @@ object Plot:
 
   extension (p: Plot)
     def text: String = p
+
+
+object Case:
+  def apply(plot: Plot,
+            files: Set[CaseFile],
+            characters: Set[Character],
+            solution: Solution): Case =
+    CaseImpl(plot, files, characters, solution)
+
+  private case class CaseImpl(
+                               plot: Plot,
+                               files: Set[CaseFile],
+                               characters: Set[Character],
+                               solution: Solution
+                             ) extends Case
