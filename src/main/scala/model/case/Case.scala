@@ -1,6 +1,6 @@
 package model.`case`
 
-import model.{CaseFile, Solution}
+import model.{CaseFile, Solution, Character}
 
 trait Case:
   def plot: Plot

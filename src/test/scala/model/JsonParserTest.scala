@@ -14,7 +14,8 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
             "plot": {
               "title": "Mystery at Dawn",
               "content": "A mysterious case begins"
-            }
+            },
+            "characters": []
           }
         """
 
@@ -37,7 +38,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         result.left.value shouldBe a[MissingFieldError]
         result.left.value.message should include("plot")
 
-      "handle invalid JSON syntax" in :
+      "handle invalid JSON syntax" in:
         val json = """{plot: "invalid}"""
 
         val result = JsonParser.parse(json)
@@ -45,7 +46,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         result shouldBe a[Left[_, _]]
         result.left.value shouldBe a[JsonSyntaxError]
 
-      "handle non-string plot value" in :
+      "handle non-string plot value" in:
         val json = """{"plot": 123}"""
 
         val result = JsonParser.parse(json)
@@ -53,8 +54,8 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         result shouldBe a[Left[_, _]]
         result.left.value shouldBe a[MissingFieldError]
 
-    "parsing characters" should :
-      "extract single character with name and role" in :
+    "parsing characters" should:
+      "extract single character with name and role" in:
         val json =
           """
           {
@@ -75,7 +76,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
 
         case1.characters should have size 1
 
-      "extract multiple characters" in :
+      "extract multiple characters" in:
         val json =
           """
           {

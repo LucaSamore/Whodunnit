@@ -13,10 +13,11 @@ object JsonParser extends Parser:
     for
       json <- parseJson(input.trim)
       plot <- extractPlot(json)
+      characters <- extractCharacters(json)
     yield Case(
       plot,
       Set.empty,
-      Set.empty,
+      characters,
       CaseSolution(Set.empty, Character("", CaseRole.Suspect), "")
     )
 
@@ -37,6 +38,32 @@ object JsonParser extends Parser:
         case Success(p) => Right(p)
         case Failure(_) => Left(MissingFieldError("plot.title or plot.content"))
 
+  private def extractCharacters(json: Value): Either[ParseError, Set[Character]] =
+    Try {
+      val array = json("characters").arr
+      array.map { charJson =>
+        val name = charJson("name").str
+        val roleStr = charJson("role").str
+        val role = parseRole(roleStr).getOrElse(
+          throw new Exception(s"Unknown role: $roleStr")
+        )
+        Character(name, role)
+      }.toSet
+    } match
+      case Success(chars) => Right(chars)
+      case Failure(e) => Left(InvalidFieldError("characters", e.getMessage))
+
+  private def parseRole(roleStr: String): Option[CaseRole] =
+    import CaseRole.*
+    roleStr match
+      case "Suspect" => Some(Suspect)
+      case "Victim" => Some(Victim)
+      case "Witness" => Some(Witness)
+      case "Investigator" => Some(Investigator)
+      case "Accomplice" => Some(Accomplice)
+      case "Informant" => Some(Informant)
+      case _ => None
+      
 sealed trait ParseError:
   def message: String
 
