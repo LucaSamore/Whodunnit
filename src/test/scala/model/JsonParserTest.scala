@@ -52,3 +52,46 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
 
         result shouldBe a[Left[_, _]]
         result.left.value shouldBe a[MissingFieldError]
+
+    "parsing characters" should :
+      "extract single character with name and role" in :
+        val json =
+          """
+          {
+            "plot": {
+              "title": "Mystery at Dawn",
+              "content": "A mysterious case begins"
+            },
+            "characters": [
+              {"name": "Alice", "role": "Suspect"}
+            ]
+          }
+        """
+
+        val result = JsonParser.parse(json)
+
+        result shouldBe a[Right[_, _]]
+        val case1 = result.value
+
+        case1.characters should have size 1
+
+      "extract multiple characters" in :
+        val json =
+          """
+          {
+            "plot": {
+              "title": "Mystery at Dawn",
+              "content": "A mysterious case begins"
+            },
+            "characters": [
+              {"name": "Alice", "role": "Suspect"},
+              {"name": "Bob", "role": "Victim"},
+              {"name": "Charlie", "role": "Witness"}
+            ]
+          }
+        """
+
+        val result = JsonParser.parse(json)
+
+        result shouldBe a[Right[_, _]]
+        result.value.characters should have size 3
