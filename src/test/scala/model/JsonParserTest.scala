@@ -12,8 +12,8 @@ class JsonParserTest extends AnyWordSpec with Matchers:
       "extract plot text from valid JSON" in:
         val json = """{"plot": "A mysterious case"}"""
 
-        val parser = Parser()
-        val result = parser.parse(json)
+        val jsonParser: Parser = JsonParser
+        val result = jsonParser.parse(json)
 
         result shouldBe a[Success[_]]
         result.get.plot.text shouldBe "A mysterious case"

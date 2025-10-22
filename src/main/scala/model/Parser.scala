@@ -6,7 +6,10 @@ import ujson.*
 
 import scala.util.Try
 
-class Parser:
+trait Parser:
+  def parse(input: String): Try[Case]
+
+object JsonParser extends Parser:
   def parse(input: String): Try[Case] =
     for
       json <- Try(ujson.read(input))
