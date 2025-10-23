@@ -10,13 +10,12 @@ class CaseGeneratorTest extends AnyWordSpec with Matchers with EitherValues:
   "CaseGenerator" should :
     "have generate method returning Either" in :
       val generator: CaseGenerator = new CaseGenerator:
-        def generate(constraints: Constraint*): Either[Error, Case] =
-          Left(Error("Not implemented"))
+        def generate(constraints: Constraint*): Either[GenerationError, Case] =
+          Left(GenerationError.LLMError("Not implemented"))
 
       val result = generator.generate(Constraint.Theme("Test"))
       result shouldBe a[Left[_, _]]
-
-
+  
   "GenerationError" should :
     "have LLMError with message" in :
       val error = GenerationError.LLMError("Connection timeout")
