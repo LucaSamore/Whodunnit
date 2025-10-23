@@ -1,17 +1,95 @@
-Generate a detective case in JSON format with this structure:
-{
-  "plot": {"title": "...", "content": "..."},
-  "characters": [{"name": "...", "role": "..."}],
-  "files": [{"title": "...", "kind": "...", "content": "...", "sender": null, "receiver": null, "date": null}],
-  "solution": {
-    "prerequisite": [{"firstEntity": "...", "secondEntity": "...", "semantic": "..."}],
-    "culprit": "...",
-    "motive": "..."
-  }
-}
+Ho bisogno che tu funga come motore di generazione di storie sempre diverse per il mio gioco investigativo.
+
+Il mio gioco avrà i seguenti elementi:
+
+- una trama (campo "plot")
+
+- un insieme di sospettati (campo "suspects")
+
+- un insieme di indizi documentali (campo "clues")
+
+- una soluzione (campo "solution").
+
+La trama deve essere intrigante, sempre diversa e non deve essere più lunga di 400 token. Al termine della trama deve essere chiaro qual è il mistero da risolvere.
+
+I sospettati devono essere di un numero compreso tra i 4 e i 6.
+
+I documenti devono fornire indizi più o meno utili, ma non devono MAI fornire confessioni o testi che rivelino la soluzione in modo esplicito. Inoltre, i documenti possono essere di 3 tipi: email, documenti, chat.
+
+I documenti devono essere di un numero compreso tra 7 e 15.
+
+Nel caso di email e documenti il contenuto è singolo, mentre per il caso delle chat che sono sempre tra 2 soggetti, (non per forza 2 sospettati, possono essere anche tra persone non sospettate ma coinvolte nella trama), sono scambi di messaggi di al massimo 6 messaggi totali di cui ogni messaggio di al massimo 100 token.
+
+La complessità del gioco (tra facile, media e difficile) deve essere: [DIFFICOLTA].
+
+Per calibrare la difficoltà utilizza i seguenti elementi:
+
+- numero di sospettati
+
+- complessità della trama anche in termini di informazioni fornite al suo interno
+
+- utilità/meno dei documenti forniti come indizi
+
+La trama, i sospettati, gli indizi, e di conseguenza la soluzione devono essere estremamente coerenti tra loro, ossia:
+
+- Nessun sospettato deve essere dimenticato, la trama deve citare brevemente tutti i sospettati e ognuno dei sospettati deve essere coinvolto in almeno un documento (receiver, sender o contenuto nel content).
+
+- La soluzione deve essere perfettamente coerente oltre che con il mistero proposto nella trama ma soprattutto con gli inizi forniti
 
 Constraints:
 {{CONSTRAINTS}}
+
+Genera gli elementi del mio gioco seguendo la seguente struttura e in formato json (valido):
+
+```json
+{
+	"plot":{
+		"title": "String",
+	  "content": "String",
+  }
+  "characters": [
+    {
+      "name": "String",
+      "role": "String"
+    },
+    ...
+  ],
+  "files": [
+    {
+      "title": "String",
+      "kind": "String (email | document)",
+      "sender": "String | null",
+      "receiver": "String | null",
+      "date": "String (ISO 8601) | null",
+      "content": "String"
+    },
+    ...
+  ],
+  "solution": {
+    "prerequisite": [
+      {
+        "firstEntity": "String (Character | CaseFile)",
+        "secondEntity": "String (Character | CaseFile)",
+        "semantic": "String | null"
+      },
+      ...
+    ],
+    "culprit": "String",
+    "motive": "String"
+  }
+}
+
+```
+
+Note sul JSON:
+
+- Solo uno tra sender e receiver dentro i document può essere null, non entrambi
+
+- Negli array dentro "prerequisites" la prima stringa deve contenere l'id di un sospettato/documento, la seconda stringa deve contenere l'id di un sospettato o di un documento (in questo secondo caso solo se nella prima stranga c'era un sospettato) altrimenti descrive il rapporto che c'è tra i due (tra "relatives", "collegues", "enemies")
+
+- Gli ID dei sospettati e dei documenti devono essere utilizzati solo nei "prerequisites", mentre ad esempio nei "clues" e nel "guilty" ci si deve riferire ai suspects utilizzando il loro nome.
+
+- La lingua del gioco è l'italiano
 
 Important rules:
 - All character names must be unique
