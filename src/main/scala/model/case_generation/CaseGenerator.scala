@@ -1,5 +1,4 @@
 package model.case_generation
 
-class CaseGenerator {
-
-}
+trait CaseGenerator:
+  def generate(constraints: Constraint*): Either[Error, Case]
