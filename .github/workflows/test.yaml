@@ -9,7 +9,7 @@ on:
       - 'LICENSE'
       - 'docs/**'
   pull_request:
-    branches: [main, dev]
+    branches: [dev]
     paths-ignore:
       - '**.md'
       - '.gitignore'
@@ -54,6 +54,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         java: ['17', '21']
+        scala: ['3.3.6']
       fail-fast: false
 
     steps:
@@ -80,6 +81,15 @@ jobs:
         if: runner.os == 'Windows'
         run: sbt test
         shell: cmd
+
+      - name: Run coverage tests
+        run: sbt clean coverage test
+
+      - name: Upload coverage data to Coveralls
+        run: sbt coverageReport coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          COVERALLS_FLAG_NAME: Scala ${{ matrix.scala }}
 
       - name: Upload test results
         if: always()
