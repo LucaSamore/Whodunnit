@@ -17,9 +17,8 @@ class LLMCaseGenerator(
       jsonResponse <- llmService.generateCase(prompt)
       parsedCase <- {
         println(s"Generated case: $jsonResponse")
-        parser.parse(
-          jsonResponse
-        ).left.map(GenerationError.ParseFailureError.apply)
+        val cleanedJson = cleanJson(jsonResponse)
+        parser.parse(cleanedJson).left.map(GenerationError.ParseFailureError.apply)
       }
     yield parsedCase
 
@@ -31,6 +30,12 @@ class LLMCaseGenerator(
           constraints.map(_.toPromptDescription).mkString("\n- ", "\n- ", "")
         Right(template.replace("{{CONSTRAINTS}}", constraintsText))
       case Left(error) => Left(error)
+
+  private def cleanJson(response: String): String =
+    response
+      .replaceAll("(?s).*?\\{", "{")
+      .replaceAll("```", "")
+      .trim
 
   private def loadPromptTemplate(): Either[GenerationError, String] =
     Try {
