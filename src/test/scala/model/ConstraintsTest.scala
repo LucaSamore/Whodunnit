@@ -41,3 +41,21 @@ class ConstraintsTest extends AnyWordSpec with Matchers:
       constraints should contain(CharactersRange(2, 4))
       constraints should contain(CaseFilesRange(2, 5))
       constraints should contain(PrerequisitesRange(0, 2))
+
+  "DifficultyPresets.medium" should :
+    "return constraints for medium difficulty" in :
+      val constraints = DifficultyPresets.medium("Corporate Espionage")
+
+      constraints should contain(Theme("Corporate Espionage"))
+      constraints should contain(CharactersRange(3, 6))
+      constraints should contain(FilesRange(4, 8))
+      constraints should contain(PrerequisitesRange(1, 4))
+
+  "DifficultyPresets.hard" should :
+    "return constraints for hard difficulty" in :
+      val constraints = DifficultyPresets.hard("International Conspiracy")
+
+      constraints should contain(Theme("International Conspiracy"))
+      constraints should contain(CharactersRange(5, 8))
+      constraints should contain(FilesRange(7, 12))
+      constraints should contain(PrerequisitesRange(3, 6))
