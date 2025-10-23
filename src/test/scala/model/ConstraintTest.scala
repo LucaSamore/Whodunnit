@@ -64,3 +64,16 @@ class ConstraintTest extends AnyWordSpec with Matchers:
       Constraint should contain(CharactersRange(4, 6))
       Constraint should contain(CaseFilesRange(7, 10))
       Constraint should contain(PrerequisitesRange(2, 5))
+
+  "DifficultyPresets.fromDifficulty" should :
+    "delegate to easy" in :
+      val result = DifficultyPresets.fromDifficulty(Easy, "Theme1")
+      result shouldBe DifficultyPresets.easy("Theme1")
+
+    "delegate to medium" in :
+      val result = DifficultyPresets.fromDifficulty(Medium, "Theme2")
+      result shouldBe DifficultyPresets.medium("Theme2")
+
+    "delegate to hard" in :
+      val result = DifficultyPresets.fromDifficulty(Hard, "Theme3")
+      result shouldBe DifficultyPresets.hard("Theme3")
