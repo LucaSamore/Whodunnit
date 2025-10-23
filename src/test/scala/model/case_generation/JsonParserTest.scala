@@ -1,8 +1,8 @@
-package model
+package model.case_generation
 
 import org.scalatest.EitherValues
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
 
@@ -77,7 +77,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
     def json(parts: String*): String =
       parts.mkString("{", ",", "}")
 
-  import JsonFixtures._
+  import JsonFixtures.*
 
   "JsonParser" when:
     "parsing plot field" should:

@@ -1,4 +1,4 @@
-package model
+package model.case_generation
 
 sealed trait Solution:
   def culprit: Character

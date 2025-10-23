@@ -1,4 +1,4 @@
-package model
+package model.case_generation
 
 import java.time.LocalDateTime
 

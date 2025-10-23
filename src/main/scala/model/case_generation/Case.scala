@@ -1,6 +1,4 @@
-package model.`case`
-
-import model.{CaseFile, Solution, Character}
+package model.case_generation
 
 trait Case:
   def plot: Plot
@@ -9,8 +7,8 @@ trait Case:
   def solution: Solution
 
 final case class Plot(
-  title: String,
-  content: String
+    title: String,
+    content: String
 )
 
 object Case:

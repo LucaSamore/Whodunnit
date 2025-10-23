@@ -1,4 +1,4 @@
-package model
+package model.case_generation
 
 sealed trait Constraint
 
@@ -12,20 +12,14 @@ object Constraint:
   case class PrerequisitesRange(min: Int, max: Int) extends Constraint
 
 object DifficultyPresets:
-  import Constraint.{
-    CaseFilesRange,
-    CharactersRange,
-    PrerequisitesRange,
-    Theme,
-    Difficulty
-  }
-  import Constraint.Difficulty.{Easy, Medium, Hard}
+  import Constraint.Difficulty.{Easy, Hard, Medium}
+  import Constraint.*
 
   def fromDifficulty(difficulty: Difficulty, theme: String): Set[Constraint] =
     difficulty match
-      case Easy => easy(theme)
+      case Easy   => easy(theme)
       case Medium => medium(theme)
-      case Hard => hard(theme)
+      case Hard   => hard(theme)
 
   def easy(theme: String): Set[Constraint] =
     Set(

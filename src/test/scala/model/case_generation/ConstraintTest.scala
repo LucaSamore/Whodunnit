@@ -1,13 +1,13 @@
-package model
+package model.case_generation
 
-import model.Constraint.{
+import Constraint.{
   CaseFilesRange,
   CharactersRange,
   PrerequisitesRange,
   Theme
 }
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class ConstraintTest extends AnyWordSpec with Matchers:
 
@@ -65,16 +65,16 @@ class ConstraintTest extends AnyWordSpec with Matchers:
       Constraint should contain(CaseFilesRange(7, 10))
       Constraint should contain(PrerequisitesRange(2, 5))
 
-  "DifficultyPresets.fromDifficulty" should :
-    import Constraint.Difficulty.{Easy, Medium, Hard}
-    "delegate to easy" in :
+  "DifficultyPresets.fromDifficulty" should:
+    import Constraint.Difficulty.{Easy, Hard, Medium}
+    "delegate to easy" in:
       val result = DifficultyPresets.fromDifficulty(Easy, "Theme1")
       result shouldBe DifficultyPresets.easy("Theme1")
 
-    "delegate to medium" in :
+    "delegate to medium" in:
       val result = DifficultyPresets.fromDifficulty(Medium, "Theme2")
       result shouldBe DifficultyPresets.medium("Theme2")
 
-    "delegate to hard" in :
+    "delegate to hard" in:
       val result = DifficultyPresets.fromDifficulty(Hard, "Theme3")
       result shouldBe DifficultyPresets.hard("Theme3")
