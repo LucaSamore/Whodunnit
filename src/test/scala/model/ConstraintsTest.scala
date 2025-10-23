@@ -31,3 +31,10 @@ class ConstraintsTest extends AnyWordSpec with Matchers:
         val range = Constraints.PrerequisitesRange(1, 4)
         range.min shouldBe 1
         range.max shouldBe 4
+
+  "Difficulty enum" should :
+    "have three levels" in :
+      import Constraints.Difficulty.*
+      Easy.toString shouldBe "Easy"
+      Medium.toString shouldBe "Medium"
+      Hard.toString shouldBe "Hard"
