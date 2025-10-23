@@ -7,6 +7,8 @@ import org.scalamock.scalatest.MockFactory
 import io.circe.syntax._
 import io.circe.parser._
 import io.circe.generic.auto._
+import sttp.client3._
+import sttp.client3.testing.SttpBackendStub
 
 class LLMCaseGeneratorTest extends AnyWordSpec with Matchers with EitherValues
     with MockFactory:
@@ -91,3 +93,43 @@ class LLMCaseGeneratorTest extends AnyWordSpec with Matchers with EitherValues
         response.choices should have size 1
         response.choices.head.message.content shouldBe "Generated case content"
       }
+
+  "GroqLLMService" when :
+    "making successful API call" should :
+      "return generated content from Groq response" in :
+        val mockResponse = GroqResponse(
+          choices = List(
+            Choice(Message("assistant", "Generated JSON content"))
+          )
+        )
+
+        val backend = SttpBackendStub.synchronous
+          .whenRequestMatches(_ => true)
+          .thenRespond(mockResponse)
+
+        val service = new GroqLLMService(
+          apiKey = "test_key",
+          model = "llama-3.1-8b-instant",
+          backend = backend
+        )
+
+        val result = service.generateCase("test prompt")
+
+        result shouldBe a[Right[_, _]]
+        result.value shouldBe "Generated JSON content"
+
+    "handling empty response" should:
+      "return LLMError when choices list is empty" in:
+        val emptyResponse = GroqResponse(choices = List.empty)
+
+        val backend = SttpBackendStub.synchronous
+          .whenRequestMatches(_ => true)
+          .thenRespond(emptyResponse)
+
+        val service = new GroqLLMService("test_key", "test_model", backend)
+
+        val result = service.generateCase("test prompt")
+
+        result shouldBe a[Left[_, _]]
+        result.left.value shouldBe a[GenerationError.LLMError]
+        result.left.value.message should include("No response content")
