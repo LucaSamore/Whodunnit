@@ -23,8 +23,8 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
                 "title": "Email",
                 "kind": "Email",
                 "sender": "Alice",
-                "receiver": "Bob",
-                "date": "2025-10-20T14:30:00Z",
+                "receiver": null,
+                "date": "2025-10-20T14:30:00",
                 "content": "Threatening message"
               }
             ]
@@ -46,7 +46,6 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         val result = jsonParser.parse(invalidJson)
 
         result shouldBe a[Left[_, _]]
-        println(result)
         result.left.value shouldBe a[MissingFieldError]
         result.left.value.message should include("plot")
 
@@ -64,7 +63,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         val result = JsonParser.parse(json)
 
         result shouldBe a[Left[_, _]]
-        result.left.value shouldBe a[MissingFieldError]
+        result.left.value shouldBe a[JsonSyntaxError]
 
     "parsing characters" should:
       "extract single character with name and role" in:
@@ -83,8 +82,8 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
                 "title": "Email",
                 "kind": "Email",
                 "sender": "Alice",
-                "receiver": "Bob",
-                "date": "2025-10-20T14:30:00Z",
+                "receiver": null,
+                "date": "2025-10-20T14:30:00",
                 "content": "Threatening message"
               }
             ]
@@ -92,10 +91,8 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         """
 
         val result = JsonParser.parse(json)
-
         result shouldBe a[Right[_, _]]
         val case1 = result.value
-
         case1.characters should have size 1
 
       "extract multiple characters" in:
@@ -117,7 +114,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
                 "kind": "Email",
                 "sender": "Alice",
                 "receiver": "Bob",
-                "date": "2025-10-20T14:30:00Z",
+                "date": "2025-10-20T14:30:00",
                 "content": "Threatening message"
               }
             ]
@@ -154,7 +151,8 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
               "title": "Mystery at Dawn",
               "content": "A mysterious case begins"
             },
-            "characters": []
+            "characters": [],
+            "files": []
           }
           """
 
@@ -181,7 +179,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         val result = JsonParser.parse(json)
 
         result shouldBe a[Left[_, _]]
-        result.left.value shouldBe a[InvalidFieldError]
+        result.left.value shouldBe a[MissingFieldError]
 
       "handle invalid role in character" in:
         val json =
@@ -222,7 +220,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
                 "kind": "Email",
                 "sender": "Alice",
                 "receiver": "Bob",
-                "date": "2025-10-20T14:30:00Z",
+                "date": "2025-10-20T14:30:00",
                 "content": "Threatening message"
               }
             ]
@@ -230,11 +228,8 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         """
 
         val result = JsonParser.parse(json)
-
         result shouldBe a[Right[_, _]]
         val case1 = result.value
-
-        println(case1.files)
         case1.files should have size 1
 
       "extract file with null optional fields" in :
@@ -262,7 +257,6 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         """
 
         val result = JsonParser.parse(json)
-
         result shouldBe a[Right[_, _]]
 
       "handle empty files array" in :
@@ -273,13 +267,14 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
               "title": "Mystery at Dawn",
               "content": "A mysterious case begins"
             },
-            "characters": [],
+            "characters": [
+              {"name": "Alice", "role": "Suspect"}
+            ],
             "files": []
           }
         """
 
         val result = JsonParser.parse(json)
-
         result shouldBe a[Left[_, _]]
         result.left.value shouldBe a[InvalidFieldError]
         result.left.value.message should include("must not be empty")
