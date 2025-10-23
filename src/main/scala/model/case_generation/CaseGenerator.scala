@@ -1,8 +1,7 @@
 package model.case_generation
 
 trait CaseGenerator:
-  def generate(constraints: Constraint*): Either[Error, Case]
-
+  def generate(constraints: Constraint*): Either[GenerationError, Case]
 
 sealed trait GenerationError:
   def message: String

@@ -1,0 +1,24 @@
+Generate a detective case in JSON format with this structure:
+{
+  "plot": {"title": "...", "content": "..."},
+  "characters": [{"name": "...", "role": "..."}],
+  "files": [{"title": "...", "kind": "...", "content": "...", "sender": null, "receiver": null, "date": null}],
+  "solution": {
+    "prerequisite": [{"firstEntity": "...", "secondEntity": "...", "semantic": "..."}],
+    "culprit": "...",
+    "motive": "..."
+  }
+}
+
+Constraints:
+{{CONSTRAINTS}}
+
+Important rules:
+- All character names must be unique
+- All file titles must be unique
+- sender/receiver must reference existing character names or be null
+- culprit must reference an existing character name
+- Valid roles: Suspect, Victim, Witness, Investigator, Accomplice, Informant
+- Valid file kinds: Email, Message, Interview, Diary, TextDocument, Notes
+- Dates must be in ISO-8601 format (YYYY-MM-DDTHH:MM:SS) or null
+- Return ONLY valid JSON, no additional text
