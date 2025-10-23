@@ -66,6 +66,7 @@ class ConstraintTest extends AnyWordSpec with Matchers:
       Constraint should contain(PrerequisitesRange(2, 5))
 
   "DifficultyPresets.fromDifficulty" should :
+    import Constraint.Difficulty.{Easy, Medium, Hard}
     "delegate to easy" in :
       val result = DifficultyPresets.fromDifficulty(Easy, "Theme1")
       result shouldBe DifficultyPresets.easy("Theme1")

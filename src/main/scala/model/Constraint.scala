@@ -16,8 +16,16 @@ object DifficultyPresets:
     CaseFilesRange,
     CharactersRange,
     PrerequisitesRange,
-    Theme
+    Theme,
+    Difficulty
   }
+  import Constraint.Difficulty.{Easy, Medium, Hard}
+
+  def fromDifficulty(difficulty: Difficulty, theme: String): Set[Constraint] =
+    difficulty match
+      case Easy => easy(theme)
+      case Medium => medium(theme)
+      case Hard => hard(theme)
 
   def easy(theme: String): Set[Constraint] =
     Set(
