@@ -1,5 +1,6 @@
 package model
 
+import model.Constraints.{CharactersRange, Theme, CaseFilesRange, PrerequisitesRange}
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -38,5 +39,5 @@ class ConstraintsTest extends AnyWordSpec with Matchers:
 
       constraints should contain(Theme("Mansion Murder"))
       constraints should contain(CharactersRange(2, 4))
-      constraints should contain(FilesRange(2, 5))
+      constraints should contain(CaseFilesRange(2, 5))
       constraints should contain(PrerequisitesRange(0, 2))
