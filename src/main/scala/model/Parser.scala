@@ -31,23 +31,32 @@ object JsonParser extends Parser:
       case s if s.contains("name") => "name"
       case s if s.contains("role") => "role"
       case s if s.contains("kind") => "kind"
+      case s if s.contains("solution") => "solution"
+      case s if s.contains("culprit") => "culprit"
+      case s if s.contains("prerequisite") => "prerequisite"
+      case s if s.contains("firstEntity") => "firstEntity"
+      case s if s.contains("secondEntity") => "secondEntity"
+      case s if s.contains("semantic") => "semantic"
+      case s if s.contains("motive") => "motive"
       case _ => "unknown"
 
   private case class CaseModel(
                                 plot: PlotModel,
                                 characters: List[CharacterModel],
-                                files: List[CaseFileModel]
+                                files: List[CaseFileModel],
+                                solution: SolutionModel
                               ):
     def toCase: Either[ParseError, Case] =
       for
         plotObj <- plot.toPlot
         characterSet <- characters.traverse(_.toCharacter).flatMap(_.toSet.validateNonEmpty("characters"))
         caseFiles <- files.traverse(_.toCaseFile(characterSet)).flatMap(_.toSet.validateNonEmpty("files"))
+        solutionObj <- solution.toSolution(characterSet, caseFiles)
       yield Case(
         plotObj,
         caseFiles,
         characterSet,
-        CaseSolution(Set.empty, characterSet.headOption.getOrElse(Character("", CaseRole.Suspect)), "")
+        solutionObj
       )
 
   private case class PlotModel(title: String, content: String):
@@ -89,10 +98,41 @@ object JsonParser extends Parser:
             .toRight(InvalidFieldError(s"file.$field", s"Character '$n' not found"))
             .map(Some(_))
 
+  private case class SolutionModel(
+                                    prerequisite: List[PrerequisiteModel],
+                                    culprit: String,
+                                    motive: String
+                                  ):
+    def toSolution(characters: Set[Character], files: Set[CaseFile]): Either[ParseError, CaseSolution] =
+      for
+        culpritChar <- characters.find(_.name == culprit)
+          .toRight(InvalidFieldError("solution.culprit", s"Character '$culprit' not found"))
+        prerequisites <- prerequisite.traverse(_.toKGPrerequisite(characters, files))
+      yield CaseSolution(prerequisites.toSet, culpritChar, motive)
+
+  private case class PrerequisiteModel(
+                                        firstEntity: String,
+                                        secondEntity: String,
+                                        semantic: String
+                                      ):
+    def toKGPrerequisite(characters: Set[Character], files: Set[CaseFile]): Either[ParseError, KGPrerequisite] =
+      for
+        first <- resolveEntity(firstEntity, characters, files)
+        second <- resolveEntity(secondEntity, characters, files)
+      yield KGPrerequisite(first, second, semantic)
+
+  private def resolveEntity(name: String, characters: Set[Character], files: Set[CaseFile]): Either[ParseError, Character | CaseFile] =
+    characters.find(_.name == name)
+      .map(_.asInstanceOf[Character | CaseFile])
+      .orElse(files.find(_.title == name).map(_.asInstanceOf[Character | CaseFile]))
+      .toRight(InvalidFieldError("solution.prerequisite", s"Entity '$name' not found"))
+
   private object UPickleCodecs:
     given ReadWriter[PlotModel] = macroRW
     given ReadWriter[CharacterModel] = macroRW
     given ReadWriter[CaseFileModel] = macroRW
+    given ReadWriter[PrerequisiteModel] = macroRW
+    given ReadWriter[SolutionModel] = macroRW
     given ReadWriter[CaseModel] = macroRW
 
   extension [A](set: Set[A])

@@ -27,7 +27,18 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
                 "date": "2025-10-20T14:30:00",
                 "content": "Threatening message"
               }
-            ]
+            ],
+            "solution": {
+              "prerequisite": [
+                {
+                  "firstEntity": "Alice",
+                  "secondEntity": "Email",
+                  "semantic": "sent"
+                }
+              ],
+              "culprit": "Alice",
+              "motive": "Revenge"
+            }
           }
         """
 
@@ -86,7 +97,18 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
                 "date": "2025-10-20T14:30:00",
                 "content": "Threatening message"
               }
-            ]
+            ],
+            "solution": {
+              "prerequisite": [
+                {
+                  "firstEntity": "Alice",
+                  "secondEntity": "Email",
+                  "semantic": "sent"
+                }
+              ],
+              "culprit": "Alice",
+              "motive": "Revenge"
+            }
           }
         """
 
@@ -117,7 +139,18 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
                 "date": "2025-10-20T14:30:00",
                 "content": "Threatening message"
               }
-            ]
+            ],
+            "solution": {
+                "prerequisite": [
+                  {
+                    "firstEntity": "Alice",
+                    "secondEntity": "Email",
+                    "semantic": "sent"
+                  }
+                ],
+                "culprit": "Alice",
+                "motive": "Revenge"
+            }
           }
         """
 
@@ -152,7 +185,18 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
               "content": "A mysterious case begins"
             },
             "characters": [],
-            "files": []
+            "files": [],
+            "solution": {
+                "prerequisite": [
+                  {
+                    "firstEntity": "Alice",
+                    "secondEntity": "Email",
+                    "semantic": "sent"
+                  }
+                ],
+                "culprit": "Alice",
+                "motive": "Revenge"
+            }
           }
           """
 
@@ -201,8 +245,8 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         result.left.value shouldBe a[InvalidFieldError]
         result.left.value.message should include("Unknown role")
 
-    "parsing files" should :
-      "extract file with all fields present" in :
+    "parsing files" should:
+      "extract file with all fields present" in:
         val json =
           """
           {
@@ -223,7 +267,18 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
                 "date": "2025-10-20T14:30:00",
                 "content": "Threatening message"
               }
-            ]
+            ],
+            "solution": {
+                "prerequisite": [
+                  {
+                    "firstEntity": "Alice",
+                    "secondEntity": "Email",
+                    "semantic": "sent"
+                  }
+                ],
+                "culprit": "Alice",
+                "motive": "Revenge"
+            }
           }
         """
 
@@ -232,7 +287,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         val case1 = result.value
         case1.files should have size 1
 
-      "extract file with null optional fields" in :
+      "extract file with null optional fields" in:
         val json =
           """
           {
@@ -252,14 +307,25 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
                 "date": null,
                 "content": "Anonymous note"
               }
-            ]
+            ],
+            "solution": {
+                "prerequisite": [
+                  {
+                    "firstEntity": "Alice",
+                    "secondEntity": "Note",
+                    "semantic": "sent"
+                  }
+                ],
+                "culprit": "Alice",
+                "motive": "Revenge"
+            }
           }
         """
 
         val result = JsonParser.parse(json)
         result shouldBe a[Right[_, _]]
 
-      "handle empty files array" in :
+      "handle empty files array" in:
         val json =
           """
           {
@@ -270,7 +336,18 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
             "characters": [
               {"name": "Alice", "role": "Suspect"}
             ],
-            "files": []
+            "files": [],
+            "solution": {
+                "prerequisite": [
+                  {
+                    "firstEntity": "Alice",
+                    "secondEntity": "Email",
+                    "semantic": "sent"
+                  }
+                ],
+                "culprit": "Alice",
+                "motive": "Revenge"
+            }
           }
         """
 
@@ -279,7 +356,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         result.left.value shouldBe a[InvalidFieldError]
         result.left.value.message should include("must not be empty")
 
-      "handle missing title in file" in :
+      "handle missing title in file" in:
         val json =
           """
           {
@@ -290,7 +367,18 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
             "characters": [
               {"name": "Alice", "role": "Suspect"}
             ],
-            "files": [{"kind": "Email", "content": "text"}]
+            "files": [{"kind": "Email", "content": "text"}],
+            "solution": {
+                "prerequisite": [
+                  {
+                    "firstEntity": "Alice",
+                    "secondEntity": "Email",
+                    "semantic": "sent"
+                  }
+                ],
+                "culprit": "Alice",
+                "motive": "Revenge"
+            }
           }
         """
 
@@ -298,7 +386,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
 
         result shouldBe a[Left[_, _]]
 
-      "handle invalid file kind" in :
+      "handle invalid file kind" in:
         val json =
           """
           {
@@ -309,7 +397,18 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
              "characters": [
               {"name": "Alice", "role": "Suspect"}
             ],
-            "files": [{"title": "Doc", "kind": "InvalidType", "content": "text"}]
+            "files": [{"title": "Doc", "kind": "InvalidType", "content": "text"}],
+            "solution": {
+                "prerequisite": [
+                  {
+                    "firstEntity": "Alice",
+                    "secondEntity": "Email",
+                    "semantic": "sent"
+                  }
+                ],
+                "culprit": "Alice",
+                "motive": "Revenge"
+            }
           }
         """
 
@@ -317,7 +416,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         result shouldBe a[Left[_, _]]
         result.left.value.message should include("Unknown type")
 
-      "handle invalid date format" in :
+      "handle invalid date format" in:
         val json =
           """
           {
@@ -335,9 +434,92 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
                 "content": "text",
                 "date": null
               }
-            ]
+            ],
+            "solution": {
+                "prerequisite": [
+                  {
+                    "firstEntity": "Alice",
+                    "secondEntity": "Doc",
+                    "semantic": "sent"
+                  }
+                ],
+                "culprit": "Alice",
+                "motive": "Revenge"
+            }
           }
         """
 
         val result = JsonParser.parse(json)
         result shouldBe a[Right[_, _]]
+
+    "parsing solution" should:
+      "extract culprit and motive" in:
+        val json =
+          """
+          {
+            "plot": {
+              "title": "Mystery at Dawn",
+              "content": "A mysterious case begins"
+            },
+            "characters": [
+              {"name": "Alice", "role": "Suspect"}
+            ],
+            "files": [
+              {
+                "title": "Email",
+                "kind": "Email",
+                "sender": "Alice",
+                "receiver": null,
+                "date": "2025-10-20T14:30:00",
+                "content": "Threatening message"
+              }
+            ],
+            "solution": {
+              "prerequisite": [],
+              "culprit": "Alice",
+              "motive": "Jealousy"
+            }
+          }
+        """
+
+        val result = JsonParser.parse(json)
+        result shouldBe a[Right[_, _]]
+
+      "extract single prerequisite" in:
+        val json =
+          """
+          {
+            "plot": {
+              "title": "Mystery at Dawn",
+              "content": "A mysterious case begins"
+            },
+            "characters": [
+              {"name": "Alice", "role": "Suspect"}
+            ],
+            "files": [
+              {
+                "title": "Email",
+                "kind": "Email",
+                "sender": "Alice",
+                "receiver": null,
+                "date": "2025-10-20T14:30:00",
+                "content": "Threatening message"
+              }
+            ],
+            "solution": {
+              "prerequisite": [
+                {
+                  "firstEntity": "Alice",
+                  "secondEntity": "Email",
+                  "semantic": "sent"
+                }
+              ],
+              "culprit": "Alice",
+              "motive": "Revenge"
+            }
+          }
+        """
+
+        val result = JsonParser.parse(json)
+        result shouldBe a[Right[_, _]]
+        val solution = result.value.solution.asInstanceOf[CaseSolution]
