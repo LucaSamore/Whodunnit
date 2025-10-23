@@ -97,15 +97,23 @@ class LLMCaseGeneratorTest extends AnyWordSpec with Matchers with EitherValues
   "GroqLLMService" when :
     "making successful API call" should :
       "return generated content from Groq response" in :
-        val mockResponse = GroqResponse(
-          choices = List(
-            Choice(Message("assistant", "Generated JSON content"))
-          )
-        )
+        val mockJsonResponse =
+          """
+          {
+            "choices": [
+              {
+                "message": {
+                  "role": "assistant",
+                  "content": "Generated JSON content"
+                }
+              }
+            ]
+          }
+        """
 
         val backend = SttpBackendStub.synchronous
           .whenRequestMatches(_ => true)
-          .thenRespond(mockResponse)
+          .thenRespond(mockJsonResponse)
 
         val service = new GroqLLMService(
           apiKey = "test_key",
@@ -120,11 +128,15 @@ class LLMCaseGeneratorTest extends AnyWordSpec with Matchers with EitherValues
 
     "handling empty response" should:
       "return LLMError when choices list is empty" in:
-        val emptyResponse = GroqResponse(choices = List.empty)
+        val emptyJsonResponse = """
+          {
+            "choices": []
+          }
+        """
 
         val backend = SttpBackendStub.synchronous
           .whenRequestMatches(_ => true)
-          .thenRespond(emptyResponse)
+          .thenRespond(emptyJsonResponse)
 
         val service = new GroqLLMService("test_key", "test_model", backend)
 
@@ -133,3 +145,16 @@ class LLMCaseGeneratorTest extends AnyWordSpec with Matchers with EitherValues
         result shouldBe a[Left[_, _]]
         result.left.value shouldBe a[GenerationError.LLMError]
         result.left.value.message should include("No response content")
+
+    "handling HTTP errors" should :
+      "return LLMError when backend returns error" in :
+        val backend = SttpBackendStub.synchronous
+          .whenRequestMatches(_ => true)
+          .thenRespondServerError()
+
+        val service = new GroqLLMService("test_key", "test_model", backend)
+
+        val result = service.generateCase("test prompt")
+
+        result shouldBe a[Left[_, _]]
+        result.left.value.message should include("Groq API error")
