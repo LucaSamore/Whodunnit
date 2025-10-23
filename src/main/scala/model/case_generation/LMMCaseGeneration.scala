@@ -15,9 +15,12 @@ class LLMCaseGenerator(
     for
       prompt <- buildPrompt(constraints)
       jsonResponse <- llmService.generateCase(prompt)
-      parsedCase <- parser.parse(
-        jsonResponse
-      ).left.map(GenerationError.ParseFailureError.apply)
+      parsedCase <- {
+        println(s"Generated case: $jsonResponse")
+        parser.parse(
+          jsonResponse
+        ).left.map(GenerationError.ParseFailureError.apply)
+      }
     yield parsedCase
 
   private def buildPrompt(constraints: Seq[Constraint])
@@ -45,3 +48,18 @@ class LLMCaseGenerator(
 object LLMCaseGenerator:
   def apply(llmService: LLMService, parser: Parser): LLMCaseGenerator =
     new LLMCaseGenerator(llmService, parser)
+
+import io.circe.generic.auto._
+
+case class GroqRequest(
+                        messages: List[Message],
+                        model: String,
+                        temperature: Double = 0.7,
+                        max_tokens: Int = 4000
+                      )
+
+case class Message(role: String, content: String)
+
+case class GroqResponse(choices: List[Choice])
+
+case class Choice(message: Message)

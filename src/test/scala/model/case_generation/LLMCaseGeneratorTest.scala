@@ -6,6 +6,7 @@ import org.scalatest.EitherValues
 import org.scalamock.scalatest.MockFactory
 import io.circe.syntax._
 import io.circe.parser._
+import io.circe.generic.auto._
 
 class LLMCaseGeneratorTest extends AnyWordSpec with Matchers with EitherValues
     with MockFactory:
