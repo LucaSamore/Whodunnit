@@ -278,3 +278,66 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         result shouldBe a[Left[_, _]]
         result.left.value shouldBe a[InvalidFieldError]
         result.left.value.message should include("must not be empty")
+
+      "handle missing title in file" in :
+        val json =
+          """
+          {
+            "plot": {
+              "title": "Mystery at Dawn",
+              "content": "A mysterious case begins"
+            },
+            "characters": [
+              {"name": "Alice", "role": "Suspect"}
+            ],
+            "files": [{"kind": "Email", "content": "text"}]
+          }
+        """
+
+        val result = JsonParser.parse(json)
+
+        result shouldBe a[Left[_, _]]
+
+      "handle invalid file kind" in :
+        val json =
+          """
+          {
+            "plot": {
+              "title": "Mystery at Dawn",
+              "content": "A mysterious case begins"
+            },
+             "characters": [
+              {"name": "Alice", "role": "Suspect"}
+            ],
+            "files": [{"title": "Doc", "kind": "InvalidType", "content": "text"}]
+          }
+        """
+
+        val result = JsonParser.parse(json)
+        result shouldBe a[Left[_, _]]
+        result.left.value.message should include("Unknown type")
+
+      "handle invalid date format" in :
+        val json =
+          """
+          {
+            "plot": {
+              "title": "Mystery at Dawn",
+              "content": "A mysterious case begins"
+            },
+            "characters": [
+              {"name": "Alice", "role": "Suspect"}
+            ],
+            "files": [
+              {
+                "title": "Doc",
+                "kind": "Email",
+                "content": "text",
+                "date": null
+              }
+            ]
+          }
+        """
+
+        val result = JsonParser.parse(json)
+        result shouldBe a[Right[_, _]]

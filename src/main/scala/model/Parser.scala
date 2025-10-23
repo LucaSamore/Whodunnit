@@ -126,7 +126,6 @@ object JsonParser extends Parser:
     private def toRight(error: => ParseError): Either[ParseError, Unit] =
       if bool then Right(()) else Left(error)
 
-  // Parsers per tipi enum
   private def parseRole(roleStr: String): Option[CaseRole] =
     CaseRole.values.find(_.toString.equalsIgnoreCase(roleStr))
 
