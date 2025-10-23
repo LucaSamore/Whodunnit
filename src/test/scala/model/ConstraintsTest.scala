@@ -24,3 +24,10 @@ class ConstraintsTest extends AnyWordSpec with Matchers:
         val range = Constraints.CaseFilesRange(3, 8)
         range.min shouldBe 3
         range.max shouldBe 8
+
+  "Constraint.PrerequisitesRange" when :
+    "created with valid range" should :
+      "store min and max" in :
+        val range = Constraints.PrerequisitesRange(1, 4)
+        range.min shouldBe 1
+        range.max shouldBe 4
