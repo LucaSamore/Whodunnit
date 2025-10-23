@@ -93,6 +93,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
       "handle missing plot field" in:
         val jsonStr = json(singleCharacter)
         val result = JsonParser.parse(jsonStr)
+
         result shouldBe a[Left[_, _]]
         result.left.value shouldBe a[MissingFieldError]
         result.left.value.message should include("plot")
@@ -100,12 +101,14 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
       "handle invalid JSON syntax" in:
         val jsonStr = """{plot: "invalid}"""
         val result = JsonParser.parse(jsonStr)
+
         result shouldBe a[Left[_, _]]
         result.left.value shouldBe a[JsonSyntaxError]
 
       "handle non-string plot value" in:
         val jsonStr = """{"plot": 123}"""
         val result = JsonParser.parse(jsonStr)
+
         result shouldBe a[Left[_, _]]
         result.left.value shouldBe a[JsonSyntaxError]
 
@@ -113,53 +116,54 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
       "extract single character with name and role" in:
         val jsonStr = json(basePlot, singleCharacter, singleFile, baseSolution)
         val result = JsonParser.parse(jsonStr)
+
         result shouldBe a[Right[_, _]]
         result.value.characters should have size 1
 
       "extract multiple characters" in:
-        val jsonStr =
-          json(basePlot, multipleCharacters, singleFile, baseSolution)
+        val jsonStr = json(basePlot, multipleCharacters, singleFile, baseSolution)
         val result = JsonParser.parse(jsonStr)
+
         result shouldBe a[Right[_, _]]
         result.value.characters should have size 3
 
       "handle missing characters field" in:
         val jsonStr = json(basePlot)
         val result = JsonParser.parse(jsonStr)
+
         result shouldBe a[Left[_, _]]
         result.left.value.message should include("characters")
 
       "handle empty characters array" in:
-        val jsonStr =
-          json(basePlot, """"characters": [], "files": []""", baseSolution)
+        val jsonStr = json(basePlot, """"characters": [], "files": []""", baseSolution)
         val result = JsonParser.parse(jsonStr)
+
         result shouldBe a[Left[_, _]]
         result.left.value.message should include("must not be empty")
 
     "parsing files" should:
       "extract file with all fields present" in:
-        val jsonStr =
-          json(basePlot, multipleCharacters, singleFile, baseSolution)
+        val jsonStr = json(basePlot, multipleCharacters, singleFile, baseSolution)
         val result = JsonParser.parse(jsonStr)
+
         result shouldBe a[Right[_, _]]
         result.value.files should have size 1
 
       "extract file with null optional fields" in:
-        val jsonStr =
-          json(basePlot, singleCharacter, fileWithNulls, 
+        val jsonStr = json(basePlot, singleCharacter, fileWithNulls,
           """"solution": {"prerequisite": [{"firstEntity": "Alice","secondEntity": "Note","semantic": "sent"}],"culprit": "Alice","motive": "Revenge"}"""
           )
         val result = JsonParser.parse(jsonStr)
+
         result shouldBe a[Right[_, _]]
 
       "handle invalid file kind" in:
-        val jsonStr = json(
-          basePlot,
-          singleCharacter,
+        val jsonStr = json(basePlot, singleCharacter,
           """"files": [{"title": "Doc", "kind": "InvalidType", "content": "text"}]""",
           baseSolution
         )
         val result = JsonParser.parse(jsonStr)
+
         result shouldBe a[Left[_, _]]
         result.left.value.message should include("Unknown type")
 
@@ -167,6 +171,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
       "extract culprit and motive" in:
         val jsonStr = json(basePlot, singleCharacter, singleFile, baseSolution)
         val result = JsonParser.parse(jsonStr)
+
         result shouldBe a[Right[_, _]]
         val solution = result.value.solution
         solution.culprit.name shouldBe "Alice"
@@ -174,8 +179,8 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
 
       "extract single prerequisite" in:
         val jsonStr = json(basePlot, singleCharacter, singleFile, baseSolution)
-
         val result = JsonParser.parse(jsonStr)
+
         result shouldBe a[Right[_, _]]
         val solution = result.value.solution.asInstanceOf[CaseSolution]
         solution.prerequisite should have size 1
@@ -183,3 +188,30 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         prereq.firstEntity.toString shouldBe "Character(Alice,Suspect)"
         prereq.secondEntity.toString shouldBe "CaseFile(Email,Threatening message,Email,Some(Character(Alice,Suspect)),None,Some(2025-10-20T14:30))"
         prereq.semantic shouldBe "sent"
+
+      "handle missing solution field" in :
+        val jsonStr = json(basePlot, singleCharacter, singleFile)
+        val result = JsonParser.parse(jsonStr)
+        result shouldBe a[Left[_, _]]
+        result.left.value.message should include("solution")
+
+      "handle missing culprit in solution" in :
+        val jsonStr = json(basePlot, singleCharacter, singleFile,
+          """"solution": {"prerequisite": [{"firstEntity": "Alice", "secondEntity": "Email", "semantic": "sent"}],"motive": "Revenge"}"""
+          )
+        val result = JsonParser.parse(jsonStr)
+        result shouldBe a[Left[_, _]]
+
+      "handle missing motive in solution" in :
+        val jsonStr = json(basePlot, singleCharacter, singleFile,
+          """"solution": {"prerequisite": [{"firstEntity": "Alice", "secondEntity": "Email", "semantic": "sent"}],"culprit": "Alice"}"""
+        )
+        val result = JsonParser.parse(jsonStr)
+        result shouldBe a[Left[_, _]]
+
+      "handle missing prerequisite entities" in :
+        val jsonStr = json(basePlot, singleCharacter, singleFile,
+            """solution": {"prerequisite": [],"culprit": "Alice","motive": "Revenge"}"""
+        )
+        val result = JsonParser.parse(jsonStr)
+        result shouldBe a[Left[_, _]]
