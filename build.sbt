@@ -18,7 +18,7 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
       "org.scalafx" %% "scalafx" % "23.0.1-R34",
       "org.scalatest" %% "scalatest" % "3.2.19" % "test",
-      "com.lihaoyi" %% "ujson" % "3.3.1"
+      "com.lihaoyi" %% "upickle" % "4.3.1"
     ),
     mainClass := Some("Launcher")
   )
