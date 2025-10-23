@@ -32,9 +32,11 @@ class ConstraintsTest extends AnyWordSpec with Matchers:
         range.min shouldBe 1
         range.max shouldBe 4
 
-  "Difficulty enum" should :
-    "have three levels" in :
-      import Constraints.Difficulty.*
-      Easy.toString shouldBe "Easy"
-      Medium.toString shouldBe "Medium"
-      Hard.toString shouldBe "Hard"
+  "DifficultyPresets.easy" should :
+    "return constraints for easy difficulty" in :
+      val constraints = DifficultyPresets.easy("Mansion Murder")
+
+      constraints should contain(Theme("Mansion Murder"))
+      constraints should contain(CharactersRange(2, 4))
+      constraints should contain(FilesRange(2, 5))
+      constraints should contain(PrerequisitesRange(0, 2))
