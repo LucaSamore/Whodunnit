@@ -78,3 +78,20 @@ class ConstraintTest extends AnyWordSpec with Matchers:
     "delegate to hard" in:
       val result = DifficultyPresets.fromDifficulty(Hard, "Theme3")
       result shouldBe DifficultyPresets.hard("Theme3")
+
+  "Constraint.toPromptDescription" should :
+    "describe Theme constraint" in :
+      val theme = Theme("Murder Mystery")
+      theme.toPromptDescription shouldBe "Theme: Murder Mystery"
+
+    "describe CharactersRange constraint" in :
+      val range = CharactersRange(2, 4)
+      range.toPromptDescription shouldBe "Number of characters: between 2 and 4"
+
+    "describe CaseFilesRange constraint" in :
+      val range = CaseFilesRange(3, 8)
+      range.toPromptDescription shouldBe "Number of case files: between 3 and 8"
+
+    "describe PrerequisitesRange constraint" in :
+      val range = PrerequisitesRange(1, 3)
+      range.toPromptDescription shouldBe "Solution prerequisites: between 1 and 3"
