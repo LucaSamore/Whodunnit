@@ -48,7 +48,6 @@ jobs:
   test:
     name: Test on ${{ matrix.os }} with JDK ${{ matrix.java }}
     runs-on: ${{ matrix.os }}
-    needs: code-checks
 
     strategy:
       matrix:
