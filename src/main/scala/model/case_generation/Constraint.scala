@@ -11,6 +11,17 @@ object Constraint:
   case class CaseFilesRange(min: Int, max: Int) extends Constraint
   case class PrerequisitesRange(min: Int, max: Int) extends Constraint
 
+  extension (c: Constraint)
+    def toPromptDescription: String = c match
+      case Theme(value) =>
+        s"Theme: $value"
+      case CharactersRange(min, max) =>
+        s"Number of characters: between $min and $max"
+      case CaseFilesRange(min, max) =>
+        s"Number of case files: between $min and $max"
+      case PrerequisitesRange(min, max) =>
+        s"Solution prerequisites: between $min and $max"
+
 object DifficultyPresets:
   import Constraint.Difficulty.{Easy, Hard, Medium}
   import Constraint.*
