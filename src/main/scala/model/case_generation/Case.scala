@@ -6,10 +6,7 @@ trait Case:
   def files: Set[CaseFile]
   def solution: Solution
 
-final case class Plot(
-    title: String,
-    content: String
-)
+final case class Plot(title: String, content: String)
 
 object Case:
   def apply(
@@ -17,8 +14,12 @@ object Case:
       files: Set[CaseFile],
       characters: Set[Character],
       solution: Solution
-  ): Case =
-    CaseImpl(plot, files, characters, solution)
+  ): Case = CaseImpl(plot, files, characters, solution)
+
+  def generate(constraints: Constraint*)(using
+      cg: CaseGenerator
+  ): Either[GenerationError, Case] =
+    cg.generate(constraints*)
 
   private case class CaseImpl(
       plot: Plot,
