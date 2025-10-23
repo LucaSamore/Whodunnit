@@ -10,3 +10,10 @@ class ConstraintsTest extends AnyWordSpec with Matchers:
       "store the theme" in :
         val theme = Constraints.Theme("Murder Mystery")
         theme.value shouldBe "Murder Mystery"
+
+  "Constraint.CharactersRange" when :
+    "created with valid range" should :
+      "store min and max" in :
+        val range = Constraints.CharactersRange(2, 5)
+        range.min shouldBe 2
+        range.max shouldBe 5
