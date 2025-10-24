@@ -142,14 +142,14 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
         result.left.value.message should include("must not be empty")
 
     "parsing files" should:
-      "extract file with all fields present" in:
+      "extract casefile with all fields present" in:
         val jsonStr = json(basePlot, multipleCharacters, singleFile, baseSolution)
         val result = JsonParser.parse(jsonStr)
 
         result shouldBe a[Right[_, _]]
-        result.value.files should have size 1
+        result.value.caseFiles should have size 1
 
-      "extract file with null optional fields" in:
+      "extract casefile with null optional fields" in:
         val jsonStr = json(basePlot, singleCharacter, fileWithNulls,
           """"solution": {"prerequisite": [{"firstEntity": "Alice","secondEntity": "Note","semantic": "sent"}],"culprit": "Alice","motive": "Revenge"}"""
           )
@@ -157,7 +157,7 @@ class JsonParserTest extends AnyWordSpec with Matchers with EitherValues:
 
         result shouldBe a[Right[_, _]]
 
-      "handle invalid file kind" in:
+      "handle invalid casefile kind" in:
         val jsonStr = json(basePlot, singleCharacter,
           """"files": [{"title": "Doc", "kind": "InvalidType", "content": "text"}]""",
           baseSolution
