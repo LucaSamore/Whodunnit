@@ -3,6 +3,12 @@ package model.case_generation
 trait CaseGenerator:
   def generate(constraints: Constraint*): Either[GenerationError, Case]
 
+object CaseGenerator:
+  given GroqLLMGenerator: CaseGenerator =
+    GroqLLMService.fromEnv() match
+      case Right(service) => LLMCaseGenerator(service, JsonParser)
+      case Left(error)    => throw IllegalStateException(error.message)
+
 sealed trait GenerationError:
   def message: String
 

@@ -18,18 +18,15 @@ class LLMCaseGenerator(
       parsedCase <- parseResponse(jsonResponse)
     yield parsedCase
 
-  private def buildPrompt(constraints: Seq[Constraint])
-      : Either[GenerationError, String] =
+  private def buildPrompt(constraints: Seq[Constraint]): Either[GenerationError, String] =
     loadPromptTemplate().map { template =>
       val constraintsText =
         constraints.map(_.toPromptDescription).mkString("\n- ", "\n- ", "")
       val finalPrompt = template.replace("{{CONSTRAINTS}}", constraintsText)
-      println(s"Built prompt with constraints: $constraintsText")
       finalPrompt
     }
 
-  private def parseResponse(jsonResponse: String)
-      : Either[GenerationError, Case] = {
+  private def parseResponse(jsonResponse: String): Either[GenerationError, Case] = {
     println(s"Generated case: $jsonResponse")
     val cleanedJson = cleanJson(jsonResponse)
     parser.parse(cleanedJson).left.map(GenerationError.ParseFailureError.apply)

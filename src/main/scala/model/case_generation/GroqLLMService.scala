@@ -1,10 +1,7 @@
 package model.case_generation
 
 import sttp.client3.*
-import sttp.client3.circe.*
 import io.circe.generic.auto.*
-import io.circe.syntax.*
-import io.github.cdimascio.dotenv.Dotenv
 
 case class GroqRequest(
                         messages: List[Message],
@@ -13,13 +10,9 @@ case class GroqRequest(
                         max_tokens: Int = 4000
                       )
 
-import io.circe.generic.auto._
-
 case class Message(role: String, content: String)
 case class GroqResponse(choices: List[Choice])
 case class Choice(message: Message)
-
-import sttp.client3._
 
 class GroqLLMService(
                       apiKey: String,
