@@ -34,8 +34,6 @@ class LLMCaseGenerator(
 
   private def cleanJson(input: String): String =
     input
-      .replaceAll("^[^{]*", "")
-      .replaceAll("[^}]*$", "")
       .replaceAll("```json", "")
       .replaceAll("```", "")
       .trim
