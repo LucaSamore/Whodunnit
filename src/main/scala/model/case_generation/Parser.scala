@@ -14,6 +14,8 @@ object JsonParser extends Parser:
     Try(read[CaseModel](input)) match
       case Success(caseModel) => caseModel.toCase
       case Failure(e)         =>
+        println(s"Parsing failed with exception: ${e.getMessage}")
+        e.printStackTrace()
         e.getMessage match
           case msg if msg.contains("missing") =>
             Left(MissingFieldError(extractFieldName(msg)))
