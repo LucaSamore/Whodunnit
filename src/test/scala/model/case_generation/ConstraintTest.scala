@@ -40,27 +40,31 @@ class ConstraintTest extends AnyWordSpec with Matchers:
 
   "DifficultyPresets.easy" should:
     "return Constraint for easy difficulty" in:
-      val Constraint = DifficultyPresets.easy()
+      val constraints = DifficultyPresets.easy()
 
-      Constraint should contain(CharactersRange(2, 4))
-      Constraint should contain(CaseFilesRange(2, 5))
-      Constraint should contain(PrerequisitesRange(1, 2))
+      constraints should contain(CharactersRange(2, 4))
+      constraints should contain(CaseFilesRange(2, 5))
+      constraints should contain(PrerequisitesRange(1, 2))
+      constraints should have size 3
+      constraints.collect { case t: Theme => t } shouldBe empty
 
   "DifficultyPresets.medium" should:
     "return Constraint for medium difficulty" in:
-      val Constraint = DifficultyPresets.medium()
+      val constraints = DifficultyPresets.medium()
 
-      Constraint should contain(CharactersRange(3, 5))
-      Constraint should contain(CaseFilesRange(4, 8))
-      Constraint should contain(PrerequisitesRange(1, 3))
+      constraints should contain(CharactersRange(3, 5))
+      constraints should contain(CaseFilesRange(4, 8))
+      constraints should contain(PrerequisitesRange(1, 3))
+      constraints should have size 3
 
   "DifficultyPresets.hard" should:
     "return Constraint for hard difficulty" in:
-      val Constraint = DifficultyPresets.hard()
+      val constraints = DifficultyPresets.hard()
 
-      Constraint should contain(CharactersRange(4, 6))
-      Constraint should contain(CaseFilesRange(7, 10))
-      Constraint should contain(PrerequisitesRange(2, 5))
+      constraints should contain(CharactersRange(4, 6))
+      constraints should contain(CaseFilesRange(7, 10))
+      constraints should contain(PrerequisitesRange(2, 5))
+      constraints should have size 3
 
   "Constraint.toPromptDescription" should :
     "describe Theme constraint" in :
