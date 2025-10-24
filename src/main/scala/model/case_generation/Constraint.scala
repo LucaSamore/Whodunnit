@@ -39,11 +39,10 @@ object Constraint:
         Set.empty[Constraint]
 
     val explicitConstraints = others.toSet
-    val fromDifficulty = expandedFromDifficulty.filterNot { dc =>
+    val uniqueDerivedConstraints = expandedFromDifficulty.filterNot { dc =>
       explicitConstraints.exists(_.getClass == dc.getClass)
     }
-
-    (explicitConstraints ++ fromDifficulty).toSeq
+    (explicitConstraints ++ uniqueDerivedConstraints).toSeq
 
 object DifficultyPresets:
   import Constraint.*
