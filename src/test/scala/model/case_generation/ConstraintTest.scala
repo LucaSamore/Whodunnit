@@ -90,3 +90,23 @@ class ConstraintTest extends AnyWordSpec with Matchers:
       result should contain(CaseFilesRange(2, 5))
       result should contain(PrerequisitesRange(1, 2))
       result should have size 4
+
+    "expand Medium difficulty to medium preset constraints" in :
+      import Constraint.Difficulty.Medium
+
+      val result = Constraint.expandConstraints(Seq(Medium))
+
+      result should contain(CharactersRange(3, 5))
+      result should contain(CaseFilesRange(4, 8))
+      result should contain(PrerequisitesRange(1, 3))
+      result should have size 3
+
+    "expand Hard difficulty to hard preset constraints" in :
+      import Constraint.Difficulty.Hard
+
+      val result = Constraint.expandConstraints(Seq(Hard))
+
+      result should contain(CharactersRange(4, 6))
+      result should contain(CaseFilesRange(7, 10))
+      result should contain(PrerequisitesRange(2, 5))
+      result should have size 3
