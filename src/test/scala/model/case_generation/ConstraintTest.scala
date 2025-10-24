@@ -40,44 +40,27 @@ class ConstraintTest extends AnyWordSpec with Matchers:
 
   "DifficultyPresets.easy" should:
     "return Constraint for easy difficulty" in:
-      val Constraint = DifficultyPresets.easy("Murder")
+      val Constraint = DifficultyPresets.easy()
 
-      Constraint should contain(Theme("Murder"))
       Constraint should contain(CharactersRange(2, 4))
       Constraint should contain(CaseFilesRange(2, 5))
       Constraint should contain(PrerequisitesRange(1, 2))
 
   "DifficultyPresets.medium" should:
     "return Constraint for medium difficulty" in:
-      val Constraint = DifficultyPresets.medium("Espionage")
+      val Constraint = DifficultyPresets.medium()
 
-      Constraint should contain(Theme("Espionage"))
       Constraint should contain(CharactersRange(3, 5))
       Constraint should contain(CaseFilesRange(4, 8))
       Constraint should contain(PrerequisitesRange(1, 3))
 
   "DifficultyPresets.hard" should:
     "return Constraint for hard difficulty" in:
-      val Constraint = DifficultyPresets.hard("Conspiracy")
+      val Constraint = DifficultyPresets.hard()
 
-      Constraint should contain(Theme("Conspiracy"))
       Constraint should contain(CharactersRange(4, 6))
       Constraint should contain(CaseFilesRange(7, 10))
       Constraint should contain(PrerequisitesRange(2, 5))
-
-  "DifficultyPresets.fromDifficulty" should:
-    import Constraint.Difficulty.{Easy, Hard, Medium}
-    "delegate to easy" in:
-      val result = DifficultyPresets.fromDifficulty(Easy, "Theme1")
-      result shouldBe DifficultyPresets.easy("Theme1")
-
-    "delegate to medium" in:
-      val result = DifficultyPresets.fromDifficulty(Medium, "Theme2")
-      result shouldBe DifficultyPresets.medium("Theme2")
-
-    "delegate to hard" in:
-      val result = DifficultyPresets.fromDifficulty(Hard, "Theme3")
-      result shouldBe DifficultyPresets.hard("Theme3")
 
   "Constraint.toPromptDescription" should :
     "describe Theme constraint" in :
@@ -95,3 +78,15 @@ class ConstraintTest extends AnyWordSpec with Matchers:
     "describe PrerequisitesRange constraint" in :
       val range = PrerequisitesRange(1, 3)
       range.toPromptDescription shouldBe "Solution prerequisites: between 1 and 3"
+
+  "Constraint.expandConstraints" should :
+    "expand Easy difficulty to easy preset constraints without theme" in :
+      import Constraint.Difficulty.Easy
+
+      val result = Constraint.expandConstraints(Seq(Theme("Murder"), Easy))
+
+      result should contain(Theme("Murder"))
+      result should contain(CharactersRange(2, 4))
+      result should contain(CaseFilesRange(2, 5))
+      result should contain(PrerequisitesRange(1, 2))
+      result should have size 4
