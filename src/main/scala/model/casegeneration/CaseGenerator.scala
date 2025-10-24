@@ -1,4 +1,4 @@
-package model.case_generation
+package model.casegeneration
 
 trait CaseGenerator:
   def generate(constraints: Constraint*): Either[GenerationError, Case]

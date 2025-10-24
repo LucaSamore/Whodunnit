@@ -1,4 +1,4 @@
-package model.case_generation
+package model.casegeneration
 
 import org.scalatest.EitherValues
 import org.scalatest.matchers.should.Matchers

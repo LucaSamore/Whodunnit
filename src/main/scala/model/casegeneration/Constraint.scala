@@ -1,4 +1,4 @@
-package model.case_generation
+package model.casegeneration
 
 sealed trait Constraint
 

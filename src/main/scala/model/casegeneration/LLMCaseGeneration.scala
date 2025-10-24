@@ -1,4 +1,4 @@
-package model.case_generation
+package model.casegeneration
 
 import scala.io.Source
 import scala.util.{Try, Using}
@@ -43,7 +43,7 @@ class LLMCaseGenerator(
   private def loadPromptTemplate(): Either[GenerationError, String] =
     Try {
       Using.resource(
-        getClass.getResourceAsStream("/prompts/case_generation_prompt.txt")
+        getClass.getResourceAsStream("/prompts/caseGenerationPrompt.txt")
       ) { stream =>
         Source.fromInputStream(stream).mkString
       }

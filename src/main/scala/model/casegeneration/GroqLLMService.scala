@@ -1,4 +1,4 @@
-package model.case_generation
+package model.casegeneration
 
 import sttp.client3.*
 import io.circe.generic.auto.*
