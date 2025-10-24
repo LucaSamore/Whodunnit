@@ -110,3 +110,11 @@ class ConstraintTest extends AnyWordSpec with Matchers:
       result should contain(CaseFilesRange(7, 10))
       result should contain(PrerequisitesRange(2, 5))
       result should have size 3
+
+    "return only explicit constraints when no difficulty is provided" in :
+      val result = Constraint.expandConstraints(
+        Seq(Theme("Mystery"), CharactersRange(3, 5))
+      )
+
+      result should contain only(Theme("Mystery"), CharactersRange(3, 5))
+      result should have size 2
