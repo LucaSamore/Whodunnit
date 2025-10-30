@@ -5,10 +5,10 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class BufferTest extends AnyWordSpec with Matchers:
 
-  "A mutable Buffer" when:
+  "A (mutable) base Buffer" when:
     "newly created" should:
       val maxSize = 5
-      val buffer = Buffer[Int](maxSize, new Array(maxSize))
+      val buffer = BaseBuffer[Int](maxSize)
 
       "have size 0" in:
         buffer.currentSize shouldBe 0
@@ -18,7 +18,7 @@ class BufferTest extends AnyWordSpec with Matchers:
 
     "elements added" should:
       val maxSize = 5
-      val buffer = Buffer[Int](maxSize, new Array(maxSize))
+      val buffer = BaseBuffer[Int](maxSize)
       buffer.add(1)
       buffer.add(2)
       buffer.add(3)
@@ -36,3 +36,17 @@ class BufferTest extends AnyWordSpec with Matchers:
 
       "have elements in correct order" in:
         buffer.elementList shouldBe List(1, 2, 3)
+
+    "elements added up to capacity" should:
+      val maxSize = 3
+      val buffer = BaseBuffer[Int](maxSize)
+      buffer.add(1)
+      buffer.add(2)
+      buffer.add(3)
+
+      "have size equal to capacity" in:
+        buffer.currentSize shouldBe maxSize
+
+      "replace elements when adding beyond capacity" in:
+        buffer.add(4)
+        buffer.elementList shouldBe List(1, 2, 4)
