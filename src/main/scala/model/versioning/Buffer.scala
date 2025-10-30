@@ -44,6 +44,35 @@ class CircularBuffer[T](
     else
       (0 until capacity).map(i => elements((head + i) % capacity)).toList
 
+class NavigableBuffer[T](
+    override val capacity: Int,
+    override val elements: Array[T]
+) extends Buffer[T]:
+  private var cursor: Int = 0
+
+  def currentPosition: Int = cursor
+
+  def currentElement: Option[T] =
+    if isEmpty then None
+    else Some(elements(size - 1 - cursor))
+
+  def resetCursor(): Unit =
+    cursor = 0
+
+  def moveForward(): Boolean =
+    if cursor > 0 then
+      cursor -= 1
+      true
+    else
+      false
+
+  def moveBackward(): Boolean =
+    if cursor < size - 1 then
+      cursor += 1
+      true
+    else
+      false
+
 object BaseBuffer:
   def apply[T: reflect.ClassTag](capacity: Int): BaseBuffer[T] =
     new BaseBuffer[T](capacity, new Array[T](capacity))
@@ -51,3 +80,7 @@ object BaseBuffer:
 object CircularBuffer:
   def apply[T: reflect.ClassTag](capacity: Int): CircularBuffer[T] =
     new CircularBuffer[T](capacity, new Array[T](capacity))
+
+object NavigableBuffer:
+  def apply[T: reflect.ClassTag](capacity: Int): NavigableBuffer[T] =
+    new NavigableBuffer[T](capacity, new Array[T](capacity))
