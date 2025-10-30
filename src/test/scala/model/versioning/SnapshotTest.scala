@@ -28,3 +28,25 @@ class SnapshotTest extends AnyWordSpec with Matchers:
         val restored = Snapshot.restore(snapshot)
 
         restored shouldBe original
+
+    "created with an immutable object" should:
+      "capture the current state" in:
+        val history = History(List.empty)
+        val snapshot = Snapshot.snap(history.add(3))
+
+        snapshot.subject.elements should contain(3)
+
+      "not be affected by subsequent changes" in:
+        val history = History(List.empty)
+        val snapshot = Snapshot.snap(history.add(3))
+        history.add(3)
+
+        snapshot.subject.elements should contain only 3
+
+      "isolate multiple snapshots from each other" in:
+        val history = History(List.empty)
+        val snapshot1 = Snapshot.snap(history.add(3))
+        val snapshot2 = Snapshot.snap(history.add(3).add(5))
+
+        snapshot1.subject.elements.size shouldBe 1
+        snapshot2.subject.elements.size shouldBe 2
