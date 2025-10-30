@@ -14,7 +14,10 @@ abstract class Buffer[T]:
       elements(size) = element
       size += 1
     else
-      elements(size - 1) = element
+      replaceElement(element)
+
+  protected def replaceElement(element: T): Unit =
+    elements(size - 1) = element
 
   def contains(element: T): Boolean = elements.take(size).contains(element)
 
@@ -25,6 +28,26 @@ case class BaseBuffer[T](
     override val elements: Array[T]
 ) extends Buffer[T]
 
+class CircularBuffer[T](
+    override val capacity: Int,
+    override val elements: Array[T]
+) extends Buffer[T]:
+  private var head: Int = 0
+
+  override protected def replaceElement(element: T): Unit =
+    elements(head) = element
+    head = (head + 1) % capacity
+
+  override def elementList: List[T] =
+    if size < capacity then
+      elements.take(size).toList
+    else
+      (0 until capacity).map(i => elements((head + i) % capacity)).toList
+
 object BaseBuffer:
   def apply[T: reflect.ClassTag](capacity: Int): BaseBuffer[T] =
     new BaseBuffer[T](capacity, new Array[T](capacity))
+
+object CircularBuffer:
+  def apply[T: reflect.ClassTag](capacity: Int): CircularBuffer[T] =
+    new CircularBuffer[T](capacity, new Array[T](capacity))
