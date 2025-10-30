@@ -74,3 +74,49 @@ class BufferTest extends AnyWordSpec with Matchers:
 
       "have elements in correct order" in:
         buffer.elementList shouldBe List(2, 3, 4)
+
+  "A navigable Buffer" when:
+    "newly created" should:
+      val buffer = NavigableBuffer[Int](maxSize)
+      buffer.add(1)
+      buffer.add(2)
+      buffer.add(3)
+
+      "have cursor at initial position" in:
+        buffer.currentPosition shouldBe 0
+
+      "have current element at last inserted" in:
+        buffer.currentElement shouldBe Some(3)
+
+      "can not move cursor forward at initial position" in:
+        buffer.moveForward() shouldBe false
+        buffer.currentPosition shouldBe 0
+
+      "move cursor backward correctly" in:
+        buffer.moveBackward() shouldBe true
+        buffer.currentPosition shouldBe 1
+        buffer.currentElement shouldBe Some(2)
+
+      "reset cursor correctly" in:
+        buffer.resetCursor()
+        buffer.currentPosition shouldBe 0
+
+      "move cursor forward correctly" in:
+        val buffer2 = NavigableBuffer[Int](maxSize)
+        buffer2.add(1)
+        buffer2.add(2)
+        buffer2.add(3)
+        buffer2.moveBackward() shouldBe true
+        buffer2.moveForward() shouldBe true
+        buffer2.currentPosition shouldBe 0
+        buffer2.currentElement shouldBe Some(3)
+
+      "can not move cursor backward at last position" in:
+        val buffer3 = NavigableBuffer[Int](maxSize)
+        buffer3.add(1)
+        buffer3.add(2)
+        buffer3.add(3)
+        buffer3.moveBackward() shouldBe true
+        buffer3.moveBackward() shouldBe true
+        buffer3.moveBackward() shouldBe false
+        buffer3.currentPosition shouldBe 2
