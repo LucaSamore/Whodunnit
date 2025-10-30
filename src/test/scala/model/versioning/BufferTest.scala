@@ -11,82 +11,88 @@ class BufferTest extends AnyWordSpec with Matchers:
       val buffer = BaseBuffer[Int](maxSize)
 
       "have size 0" in:
-        buffer.currentSize shouldBe 0
+        buffer.size shouldBe 0
 
       "is empty" in:
         buffer.isEmpty shouldBe true
 
-    "elements added" should:
+    "elements pushed" should:
       val buffer = BaseBuffer[Int](maxSize)
-      buffer.add(1)
-      buffer.add(2)
-      buffer.add(3)
+      buffer.push(1)
+      buffer.push(2)
+      buffer.push(3)
 
       "have correct size" in:
-        buffer.currentSize shouldBe 3
+        buffer.size shouldBe 3
 
       "not be empty" in:
         buffer.isEmpty shouldBe false
 
-      "contain the added elements" in:
+      "contain the pushed elements" in:
         buffer.contains(1) shouldBe true
         buffer.contains(2) shouldBe true
         buffer.contains(3) shouldBe true
 
       "have elements in correct order" in:
-        buffer.elementList shouldBe List(1, 2, 3)
+        buffer.elements shouldBe List(1, 2, 3)
 
-    "elements added up to capacity" should:
+    "elements pushed up to capacity" should:
       val buffer = BaseBuffer[Int](maxSize)
-      buffer.add(1)
-      buffer.add(2)
-      buffer.add(3)
+      buffer.push(1)
+      buffer.push(2)
+      buffer.push(3)
 
       "have size equal to capacity" in:
-        buffer.currentSize shouldBe maxSize
+        buffer.size shouldBe maxSize
 
-      "replace elements when adding beyond capacity" in:
-        buffer.add(4)
-        buffer.elementList shouldBe List(1, 2, 4)
+      "replace elements when pushing beyond capacity" in:
+        buffer.push(4)
+        buffer.elements shouldBe List(1, 2, 4)
 
   "A circular Buffer" when:
     "newly created" should:
       val buffer = CircularBuffer[Int](maxSize)
 
       "have size 0" in:
-        buffer.currentSize shouldBe 0
+        buffer.size shouldBe 0
 
       "is empty" in:
         buffer.isEmpty shouldBe true
 
-    "elements added beyond capacity" should:
+    "elements pushed beyond capacity" should:
       val buffer = CircularBuffer[Int](maxSize)
-      buffer.add(1)
-      buffer.add(2)
-      buffer.add(3)
-      buffer.add(4)
+      buffer.push(1)
+      buffer.push(2)
+      buffer.push(3)
+      buffer.push(4)
 
       "have size equal to capacity" in:
-        buffer.currentSize shouldBe maxSize
+        buffer.size shouldBe maxSize
 
       "not contain the replaced element" in:
         buffer.contains(1) shouldBe false
 
       "have elements in correct order" in:
-        buffer.elementList shouldBe List(2, 3, 4)
+        buffer.elements shouldBe List(2, 3, 4)
 
   "A navigable Buffer" when:
     "newly created" should:
       val buffer = NavigableBuffer[Int](maxSize)
-      buffer.add(1)
-      buffer.add(2)
-      buffer.add(3)
+      buffer.push(1)
+      buffer.push(2)
+      buffer.push(3)
 
       "have cursor at initial position" in:
         buffer.currentPosition shouldBe 0
 
       "have current element at last inserted" in:
         buffer.currentElement shouldBe Some(3)
+
+    "cursor moved" should:
+      val buffer = NavigableBuffer[Int](maxSize)
+      buffer.push(1)
+      buffer.push(2)
+      buffer.push(3)
 
       "can not move cursor forward at initial position" in:
         buffer.moveForward() shouldBe false
@@ -103,9 +109,9 @@ class BufferTest extends AnyWordSpec with Matchers:
 
       "move cursor forward correctly" in:
         val buffer2 = NavigableBuffer[Int](maxSize)
-        buffer2.add(1)
-        buffer2.add(2)
-        buffer2.add(3)
+        buffer2.push(1)
+        buffer2.push(2)
+        buffer2.push(3)
         buffer2.moveBackward() shouldBe true
         buffer2.moveForward() shouldBe true
         buffer2.currentPosition shouldBe 0
@@ -113,9 +119,9 @@ class BufferTest extends AnyWordSpec with Matchers:
 
       "can not move cursor backward at last position" in:
         val buffer3 = NavigableBuffer[Int](maxSize)
-        buffer3.add(1)
-        buffer3.add(2)
-        buffer3.add(3)
+        buffer3.push(1)
+        buffer3.push(2)
+        buffer3.push(3)
         buffer3.moveBackward() shouldBe true
         buffer3.moveBackward() shouldBe true
         buffer3.moveBackward() shouldBe false
