@@ -2,6 +2,7 @@ package model.versioning
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import java.time.LocalDateTime
 
 class SnapshotTest extends AnyWordSpec with Matchers:
   "A Snapshot" when:
@@ -13,3 +14,9 @@ class SnapshotTest extends AnyWordSpec with Matchers:
       "preserve the value type" in:
         val snapshot = Snapshot.snap("Hello World")
         snapshot.subject shouldBe "Hello World"
+
+      "use current time as default" in:
+        val before = LocalDateTime.now
+        val snapshot = Snapshot.snap(3)
+        val after = LocalDateTime.now
+        snapshot.timestamp should (be >= before and be <= after)
