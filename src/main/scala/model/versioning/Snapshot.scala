@@ -12,3 +12,9 @@ object Snapshot:
   def restore[A](snapshot: Snapshot[A]): A = {
     snapshot.subject
   }
+
+case class History(elements: List[Int]) {
+  def add(element: Int): History = {
+    History(elements :+ element)
+  }
+}
