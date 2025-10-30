@@ -1,6 +1,10 @@
 package model.versioning
 
-class Snapshot[A](val subject: A)
+import java.time.LocalDateTime
+
+class Snapshot[A](val subject: A, val timestamp: LocalDateTime)
 
 object Snapshot:
-  def snap[A](subject: A): Snapshot[A] = new Snapshot(subject)
+  def snap[A](subject: A): Snapshot[A] = {
+    new Snapshot(subject, LocalDateTime.now())
+  }
