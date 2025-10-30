@@ -5,9 +5,9 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class BufferTest extends AnyWordSpec with Matchers:
 
+  private val maxSize = 3
   "A (mutable) base Buffer" when:
     "newly created" should:
-      val maxSize = 5
       val buffer = BaseBuffer[Int](maxSize)
 
       "have size 0" in:
@@ -17,7 +17,6 @@ class BufferTest extends AnyWordSpec with Matchers:
         buffer.isEmpty shouldBe true
 
     "elements added" should:
-      val maxSize = 5
       val buffer = BaseBuffer[Int](maxSize)
       buffer.add(1)
       buffer.add(2)
@@ -38,7 +37,6 @@ class BufferTest extends AnyWordSpec with Matchers:
         buffer.elementList shouldBe List(1, 2, 3)
 
     "elements added up to capacity" should:
-      val maxSize = 3
       val buffer = BaseBuffer[Int](maxSize)
       buffer.add(1)
       buffer.add(2)
@@ -50,3 +48,29 @@ class BufferTest extends AnyWordSpec with Matchers:
       "replace elements when adding beyond capacity" in:
         buffer.add(4)
         buffer.elementList shouldBe List(1, 2, 4)
+
+  "A circular Buffer" when:
+    "newly created" should:
+      val buffer = CircularBuffer[Int](maxSize)
+
+      "have size 0" in:
+        buffer.currentSize shouldBe 0
+
+      "is empty" in:
+        buffer.isEmpty shouldBe true
+
+    "elements added beyond capacity" should:
+      val buffer = CircularBuffer[Int](maxSize)
+      buffer.add(1)
+      buffer.add(2)
+      buffer.add(3)
+      buffer.add(4)
+
+      "have size equal to capacity" in:
+        buffer.currentSize shouldBe maxSize
+
+      "not contain the replaced element" in:
+        buffer.contains(1) shouldBe false
+
+      "have elements in correct order" in:
+        buffer.elementList shouldBe List(2, 3, 4)
