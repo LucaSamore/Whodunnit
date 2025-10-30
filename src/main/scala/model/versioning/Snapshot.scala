@@ -8,3 +8,7 @@ object Snapshot:
   def snap[A](subject: A): Snapshot[A] = {
     new Snapshot(subject, LocalDateTime.now())
   }
+
+  def restore[A](snapshot: Snapshot[A]): A = {
+    snapshot.subject
+  }
