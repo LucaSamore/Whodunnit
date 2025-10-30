@@ -18,3 +18,10 @@ case class History(elements: List[Int]) {
     History(elements :+ element)
   }
 }
+
+case class MutableHistory(elements: Array[Int], var size: Int = 0) {
+  def add(element: Int): Unit = {
+    elements(size) = element
+    size += 1
+  }
+}

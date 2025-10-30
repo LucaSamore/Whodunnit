@@ -50,3 +50,29 @@ class SnapshotTest extends AnyWordSpec with Matchers:
 
         snapshot1.subject.elements.size shouldBe 1
         snapshot2.subject.elements.size shouldBe 2
+
+    "created with an mutable object" should:
+      "capture the current state" in:
+        val history = MutableHistory(new Array(5))
+        history.add(3)
+        val snapshot = Snapshot.snap(history)
+
+        snapshot.subject.elements should contain(3)
+
+      "not be affected by subsequent changes" in:
+        val history = MutableHistory(new Array(5))
+        history.add(3)
+        val snapshot = Snapshot.snap(history)
+        history.add(3)
+
+        snapshot.subject.elements should contain only 3
+
+      "isolate multiple snapshots from each other" in:
+        val history = MutableHistory(new Array(5))
+        history.add(3)
+        val snapshot1 = Snapshot.snap(history)
+        history.add(5)
+        val snapshot2 = Snapshot.snap(history)
+
+        snapshot1.subject.elements.length shouldBe 1
+        snapshot2.subject.elements.length shouldBe 2
