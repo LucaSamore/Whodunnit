@@ -20,3 +20,11 @@ class SnapshotTest extends AnyWordSpec with Matchers:
         val snapshot = Snapshot.snap(3)
         val after = LocalDateTime.now
         snapshot.timestamp should (be >= before and be <= after)
+
+    "restored" should:
+      "return the original value" in:
+        val original = 42
+        val snapshot = Snapshot.snap(original)
+        val restored = Snapshot.restore(snapshot)
+
+        restored shouldBe original
