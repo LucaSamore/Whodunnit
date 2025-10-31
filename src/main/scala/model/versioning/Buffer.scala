@@ -84,6 +84,19 @@ trait Navigability:
     else
       false
 
+trait InverseNavigability extends Navigability:
+  self: Buffer =>
+
+  override def currentElement: Option[Element] =
+    if isEmpty then None
+    else Some(elements(size - 1 - cursor))
+
+  override def moveForward(): Boolean =
+    super.moveBackward()
+
+  override def moveBackward(): Boolean =
+    super.moveForward()
+
 object BaseBuffer:
   def apply[T: reflect.ClassTag](capacity: Int): BaseBuffer[T] =
     new BaseBuffer[T](capacity) {}
@@ -97,3 +110,8 @@ object NavigableBuffer:
   def apply[T: reflect.ClassTag](capacity: Int)
       : BaseBuffer[T] with Navigability =
     new BaseBuffer[T](capacity) with Navigability {}
+
+object InverseNavigableBuffer:
+  def apply[T: reflect.ClassTag](capacity: Int)
+      : BaseBuffer[T] with InverseNavigability =
+    new BaseBuffer[T](capacity) with InverseNavigability {}
