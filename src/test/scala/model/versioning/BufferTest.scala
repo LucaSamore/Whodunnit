@@ -85,8 +85,8 @@ class BufferTest extends AnyWordSpec with Matchers:
       "have cursor at initial position" in:
         buffer.currentPosition shouldBe 0
 
-      "have current element at last inserted" in:
-        buffer.currentElement shouldBe Some(3)
+      "have current element at first inserted" in:
+        buffer.currentElement shouldBe Some(1)
 
     "cursor moved" should:
       val buffer = NavigableBuffer[Int](maxSize)
@@ -115,7 +115,7 @@ class BufferTest extends AnyWordSpec with Matchers:
         buffer2.moveBackward() shouldBe true
         buffer2.moveForward() shouldBe true
         buffer2.currentPosition shouldBe 0
-        buffer2.currentElement shouldBe Some(3)
+        buffer2.currentElement shouldBe Some(1)
 
       "can not move cursor backward at last position" in:
         val buffer3 = NavigableBuffer[Int](maxSize)

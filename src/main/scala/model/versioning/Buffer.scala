@@ -15,7 +15,7 @@ abstract class BaseBuffer[E](override val capacity: Int)(using
     reflect.ClassTag[E]
 ) extends Buffer:
   type Element = E
-  private val buffer: Array[Option[E]] = Array.fill(capacity)(None)
+  protected val buffer: Array[Option[E]] = Array.fill(capacity)(None)
   protected var _size: Int = 0
 
   override def size: Int = _size
@@ -41,7 +41,7 @@ abstract class BaseBuffer[E](override val capacity: Int)(using
     buffer.take(_size).flatten.contains(element)
 
 trait CircularBuffer extends Buffer:
-  private var head: Int = 0
+  protected var head: Int = 0
 
   abstract override def push(element: Element): Unit =
     super.push(element)
@@ -59,13 +59,13 @@ trait CircularBuffer extends Buffer:
 trait Navigability:
   self: Buffer =>
 
-  private var cursor: Int = 0
+  protected var cursor: Int = 0
 
   def currentPosition: Int = cursor
 
   def currentElement: Option[Element] =
     if isEmpty then None
-    else Some(elements(size - 1 - cursor))
+    Some(elements(cursor))
 
   def resetCursor(): Unit =
     cursor = 0
