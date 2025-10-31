@@ -126,3 +126,61 @@ class BufferTest extends AnyWordSpec with Matchers:
         buffer3.moveBackward() shouldBe true
         buffer3.moveBackward() shouldBe false
         buffer3.currentPosition shouldBe 2
+
+  "A inverse navigable Buffer" when:
+    "newly created" should:
+      val buffer = InverseNavigableBuffer[Int](maxSize)
+      buffer.push(1)
+      buffer.push(2)
+      buffer.push(3)
+
+      "have cursor at initial position" in:
+        buffer.currentPosition shouldBe 0
+
+      "have current element at last inserted" in:
+        buffer.currentElement shouldBe Some(3)
+
+    "cursor moved" should:
+      val inverseMaxSize = 4
+      val buffer = InverseNavigableBuffer[Int](inverseMaxSize)
+      buffer.push(10)
+      buffer.push(2)
+      buffer.push(3)
+      buffer.push(4)
+
+      "can not move cursor backward at initial position" in:
+        buffer.moveBackward() shouldBe false
+        buffer.currentPosition shouldBe 0
+
+      "move cursor forward correctly" in:
+        buffer.moveForward() shouldBe true
+        buffer.currentPosition shouldBe 1
+        buffer.currentElement shouldBe Some(3)
+
+      "reset cursor correctly" in:
+        buffer.resetCursor()
+        buffer.currentPosition shouldBe 0
+
+      "move cursor backward correctly" in:
+        val buffer2 = InverseNavigableBuffer[Int](inverseMaxSize)
+        buffer2.push(1)
+        buffer2.push(2)
+        buffer2.push(3)
+        buffer2.push(4)
+        buffer2.moveForward() shouldBe true
+        buffer2.moveBackward() shouldBe true
+        buffer2.currentPosition shouldBe 0
+        buffer2.currentElement shouldBe Some(4)
+
+      "can not move cursor forward at last position" in:
+        val buffer3 = InverseNavigableBuffer[Int](inverseMaxSize)
+        buffer3.push(1)
+        buffer3.push(2)
+        buffer3.push(3)
+        buffer3.push(4)
+        buffer3.moveForward() shouldBe true
+        buffer3.moveForward() shouldBe true
+        buffer3.moveForward() shouldBe true
+        buffer3.moveForward() shouldBe false
+        buffer3.currentPosition shouldBe 3
+        buffer3.currentElement shouldBe Some(1)
