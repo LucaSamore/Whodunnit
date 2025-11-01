@@ -1,26 +1,57 @@
 package view
 
+import model.casegeneration.*
+import model.{CaseKnowledgeGraph, Link}
 import scalafx.Includes.eventClosureWrapperWithZeroParam
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.control.{Button, ContentDisplay}
 import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.layout.{
-  Background,
-  BackgroundImage,
-  BackgroundPosition,
-  BackgroundRepeat,
-  BackgroundSize,
-  BorderPane,
-  HBox,
-  StackPane
-}
+import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight}
 
+//class GameBoardScene(knowledgeGraph: CaseKnowledgeGraph) extends Scene(1280, 720):
 class GameBoardScene extends Scene(1280, 720):
 
-  import Config._
+  import Config.*
+
+  
+  /* Mock data for testing purposes */
+  private object MockData:
+    val mike: Character = Character("Mike", CaseRole.Suspect)
+    val frank: Character = Character("Frank", CaseRole.Victim)
+    val chatMikeFrank: CaseFile = CaseFile(
+      title = "Chat: Mike-Frank",
+      content = "...",
+      kind = CaseFileType.Message,
+      sender = Some(mike),
+      receiver = None,
+      date = None
+    )
+    val mockCase: Case = Case(
+      plot = Plot("Mock case", "Content test"),
+      characters = Set(mike, frank),
+      caseFiles = Set(chatMikeFrank),
+      solution = CaseSolution(Set.empty, culprit = mike, motive = "Test.")
+    )
+  
+  private val mockKnowledgeGraph = CaseKnowledgeGraph()
+  mockInitializeKnowledgeGraph()
+  private def mockInitializeKnowledgeGraph(): Unit =
+    val mike = MockData.mockCase.characters.find(_.name == "Mike").get
+    val frank = MockData.mockCase.characters.find(_.name == "Frank").get
+    mockKnowledgeGraph.addNode(mike)
+    mockKnowledgeGraph.addNode(frank)
+    mockKnowledgeGraph.addEdge(mike, Link("informed"), frank)
+
+  /* End of mock data */
+  
+  
+  private val graphView = KnowledgeGraphView(
+    mockKnowledgeGraph,
+    viewDimensions = (sceneWidth, sceneHeight),
+  )
 
   private def createIconButton(
       description: String,
@@ -156,9 +187,13 @@ class GameBoardScene extends Scene(1280, 720):
         padding = Insets(topPadding, 70, 0, 10)
         children = Seq(cluesButton, snapshotButton, accuseButton)
 
-    center = new StackPane {
-      // TODO: Game board content
-    }
+    center = new StackPane:
+      children = Seq(
+        new StackPane:
+          prefWidth = sceneWidth
+          prefHeight = sceneHeight
+          children = Seq(graphView)
+      )
 
     bottom = new BorderPane:
       minWidth = sceneWidth
@@ -200,3 +235,7 @@ class GameBoardScene extends Scene(1280, 720):
       getClass.getResourceAsStream("/fonts/GloriaHallelujah-Regular.ttf"),
       18
     )
+
+object GameBoardScene:
+  //def apply(knowledgeGraph: CaseKnowledgeGraph) = new GameBoardScene(knowledgeGraph)
+  def apply() = new GameBoardScene()

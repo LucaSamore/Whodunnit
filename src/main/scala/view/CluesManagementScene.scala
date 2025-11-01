@@ -13,70 +13,93 @@ class CluesManagementScene extends Scene(1280, 720):
 
   import Config._
 
-  private val titleLabel = new Label("Manage Clues"):
-    font = titleFont
-    textFill = Color.web("#1E1E1E")
+  private val notesTextArea = new TextArea():
+    promptText = "Notes"
+    prefRowCount = 6
 
   private val metadataForm = new VBox(10):
     children = Seq(
-      baseLabel("Type"),
-      new TextField():
-        promptText =
-          "Type"
-      ,
-      baseLabel("Title"),
-      new TextField():
-        promptText =
-          "Title"
-      ,
+      baseLabel("Type: " + "Email"),
       baseLabel("Notes"),
-      new TextArea():
-        promptText = "Notes"
-        prefRowCount = 6
+      notesTextArea,
+      new HBox():
+        alignment = Pos.CenterRight
+        children = Seq(
+          new Button("Save"):
+            font = baseFont
+            onAction =
+              _ => println(s"Saving notes: ${notesTextArea.text.value}")
+        )
     )
 
-  private def showRelationshipPopup(existingRelationship: Option[Relationship] =
+  private def showRelationshipPopup(toModifyRelationship: Option[Relationship] =
     None): Unit =
-    val fromField = new TextField():
-      promptText = "From"
-      text = existingRelationship.map(_.from).getOrElse("")
-    val toField = new TextField():
-      promptText = "To"
-      text = existingRelationship.map(_.to).getOrElse("")
+
+    val fromComboBox = new ComboBox[String](mockEntities):
+      editable = true
+      promptText = "Select or type new entity"
+      value = toModifyRelationship match
+        case Some(rel) => rel.from
+        case None      => ""
+
+    val toComboBox = new ComboBox[String](mockEntities):
+      editable = true
+      promptText = "Select or type new entity"
+      value = toModifyRelationship match
+        case Some(rel) => rel.to
+        case None      => ""
+
     val relationshipField = new TextField():
       promptText = "Relationship"
-      text = existingRelationship.map(_.relationshipType).getOrElse("")
+      text = toModifyRelationship match
+        case Some(rel) => rel.relationshipType
+        case None      => ""
 
     val popup = new Stage():
       initModality(Modality.ApplicationModal)
-      title = if (existingRelationship.isDefined) "Modify Relationship"
-      else "Add Relationship"
+      title = toModifyRelationship match
+        case Some(_) => "Modify Relationship"
+        case None    => "Add Relationship"
       resizable = false
 
     val saveButton = new Button("Save"):
       font = baseFont
       onAction = _ => {
-        val action =
-          if (existingRelationship.isDefined) "Modifying" else "Saving"
-        println(
-          s"$action: ${fromField.text.value} -> ${toField.text.value} (${relationshipField.text.value})"
-        )
+        val action = toModifyRelationship match
+          case Some(_) => "Modifying"
+          case None    => "Saving"
+
+        val fromValue = Option(fromComboBox.value.value).filter(_.nonEmpty)
+        val toValue = Option(toComboBox.value.value).filter(_.nonEmpty)
+
+        val newEntities = List(fromValue, toValue).flatten
+          .filterNot(entity => mockEntities.contains(entity))
+          .distinct
+
+        newEntities.foreach { entity =>
+          println(s"Created new entity: $entity")
+        }
+
+        (fromValue, toValue) match
+          case (Some(from), Some(to)) =>
+            println(s"$action: $from -> $to (${relationshipField.text.value})")
+          case _ =>
+            println("Warning: From or To field is empty")
+
         popup.close()
       }
 
     val discardButton = new Button("Discard"):
       font = baseFont
-      onAction = _ => {
-        popup.close()
-      }
+      onAction = _ => popup.close()
 
     val popupForm = new VBox(10):
       padding = Insets(20)
       children = Seq(
         baseLabel("From:"),
-        fromField,
+        fromComboBox,
         baseLabel("To:"),
-        toField,
+        toComboBox,
         baseLabel("Relationship:"),
         relationshipField,
         new HBox(10):
@@ -143,41 +166,61 @@ class CluesManagementScene extends Scene(1280, 720):
     )
 
   private val documentPanelOverlay = new VBox(15):
-    maxWidth = sceneWidth / 2
-    prefWidth = sceneWidth / 2
+    maxWidth = sceneWidth / 3
+    prefWidth = sceneWidth / 3
     prefHeight = sceneHeight - 40
     alignment = Pos.Center
     background = overlayBackground
     children = Seq( /* Specific GUI for each document type */ )
 
   private val documentPanelContainer = new StackPane:
-    maxWidth = sceneWidth * 3 / 4
-    prefWidth = sceneWidth * 3 / 4
+    maxWidth = sceneWidth / 2
+    prefWidth = sceneWidth / 2
     prefHeight = sceneHeight
     padding = Insets(20, 0, 20, 0)
     alignment = Pos.Center
     children = documentPanelOverlay
 
+  private val backButton = new Button("Back to Main Page"):
+    font = baseFont
+    onAction = _ => {
+      println("Returning to main page")
+      // WhodunnitApp.changeScene(new GameScene)
+    }
+    maxWidth = Double.MaxValue
+
+  private val backButtonSection = new VBox(10):
+    padding = Insets(0, 0, 15, 0)
+    children = Seq(
+      backButton,
+      new Separator()
+    )
+
+  private def createDocumentButton(docName: String): Button =
+    new Button(docName):
+      font = baseFont
+      maxWidth = Double.MaxValue
+      disable = docName == currentDocument
+      onAction = _ => println(s"Navigating to document: $docName")
+
+  private val documentButtonsBox = new VBox(8):
+    children = mockDocuments.map(createDocumentButton)
+
+  private val leftPanelContent = new VBox(15):
+    prefWidth = sceneWidth / 4 - 20
+    padding = Insets(20)
+    alignment = Pos.TopLeft
+    children = Seq(
+      backButtonSection,
+      subtitleLabel("Clues Navigation"),
+      documentButtonsBox
+    )
+
   private val rightPanelContent = new VBox(15):
     prefWidth = sceneWidth / 4 - 20
     padding = Insets(20)
     alignment = Pos.TopLeft
-    children = Seq(titleLabel, metadataForm, relationshipForm)
-
-  private val rightPanelOverlay = new ScrollPane:
-    prefWidth = sceneWidth / 4
-    prefHeight = sceneHeight
-    maxWidth = sceneWidth / 4
-    background = overlayBackground
-    content = rightPanelContent
-    fitToWidth = true
-    hbarPolicy = ScrollPane.ScrollBarPolicy.Never
-    vbarPolicy = ScrollPane.ScrollBarPolicy.AsNeeded
-    style =
-      """
-        -fx-background: rgba(255, 255, 255, 0.7);
-        -fx-background-color: rgba(255, 255, 255, 0.7);
-      """.stripMargin
+    children = Seq(titleLabel("Manage Clues"), metadataForm, relationshipForm)
 
   root = new StackPane:
     background = new Background(Array(BackgroundImage(
@@ -197,7 +240,12 @@ class CluesManagementScene extends Scene(1280, 720):
     children = Seq(new HBox:
       prefWidth = sceneWidth
       prefHeight = sceneHeight
-      children = Seq(documentPanelContainer, rightPanelOverlay))
+      children =
+        Seq(
+          panelOverlay(leftPanelContent),
+          documentPanelContainer,
+          panelOverlay(rightPanelContent)
+        ))
 
   private object Config:
     val sceneWidth: Int = 1280
@@ -213,7 +261,7 @@ class CluesManagementScene extends Scene(1280, 720):
       getClass.getResourceAsStream("/fonts/LibreBaskerville-Regular.ttf"),
       18
     )
-    val titleFont: Font = Font.loadFont(
+    private val titleFont: Font = Font.loadFont(
       getClass.getResourceAsStream("/fonts/LibreBaskerville-Regular.ttf"),
       35
     )
@@ -224,9 +272,7 @@ class CluesManagementScene extends Scene(1280, 720):
         Insets(0)
       )
     ))
-
     case class Relationship(from: String, to: String, relationshipType: String)
-
     val mockRelationships: List[Relationship] = List(
       Relationship("Lucia", "This", "is the sender"),
       Relationship("Luca", "This", "is the receiver"),
@@ -238,13 +284,44 @@ class CluesManagementScene extends Scene(1280, 720):
       Relationship("Luca", "This", "is the receiver"),
       Relationship("That", "Other", "is connected with")
     )
+    val mockEntities: List[String] =
+      List("Lucia", "Luca", "This", "That", "Other", "Entity1", "Entity2")
+    val mockDocuments: List[String] =
+      List(
+        "This",
+        "Email 2",
+        "Email 3",
+        "SMS 1",
+        "SMS 2",
+        "Lettera 1",
+        "Telefonata 1"
+      )
+    val currentDocument = "This"
 
     def baseLabel(text: String): Label =
       new Label(text):
         font = baseFont
         textFill = Color.web("#1E1E1E")
-
     def subtitleLabel(text: String): Label =
       new Label(text):
         font = subtitleFont
         textFill = Color.web("#1E1E1E")
+    def titleLabel(text: String): Label =
+      new Label(text):
+        font = titleFont
+        textFill = Color.web("#1E1E1E")
+    def panelOverlay(panelContent: VBox): ScrollPane =
+      new ScrollPane:
+        prefWidth = sceneWidth / 4
+        prefHeight = sceneHeight
+        maxWidth = sceneWidth / 4
+        background = overlayBackground
+        content = panelContent
+        fitToWidth = true
+        hbarPolicy = ScrollPane.ScrollBarPolicy.Never
+        vbarPolicy = ScrollPane.ScrollBarPolicy.AsNeeded
+        style =
+          """
+            -fx-background: rgba(255, 255, 255, 0.7);
+            -fx-background-color: rgba(255, 255, 255, 0.7);
+          """.stripMargin
