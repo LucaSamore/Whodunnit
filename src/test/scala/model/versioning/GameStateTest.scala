@@ -25,7 +25,6 @@ class GameStateTest extends AnyWordSpec with Matchers:
     "elements are added" should:
       val maxSize = 3
       val originalHistory = GameHistory(maxSize)
-      // Mock KnowledgeGraph instances
       case class MockKnowledgeGraph(id: Int) extends KnowledgeGraph:
         def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
 
@@ -37,3 +36,19 @@ class GameStateTest extends AnyWordSpec with Matchers:
 
       "maintain the correct current state" in:
         originalHistory.currentState shouldBe Some(kg2)
+
+    "undo operation is called" should:
+      val maxSize = 3
+      val originalHistory = GameHistory(maxSize)
+      case class MockKnowledgeGraph(id: Int) extends KnowledgeGraph:
+        def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
+
+      val kg1 = MockKnowledgeGraph(1)
+      val kg2 = MockKnowledgeGraph(2)
+
+      originalHistory.addState(kg1)
+      originalHistory.addState(kg2)
+      originalHistory.undo()
+
+      "revert to the previous state" in:
+        originalHistory.currentState shouldBe Some(kg1)
