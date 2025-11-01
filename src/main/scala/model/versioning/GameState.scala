@@ -38,4 +38,7 @@ case class HistoryTimeMachine[S: Snapshottable](
     private var currentSnapshot: Option[Snapshot[S]] = None
 ):
 
+  def save(state: S): Unit =
+    currentSnapshot = Some(Snapshot(state))
+
   def hasSnapshot: Boolean = currentSnapshot.isDefined
