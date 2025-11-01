@@ -1,5 +1,6 @@
 package model.versioning
 
+import model.versioning.Snapshot.Snapshotters.given_Snapshottable_GameHistory
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -92,3 +93,10 @@ class GameStateTest extends AnyWordSpec with Matchers:
         originalHistory.currentState shouldBe Some(kg4)
         originalHistory.undo() shouldBe Some(kg1)
         originalHistory.undo() shouldBe None
+
+  "A game Time Machine" when:
+    "newly created" should:
+      val timeMachine = HistoryTimeMachine[GameHistory]()
+
+      "have no snapshot" in:
+        timeMachine.hasSnapshot shouldBe false
