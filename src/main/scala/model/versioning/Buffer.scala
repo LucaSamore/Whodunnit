@@ -6,6 +6,7 @@ trait Buffer:
   def isEmpty: Boolean
   def elements: List[Element]
   def set(index: Int, element: Element): Unit
+  def unset(index: Int): Unit
   def push(element: Element): Unit
   def replaceOnFull(element: Element): Unit
   def contains(element: Element): Boolean
@@ -26,6 +27,9 @@ abstract class BaseBuffer[E](override val capacity: Int)(using
 
   override def set(index: Int, element: E): Unit =
     buffer(index) = Some(element)
+
+  override def unset(index: Int): Unit =
+    buffer(index) = None
 
   override def push(element: E): Unit =
     if (_size < capacity) then
@@ -97,6 +101,28 @@ trait InverseNavigability extends Navigability:
   override def moveBackward(): Boolean =
     super.moveForward()
 
+abstract class RingNavigableBuffer[E](override val capacity: Int)(using
+    reflect.ClassTag[E]
+) extends BaseBuffer[E](capacity) with CircularBuffer
+    with InverseNavigability:
+
+  override def currentElement: Option[Element] =
+    if isEmpty then None
+    else Some(elements(size - 1 - cursor))
+
+  override def push(element: Element): Unit =
+    if currentPosition == 0 then
+      super.push(element)
+    else
+      val currentLogicalIndex = size - 1 - currentPosition
+      val newSize = currentLogicalIndex + 1
+      val insertIndex = (head + newSize) % capacity
+      set(insertIndex, element)
+
+      head = (head + newSize + 1) % capacity
+      _size = Math.min(newSize + 1, capacity)
+      cursor = 0
+
 object BaseBuffer:
   def apply[T: reflect.ClassTag](capacity: Int): BaseBuffer[T] =
     new BaseBuffer[T](capacity) {}
@@ -115,3 +141,9 @@ object InverseNavigableBuffer:
   def apply[T: reflect.ClassTag](capacity: Int)
       : BaseBuffer[T] with InverseNavigability =
     new BaseBuffer[T](capacity) with InverseNavigability {}
+
+object RingNavigableBuffer:
+  def apply[T: reflect.ClassTag](capacity: Int)
+      : RingNavigableBuffer[T] with CircularBuffer with InverseNavigability =
+    new RingNavigableBuffer[T](capacity) with CircularBuffer
+      with InverseNavigability {}
