@@ -15,6 +15,14 @@ trait Graph:
   def outEdges(n: Node): Set[Edge]
   def isEmpty: Boolean
 
+  def withNodes(nodes: Node*): this.type =
+    nodes.foreach(addNode)
+    this
+
+  def withEdge(n1: Node, edge: Edge, n2: Node): this.type =
+    addEdge(n1, edge, n2)
+    this
+
 abstract class BaseGraph extends Graph:
   private val data = mutable.Map[Node, List[(Node, Edge)]]()
 
@@ -60,6 +68,3 @@ case class Link(semantic: String)
 class CaseKnowledgeGraph extends BaseGraph
     with KnowledgeGraph
     with CaseNodesAndEdges
-
-object CaseKnowledgeGraph:
-  def apply(): CaseKnowledgeGraph = new CaseKnowledgeGraph()

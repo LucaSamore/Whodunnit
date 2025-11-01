@@ -15,15 +15,6 @@ class BaseGraphTest extends AnyWordSpec with Matchers:
       override type Node = Unit
       override type Edge = Unit
 
-  extension (g: BaseGraph { type Node = Int; type Edge = String })
-    private def withNodes(nodes: Int*): g.type =
-      nodes.foreach(g.addNode)
-      g
-
-    private def withEdge(n1: Int, edge: String, n2: Int): g.type =
-      g.addEdge(n1, edge, n2)
-      g
-
   "A BaseGraph" when:
     "created" should:
       "be initially empty" in:
