@@ -1,5 +1,7 @@
 package model
 
+import model.casegeneration.Entity
+
 import scala.collection.mutable
 
 trait Graph:
@@ -59,10 +61,9 @@ trait KnowledgeGraph extends Graph:
 
 trait CaseNodesAndEdges:
   self: Graph =>
-  type Node = CaseEntity
+  type Node = Entity
   type Edge = Link
 
-trait CaseEntity
 case class Link(semantic: String)
 
 class CaseKnowledgeGraph extends BaseGraph

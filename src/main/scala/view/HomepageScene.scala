@@ -62,7 +62,7 @@ class HomepageScene extends Scene(1280, 720):
       """
     onAction = _ => {
       println("Play Now clicked - Changing to Game scene")
-      WhodunnitApp.changeScene(new GameBoardScene)
+      WhodunnitApp.changeScene(GameConfigurationScene)
     }
 
   private val resumeButton = new Button("Resume Game"):

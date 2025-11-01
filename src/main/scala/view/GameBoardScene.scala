@@ -16,7 +16,6 @@ class GameBoardScene extends Scene(1280, 720):
 
   import Config.*
 
-  
   /* Mock data for testing purposes */
   private object MockData:
     val mike: Character = Character("Mike", CaseRole.Suspect)
@@ -35,7 +34,7 @@ class GameBoardScene extends Scene(1280, 720):
       caseFiles = Set(chatMikeFrank),
       solution = CaseSolution(Set.empty, culprit = mike, motive = "Test.")
     )
-  
+
   private val mockKnowledgeGraph = CaseKnowledgeGraph()
   mockInitializeKnowledgeGraph()
   private def mockInitializeKnowledgeGraph(): Unit =
@@ -46,11 +45,10 @@ class GameBoardScene extends Scene(1280, 720):
     mockKnowledgeGraph.addEdge(mike, Link("informed"), frank)
 
   /* End of mock data */
-  
-  
+
   private val graphView = KnowledgeGraphView(
     mockKnowledgeGraph,
-    viewDimensions = (sceneWidth, sceneHeight),
+    viewDimensions = (sceneWidth, sceneHeight)
   )
 
   private def createIconButton(
@@ -237,5 +235,5 @@ class GameBoardScene extends Scene(1280, 720):
     )
 
 object GameBoardScene:
-  //def apply(knowledgeGraph: CaseKnowledgeGraph) = new GameBoardScene(knowledgeGraph)
+  // def apply(knowledgeGraph: CaseKnowledgeGraph) = new GameBoardScene(knowledgeGraph)
   def apply() = new GameBoardScene()
