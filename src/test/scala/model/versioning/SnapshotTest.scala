@@ -1,7 +1,7 @@
 package model.versioning
 
 import model.versioning.Snapshot.Snapshotters.{
-  given_Snapshottable_History,
+  given_Snapshottable_ImmutableHistory,
   given_Snapshottable_Int,
   given_Snapshottable_MutableHistory,
   given_Snapshottable_String
@@ -30,20 +30,20 @@ class SnapshotTest extends AnyWordSpec with Matchers:
 
     "created with an immutable object" should:
       "capture the current state" in:
-        val history = History(List.empty)
+        val history = ImmutableHistory(List.empty)
         val snapshot = Snapshot(history.add(3))
 
         snapshot.subject.elements should contain(3)
 
       "not be affected by subsequent changes" in:
-        val history = History(List.empty)
+        val history = ImmutableHistory(List.empty)
         val snapshot = Snapshot(history.add(3))
         history.add(3)
 
         snapshot.subject.elements should contain only 3
 
       "isolate multiple snapshots from each other" in:
-        val history = History(List.empty)
+        val history = ImmutableHistory(List.empty)
         val snapshot1 = Snapshot(history.add(3))
         val snapshot2 = Snapshot(history.add(3).add(5))
 
