@@ -27,5 +27,10 @@ lazy val root = (project in file("."))
       "io.github.cdimascio" % "dotenv-java" % "3.2.0",
       "org.typelevel" %% "cats-core" % "2.13.0"
     ),
-    mainClass := Some("Launcher")
-  )
+    mainClass := Some("Launcher"),
+    assembly / assemblyOutputPath := target.value / "scala-3" / "whodunnit.jar",
+    assembly / assemblyMergeStrategy := {
+      case PathList("META-INF", _*) => MergeStrategy.discard
+      case _ => MergeStrategy.first
+    }
+  ).enablePlugins(AssemblyPlugin)
