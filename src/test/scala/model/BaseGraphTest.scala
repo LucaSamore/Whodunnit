@@ -10,15 +10,10 @@ class BaseGraphTest extends AnyWordSpec with Matchers:
       override type Node = Int
       override type Edge = String
 
-  private def emptyGraph: BaseGraph { type Node = Unit; type Edge = Unit } =
-    new BaseGraph:
-      override type Node = Unit
-      override type Edge = Unit
-
   "A BaseGraph" when:
     "created" should:
       "be initially empty" in:
-        emptyGraph.isEmpty shouldBe true
+        graph.isEmpty shouldBe true
 
       "not be empty after adding one node" in:
         graph.withNodes(1).isEmpty shouldBe false
