@@ -16,7 +16,7 @@ abstract class BaseBuffer[E](override val capacity: Int)(using
     reflect.ClassTag[E]
 ) extends Buffer:
   type Element = E
-  protected val buffer: Array[Option[E]] = Array.fill(capacity)(None)
+  private val buffer: Array[Option[E]] = Array.fill(capacity)(None)
   protected var _size: Int = 0
 
   override def size: Int = _size
@@ -47,9 +47,6 @@ abstract class BaseBuffer[E](override val capacity: Int)(using
 trait CircularBuffer extends Buffer:
   protected var head: Int = 0
 
-  abstract override def push(element: Element): Unit =
-    super.push(element)
-
   abstract override def replaceOnFull(element: Element): Unit =
     set(head, element)
     head = (head + 1) % capacity
@@ -67,23 +64,23 @@ trait Navigability:
 
   def currentPosition: Int = cursor
 
+  def resetCursor(): Unit =
+    cursor = 0
+
   def currentElement: Option[Element] =
     if isEmpty then None
     Some(elements(cursor))
 
-  def resetCursor(): Unit =
-    cursor = 0
-
   def moveForward(): Boolean =
-    if cursor > 0 then
-      cursor -= 1
+    if cursor < size - 1 then
+      cursor += 1
       true
     else
       false
 
   def moveBackward(): Boolean =
-    if cursor < size - 1 then
-      cursor += 1
+    if cursor > 0 then
+      cursor -= 1
       true
     else
       false
@@ -105,10 +102,6 @@ abstract class RingNavigableBuffer[E](override val capacity: Int)(using
     reflect.ClassTag[E]
 ) extends BaseBuffer[E](capacity) with CircularBuffer
     with InverseNavigability:
-
-  override def currentElement: Option[Element] =
-    if isEmpty then None
-    else Some(elements(size - 1 - cursor))
 
   override def push(element: Element): Unit =
     if currentPosition == 0 then
