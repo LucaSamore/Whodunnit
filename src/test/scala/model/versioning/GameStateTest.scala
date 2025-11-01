@@ -12,3 +12,12 @@ class GameStateTest extends AnyWordSpec with Matchers:
 
       "have current state as None" in:
         gameHistory.currentState shouldBe None
+
+    "deep copied" should:
+      val maxSize = 5
+      val originalHistory = GameHistory(maxSize)
+      val copiedHistory = originalHistory.deepCopy()
+
+      "be a deep copy (equal but distinct instance)" in:
+        copiedHistory should not be theSameInstanceAs(originalHistory)
+        copiedHistory shouldEqual originalHistory
