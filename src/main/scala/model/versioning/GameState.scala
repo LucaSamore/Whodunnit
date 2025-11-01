@@ -15,6 +15,9 @@ case class GameHistory(
   def undo(): Option[KnowledgeGraph] =
     Option.when(timeline.moveBackward())(timeline.currentElement).flatten
 
+  def redo(): Option[KnowledgeGraph] =
+    Option.when(timeline.moveForward())(timeline.currentElement).flatten
+
   def deepCopy(): GameHistory =
     val newBuffer = RingNavigableBuffer[KnowledgeGraph](timeline.capacity)
     timeline.elements.foreach(kg => newBuffer.push(kg.deepCopy()))
