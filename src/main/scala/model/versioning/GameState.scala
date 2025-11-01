@@ -41,6 +41,9 @@ case class HistoryTimeMachine[S: Snapshottable](
   def save(state: S): Unit =
     currentSnapshot = Some(Snapshot(state))
 
+  def restore(): Option[S] =
+    currentSnapshot.map(Snapshot.restore)
+
   def clear(): Unit =
     currentSnapshot = None
 
