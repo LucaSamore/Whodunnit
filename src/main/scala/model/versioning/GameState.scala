@@ -1,5 +1,7 @@
 package model.versioning
 
+import java.time.LocalDateTime
+
 trait KnowledgeGraph:
   def deepCopy(): KnowledgeGraph
 
@@ -48,3 +50,6 @@ case class HistoryTimeMachine[S: Snapshottable](
     currentSnapshot = None
 
   def hasSnapshot: Boolean = currentSnapshot.isDefined
+
+  def snapshotTime: Option[LocalDateTime] =
+    currentSnapshot.flatMap(snapshot => Some(snapshot.timestamp))
