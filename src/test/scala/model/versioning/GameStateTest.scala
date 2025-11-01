@@ -119,3 +119,32 @@ class GameStateTest extends AnyWordSpec with Matchers:
 
       "have no snapshot" in:
         timeMachine.hasSnapshot shouldBe false
+
+    "a snapshot is restored" should:
+      val timeMachine = HistoryTimeMachine[GameHistory]()
+      val maxSize = 5
+      val gameHistory = GameHistory(maxSize)
+      timeMachine.save(gameHistory)
+      val restoredHistory = timeMachine.restore()
+
+      "restore the correct state" in:
+        restoredHistory shouldBe Some(gameHistory)
+
+      "preserve equality but be a distinct instance" in:
+        restoredHistory.get should not be theSameInstanceAs(gameHistory)
+        restoredHistory.get shouldEqual gameHistory
+
+      "preserve the state if modified after snapshot" in:
+        val modifiedHistory = gameHistory.deepCopy()
+        case class MockKnowledgeGraph(id: Int) extends KnowledgeGraph:
+          def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
+        modifiedHistory.addState(MockKnowledgeGraph(1))
+        modifiedHistory should not equal gameHistory
+        val restoredAfterModification = timeMachine.restore()
+        restoredAfterModification shouldBe Some(gameHistory)
+
+    "restoring without a snapshot" should:
+      val timeMachine = HistoryTimeMachine[GameHistory]()
+      val restoredHistory = timeMachine.restore()
+      "return None" in:
+        restoredHistory shouldBe None
