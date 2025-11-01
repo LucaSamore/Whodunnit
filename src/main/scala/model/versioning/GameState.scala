@@ -9,6 +9,9 @@ case class GameHistory(
 ):
   def currentState: Option[KnowledgeGraph] = timeline.currentElement
 
+  def addState(state: KnowledgeGraph): Unit =
+    timeline.push(state)
+
   def deepCopy(): GameHistory =
     val newBuffer = RingNavigableBuffer[KnowledgeGraph](timeline.capacity)
     timeline.elements.foreach(kg => newBuffer.push(kg.deepCopy()))
