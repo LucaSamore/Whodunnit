@@ -184,3 +184,55 @@ class BufferTest extends AnyWordSpec with Matchers:
         buffer3.moveForward() shouldBe false
         buffer3.currentPosition shouldBe 3
         buffer3.currentElement shouldBe Some(1)
+
+  "A ring navigable Buffer" when:
+    val ringNavigableMaxSize = 4
+
+    "newly created" should:
+      "have cursor at initial position" in:
+        val buffer = RingNavigableBuffer[Int](ringNavigableMaxSize)
+        buffer.push(1)
+        buffer.push(2)
+        buffer.push(3)
+        buffer.currentPosition shouldBe 0
+
+    "elements pushed when cursor is not at initial position" should:
+      val buffer = RingNavigableBuffer[Int](ringNavigableMaxSize)
+      buffer.push(1)
+      buffer.push(2)
+      buffer.push(3)
+      buffer.push(4) // should push normally
+      buffer.push(5) // should replace oldest (1)
+
+      "have size equal to capacity" in:
+        buffer.size shouldBe 4
+
+      "have elements in correct order" in:
+        buffer.elements shouldBe List(2, 3, 4, 5)
+
+      "have cursor unchanged" in:
+        buffer.currentPosition shouldBe 0
+
+      "have current element correct" in:
+        buffer.currentElement shouldBe Some(5)
+
+    "elements pushed when cursor is not in initial position" should:
+      val buffer = RingNavigableBuffer[Int](ringNavigableMaxSize)
+      buffer.push(1)
+      buffer.push(2)
+      buffer.push(3)
+      buffer.moveForward() // cursor at 1, current element 2
+      buffer.moveForward() // cursor at 2, current element 1
+      buffer.push(4) // should push and decrease size
+
+      "have size decreased" in:
+        buffer.size shouldBe 2
+
+      "have elements in correct order" in:
+        buffer.elements shouldBe List(1, 4)
+
+      "have cursor adjusted correctly" in:
+        buffer.currentPosition shouldBe 0
+
+      "have current element correct" in:
+        buffer.currentElement shouldBe Some(4)
