@@ -33,3 +33,9 @@ case class GameHistory(
 object GameHistory:
   def apply(historySize: Int): GameHistory =
     GameHistory(historySize, RingNavigableBuffer[KnowledgeGraph](historySize))
+
+case class HistoryTimeMachine[S: Snapshottable](
+    private var currentSnapshot: Option[Snapshot[S]] = None
+):
+
+  def hasSnapshot: Boolean = currentSnapshot.isDefined

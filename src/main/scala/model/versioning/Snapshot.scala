@@ -6,7 +6,6 @@ trait Snapshot[+A]:
   def subject: A
   def timestamp: LocalDateTime
 
-// TODO: Togliere il timestamp da Snaphottable
 trait Snapshottable[S]:
   def snap(s: S): Snapshot[S]
   def restore(snapshot: Snapshot[S]): S
@@ -51,6 +50,13 @@ object Snapshot:
         SnapshotImpl(history.deepCopy(), LocalDateTime.now())
 
       def restore(snapshot: Snapshot[MutableHistory]): MutableHistory =
+        snapshot.subject.deepCopy()
+
+    given Snapshottable[GameHistory] with
+      def snap(history: GameHistory): Snapshot[GameHistory] =
+        SnapshotImpl(history.deepCopy(), LocalDateTime.now())
+
+      def restore(snapshot: Snapshot[GameHistory]): GameHistory =
         snapshot.subject.deepCopy()
 
 case class ImmutableHistory(elements: List[Int]) {
