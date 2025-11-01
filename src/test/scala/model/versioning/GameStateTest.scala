@@ -1,6 +1,6 @@
 package model.versioning
 
-import model.versioning.Snapshot.Snapshotters.given_Snapshottable_GameHistory
+import model.versioning.Snapshot.Snapshotters.given_Snapshottable_History
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -98,13 +98,13 @@ class GameStateTest extends AnyWordSpec with Matchers:
 
   "A game Time Machine" when:
     "newly created" should:
-      val timeMachine = HistoryTimeMachine[GameHistory]()
+      val timeMachine = HistoryTimeMachine[History]()
 
       "have no snapshot" in:
         timeMachine.hasSnapshot shouldBe false
 
     "a snapshot is taken" should:
-      val timeMachine = HistoryTimeMachine[GameHistory]()
+      val timeMachine = HistoryTimeMachine[History]()
       val maxSize = 5
       val gameHistory = GameHistory(maxSize)
       val beforeSnapshot = LocalDateTime.now()
@@ -121,7 +121,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
           snapshotTime.get.isBefore(afterSnapshot) || snapshotTime.get.isEqual(afterSnapshot) shouldBe true
 
     "a snapshot is cleared" should:
-      val timeMachine = HistoryTimeMachine[GameHistory]()
+      val timeMachine = HistoryTimeMachine[History]()
       val maxSize = 5
       val gameHistory = GameHistory(maxSize)
       timeMachine.save(gameHistory)
@@ -131,7 +131,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
         timeMachine.hasSnapshot shouldBe false
 
     "a snapshot is restored" should:
-      val timeMachine = HistoryTimeMachine[GameHistory]()
+      val timeMachine = HistoryTimeMachine[History]()
       val maxSize = 5
       val gameHistory = GameHistory(maxSize)
       timeMachine.save(gameHistory)
@@ -154,7 +154,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
         restoredAfterModification shouldBe Some(gameHistory)
 
     "restoring without a snapshot" should:
-      val timeMachine = HistoryTimeMachine[GameHistory]()
+      val timeMachine = HistoryTimeMachine[History]()
       val restoredHistory = timeMachine.restore()
       "return None" in:
         restoredHistory shouldBe None

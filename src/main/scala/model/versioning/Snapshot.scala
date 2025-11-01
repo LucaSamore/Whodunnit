@@ -52,11 +52,11 @@ object Snapshot:
       def restore(snapshot: Snapshot[MutableHistory]): MutableHistory =
         snapshot.subject.deepCopy()
 
-    given Snapshottable[GameHistory] with
-      def snap(history: GameHistory): Snapshot[GameHistory] =
+    given Snapshottable[History] with
+      def snap(history: History): Snapshot[History] =
         SnapshotImpl(history.deepCopy(), LocalDateTime.now())
 
-      def restore(snapshot: Snapshot[GameHistory]): GameHistory =
+      def restore(snapshot: Snapshot[History]): History =
         snapshot.subject.deepCopy()
 
 case class ImmutableHistory(elements: List[Int]) {
