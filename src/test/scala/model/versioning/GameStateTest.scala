@@ -4,6 +4,8 @@ import model.versioning.Snapshot.Snapshotters.given_Snapshottable_GameHistory
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+import java.time.LocalDateTime
+
 class GameStateTest extends AnyWordSpec with Matchers:
 
   "A game History" when:
@@ -105,10 +107,18 @@ class GameStateTest extends AnyWordSpec with Matchers:
       val timeMachine = HistoryTimeMachine[GameHistory]()
       val maxSize = 5
       val gameHistory = GameHistory(maxSize)
+      val beforeSnapshot = LocalDateTime.now()
       timeMachine.save(gameHistory)
+      val afterSnapshot = LocalDateTime.now()
 
       "have a snapshot" in:
         timeMachine.hasSnapshot shouldBe true
+
+      "snapshot time should be within the correct time bounds" in:
+          val snapshotTime = timeMachine.snapshotTime
+          snapshotTime shouldBe defined
+          snapshotTime.get.isAfter(beforeSnapshot) || snapshotTime.get.isEqual(beforeSnapshot) shouldBe true
+          snapshotTime.get.isBefore(afterSnapshot) || snapshotTime.get.isEqual(afterSnapshot) shouldBe true
 
     "a snapshot is cleared" should:
       val timeMachine = HistoryTimeMachine[GameHistory]()
