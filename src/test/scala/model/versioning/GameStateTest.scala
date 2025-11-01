@@ -27,11 +27,8 @@ class GameStateTest extends AnyWordSpec with Matchers:
       val originalHistory = GameHistory(maxSize)
       case class MockKnowledgeGraph(id: Int) extends KnowledgeGraph:
         def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
-
-      val kg1 = MockKnowledgeGraph(1)
       val kg2 = MockKnowledgeGraph(2)
-
-      originalHistory.addState(kg1)
+      originalHistory.addState(MockKnowledgeGraph(1))
       originalHistory.addState(kg2)
 
       "maintain the correct current state" in:
@@ -42,33 +39,24 @@ class GameStateTest extends AnyWordSpec with Matchers:
       val originalHistory = GameHistory(maxSize)
       case class MockKnowledgeGraph(id: Int) extends KnowledgeGraph:
         def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
-
       val kg1 = MockKnowledgeGraph(1)
-      val kg2 = MockKnowledgeGraph(2)
-
       originalHistory.addState(kg1)
-      originalHistory.addState(kg2)
-      originalHistory.undo()
+      originalHistory.addState(MockKnowledgeGraph(2))
 
       "revert to the previous state" in:
-        originalHistory.currentState shouldBe Some(kg1)
+        originalHistory.undo() shouldBe Some(kg1)
 
     "redo operation is called" should:
       val maxSize = 3
       val originalHistory = GameHistory(maxSize)
       case class MockKnowledgeGraph(id: Int) extends KnowledgeGraph:
         def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
-
-      val kg1 = MockKnowledgeGraph(1)
       val kg2 = MockKnowledgeGraph(2)
-      val kg3 = MockKnowledgeGraph(3)
-
-      originalHistory.addState(kg1)
+      originalHistory.addState(MockKnowledgeGraph(1))
       originalHistory.addState(kg2)
-      originalHistory.addState(kg3)
-      originalHistory.undo()
-      originalHistory.undo()
-      originalHistory.redo()
+      originalHistory.addState(MockKnowledgeGraph(3))
 
       "reload to the subsequent state" in:
-        originalHistory.currentState shouldBe Some(kg2)
+        originalHistory.undo()
+        originalHistory.undo()
+        originalHistory.redo() shouldBe Some(kg2)
