@@ -7,14 +7,14 @@ import scala.concurrent.duration.*
 
 class TimerTest extends AnyWordSpec with Matchers:
 
-  "Timer" when:
+  "TimerLogic" when:
     "starting a timer" should:
       "create a Running state with the given current time" in:
         val currentTime = 1000L
         val duration = 10.seconds
 
         val state =
-          Timer.start(totalDuration = duration, currentTime = currentTime)
+          TimerLogic.start(totalDuration = duration, currentTime = currentTime)
 
         state shouldBe Running(
           startedAt = currentTime,
@@ -33,7 +33,7 @@ class TimerTest extends AnyWordSpec with Matchers:
         )
 
         val (newState, remainingTime) =
-          Timer.updateTimer(initialState, currentTime)
+          TimerLogic.updateTimer(initialState, currentTime)
 
         remainingTime.get shouldBe 7.seconds
         newState shouldBe Running(
@@ -52,7 +52,7 @@ class TimerTest extends AnyWordSpec with Matchers:
         )
 
         val (newState, remainingTime) =
-          Timer.updateTimer(initialState, currentTime)
+          TimerLogic.updateTimer(initialState, currentTime)
 
         newState shouldBe Finished
         remainingTime shouldBe Some(Duration.Zero)
@@ -67,7 +67,7 @@ class TimerTest extends AnyWordSpec with Matchers:
         )
 
         val (newState, remainingTime) =
-          Timer.updateTimer(initialState, currentTime)
+          TimerLogic.updateTimer(initialState, currentTime)
 
         newState shouldBe Finished
         remainingTime shouldBe Some(Duration.Zero)
@@ -75,28 +75,28 @@ class TimerTest extends AnyWordSpec with Matchers:
     "formatting duration" should:
       "format zero seconds correctly" in:
         val duration = 0.seconds
-        Timer.formatDuration(duration) shouldBe "00:00"
+        TimerLogic.formatDuration(duration) shouldBe "00:00"
 
       "format seconds correctly" in:
         val duration = 45.seconds
-        Timer.formatDuration(duration) shouldBe "00:45"
+        TimerLogic.formatDuration(duration) shouldBe "00:45"
 
       "format minutes and seconds correctly" in:
         val duration = 125.seconds
-        Timer.formatDuration(duration) shouldBe "02:05"
+        TimerLogic.formatDuration(duration) shouldBe "02:05"
 
       "format exact minutes correctly" in:
         val duration = 3.minutes
-        Timer.formatDuration(duration) shouldBe "03:00"
+        TimerLogic.formatDuration(duration) shouldBe "03:00"
 
     "getting remaining time" should:
       "return None for Ready state" in:
         val state = Ready
-        Timer.getRemainingTime(state) shouldBe None
+        TimerLogic.getRemainingTime(state) shouldBe None
 
       "return Some(Duration.Zero) for Finished state" in:
         val state = Finished
-        Timer.getRemainingTime(state) shouldBe Some(Duration.Zero)
+        TimerLogic.getRemainingTime(state) shouldBe Some(Duration.Zero)
 
       "return remaining time for Running state" in:
         val state = Running(
@@ -104,14 +104,14 @@ class TimerTest extends AnyWordSpec with Matchers:
           totalDuration = 10.seconds,
           remaining = 7.seconds
         )
-        Timer.getRemainingTime(state) shouldBe Some(7.seconds)
+        TimerLogic.getRemainingTime(state) shouldBe Some(7.seconds)
 
       "return remaining time for Paused state" in:
         val state = Paused(
           totalDuration = 10.seconds,
           remaining = 5.seconds
         )
-        Timer.getRemainingTime(state) shouldBe Some(5.seconds)
+        TimerLogic.getRemainingTime(state) shouldBe Some(5.seconds)
 
     "checking triggers" should:
       "return empty list when no triggers are defined" in:
@@ -119,7 +119,7 @@ class TimerTest extends AnyWordSpec with Matchers:
         val current = 5.seconds
         val previous = 8.seconds
 
-        val activated = Timer.checkTriggers(current, previous, triggers)
+        val activated = TimerLogic.checkTriggers(current, previous, triggers)
 
         activated shouldBe empty
 
@@ -129,7 +129,7 @@ class TimerTest extends AnyWordSpec with Matchers:
         val current = 5.seconds
         val previous = 7.seconds
 
-        val activated = Timer.checkTriggers(current, previous, triggers)
+        val activated = TimerLogic.checkTriggers(current, previous, triggers)
 
         activated should contain only trigger
 
@@ -139,7 +139,7 @@ class TimerTest extends AnyWordSpec with Matchers:
         val current = 7.seconds
         val previous = 8.seconds
 
-        val activated = Timer.checkTriggers(current, previous, triggers)
+        val activated = TimerLogic.checkTriggers(current, previous, triggers)
 
         activated shouldBe empty
 
@@ -149,7 +149,7 @@ class TimerTest extends AnyWordSpec with Matchers:
         val current = 5.seconds
         val previous = 6.seconds
 
-        val activated = Timer.checkTriggers(current, previous, triggers)
+        val activated = TimerLogic.checkTriggers(current, previous, triggers)
 
         activated should contain only trigger
 
@@ -159,7 +159,7 @@ class TimerTest extends AnyWordSpec with Matchers:
         val current = 4.seconds
         val previous = 5.seconds
 
-        val activated = Timer.checkTriggers(current, previous, triggers)
+        val activated = TimerLogic.checkTriggers(current, previous, triggers)
 
         activated shouldBe empty
 
@@ -170,6 +170,29 @@ class TimerTest extends AnyWordSpec with Matchers:
         val current = 5.seconds
         val previous = 7.seconds
 
-        val activated = Timer.checkTriggers(current, previous, triggers)
+        val activated = TimerLogic.checkTriggers(current, previous, triggers)
 
         activated should contain only trigger1
+
+  "Timer" when:
+    "starting" should:
+      "transition from Ready to Running state" in:
+        val timer = Timer(totalDuration = 5.seconds)
+
+        timer.state shouldBe TimerState.Ready
+
+        timer.start()
+
+        timer.state match
+          case TimerState.Running(startedAt, totalDuration, remaining) =>
+            totalDuration shouldBe 5.seconds
+            remaining shouldBe 5.seconds
+            startedAt should be > 0L
+          case other => fail(s"Expected Running state, got $other")
+
+      "maintain Running state immediately after start" in:
+        val timer = Timer(totalDuration = 10.seconds)
+
+        timer.start()
+
+        timer.state shouldBe TimerState.Running

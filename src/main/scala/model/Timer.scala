@@ -10,7 +10,7 @@ enum TimerState:
   case Paused(totalDuration: Duration, remaining: Duration)
   case Finished
 
-object Timer:
+object TimerLogic:
   export TimerState.*
 
   def start(totalDuration: Duration, currentTime: Long): TimerState =
