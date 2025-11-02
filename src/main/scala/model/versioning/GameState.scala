@@ -69,9 +69,5 @@ case class HistoryTimeMachine[S: Snapshottable](
     currentSnapshot.flatMap(snapshot => Some(snapshot.timestamp))
 
 object HistoryTimeMachine:
-  def apply[S: Snapshottable](): HistoryTimeMachine[S] =
-    HistoryTimeMachine[S](None)
-
-object TimeMachine:
   def apply[S: Snapshottable](): TimeMachine[S] =
-    HistoryTimeMachine[S]()
+    HistoryTimeMachine[S](None)

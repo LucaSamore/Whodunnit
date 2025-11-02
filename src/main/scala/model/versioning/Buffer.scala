@@ -6,7 +6,6 @@ trait Buffer:
   def isEmpty: Boolean
   def elements: List[Element]
   def set(index: Int, element: Element): Unit
-  def unset(index: Int): Unit
   def push(element: Element): Unit
   def replaceOnFull(element: Element): Unit
   def contains(element: Element): Boolean
@@ -27,9 +26,6 @@ abstract class BaseBuffer[E](override val capacity: Int)(using
 
   override def set(index: Int, element: E): Unit =
     buffer(index) = Some(element)
-
-  override def unset(index: Int): Unit =
-    buffer(index) = None
 
   override def push(element: E): Unit =
     if (_size < capacity) then
