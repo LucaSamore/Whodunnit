@@ -32,3 +32,9 @@ object Timer:
         val newState = Running(startedAt, totalDuration, newRemaining)
         (newState, Some(newRemaining))
     case other => (other, None)
+
+  def formatDuration(duration: Duration): String =
+    val totalSeconds = duration.toSeconds.max(0)
+    val minutes = totalSeconds / 60
+    val seconds = totalSeconds % 60
+    f"$minutes%02d:$seconds%02d"

@@ -76,11 +76,11 @@ class TimerTest extends AnyWordSpec with Matchers:
       "format zero seconds correctly" in:
         val duration = 0.seconds
         Timer.formatDuration(duration) shouldBe "00:00"
-      
+
       "format seconds correctly" in:
         val duration = 45.seconds
         Timer.formatDuration(duration) shouldBe "00:45"
-      
+
       "format minutes and seconds correctly" in:
         val duration = 125.seconds
         Timer.formatDuration(duration) shouldBe "02:05"
@@ -88,4 +88,3 @@ class TimerTest extends AnyWordSpec with Matchers:
       "format exact minutes correctly" in:
         val duration = 3.minutes
         Timer.formatDuration(duration) shouldBe "03:00"
-      
