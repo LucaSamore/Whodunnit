@@ -20,13 +20,16 @@ class SnapshotTest extends AnyWordSpec with Matchers:
         val snapshot = Snapshot("Hello World")
         snapshot.subject shouldBe "Hello World"
 
-    "restored" should:
-      "return the original value" in:
-        val original = 42
+      "restore the original value" in:
+        val original = "Hello World"
         val snapshot = Snapshot(original)
         val restored = Snapshot.restore(snapshot)
-
         restored shouldBe original
+
+        val originalInt = 42
+        val snapshotInt = Snapshot(originalInt)
+        val restoredInt = Snapshot.restore(snapshotInt)
+        restoredInt shouldBe originalInt
 
     "created with an immutable object" should:
       "capture the current state" in:
