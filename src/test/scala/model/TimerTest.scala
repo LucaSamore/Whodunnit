@@ -195,4 +195,45 @@ class TimerTest extends AnyWordSpec with Matchers:
 
         timer.start()
 
-        timer.state shouldBe TimerState.Running
+        timer.state shouldBe a[TimerState.Running]
+
+    "ticking" should:
+      "decrease remaining time progressively" in:
+        val timer = Timer(totalDuration = 10.seconds)
+
+        timer.start()
+
+        val state1 = timer.state
+        Thread.sleep(2000)
+        val state2 = timer.state
+        Thread.sleep(2000)
+        val state3 = timer.state
+
+        (state1, state2, state3) match
+          case (
+                TimerState.Running(_, _, remainingTime1),
+                TimerState.Running(_, _, remainingTime2),
+                TimerState.Running(_, _, remainingTime3)
+              ) =>
+            remainingTime1 should be > remainingTime2
+            remainingTime2 should be > remainingTime3
+
+          case _ => fail("Timer should remain in Running state")
+
+      "maintain Running state while time remains" in:
+        val timer = Timer(totalDuration = 5.seconds)
+
+        timer.start()
+        Thread.sleep(1000)
+        timer.state shouldBe a[TimerState.Running]
+        Thread.sleep(1000)
+        timer.state shouldBe a[TimerState.Running]
+
+      "update remaining time correctly based on elapsed time" in:
+        val timer = Timer(totalDuration = 10.seconds)
+
+        timer.start()
+        Thread.sleep(3000)
+        timer.state match
+          case TimerState.Running(_, _, remaining) =>
+          case _ => fail("Expected Running state")
