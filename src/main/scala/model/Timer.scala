@@ -63,7 +63,39 @@ class Timer(
 ):
 
   private var _state: TimerState = TimerState.Ready
+  private var tickerThread: Option[Thread] = None
+
   def state: TimerState = _state
 
   def start(): Unit =
     _state = TimerLogic.start(totalDuration, System.currentTimeMillis())
+    startTicker()
+
+  private def onTick(): Unit =
+    val oldRemaining = TimerLogic.getRemainingTime(_state)
+    val (newState, newRemaining) =
+      TimerLogic.updateTimer(_state, System.currentTimeMillis())
+    _state = newState
+
+    (oldRemaining, newRemaining) match
+      case (Some(previousTimeRemaining), Some(currentTimeRemaining)) =>
+        val activatedTriggers = TimerLogic.checkTriggers(
+          currentTimeRemaining,
+          previousTimeRemaining,
+          triggers
+        )
+        activatedTriggers.foreach { trigger =>
+          println(s"\n ${trigger.message}")
+        }
+
+      case _ => ()
+
+  private def startTicker(): Unit =
+    val thread = new Thread(() => {
+      while _state != TimerState.Finished do
+        Thread.sleep(1000)
+        onTick()
+    })
+    thread.setDaemon(true)
+    thread.start()
+    tickerThread = Some(thread)
