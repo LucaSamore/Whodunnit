@@ -69,7 +69,7 @@ trait Navigability:
 
   def currentElement: Option[Element] =
     if isEmpty then None
-    Some(elements(cursor))
+    else Some(elements(cursor))
 
   def moveForward(): Boolean =
     if cursor < size - 1 then
