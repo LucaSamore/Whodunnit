@@ -88,17 +88,26 @@ class Timer(
           println(s"\n ${trigger.message}")
         }
 
+        displayCurrentTime()
+
         if _state == TimerState.Finished then
           println("\n Time over!")
           stopTicker()
 
       case _ => ()
 
+  private def displayCurrentTime(): Unit =
+    val remaining = TimerLogic.getRemainingTime(_state) match
+      case Some(remaining) =>
+        val formatted = TimerLogic.formatDuration(remaining)
+        println(s"️$formatted")
+      case None => None
+
   private def startTicker(): Unit =
     val thread = new Thread(() => {
       while _state != TimerState.Finished do
-        Thread.sleep(1000)
         onTick()
+        Thread.sleep(1000)
     })
     thread.setDaemon(true)
     thread.start()
