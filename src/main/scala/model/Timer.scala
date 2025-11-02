@@ -38,3 +38,10 @@ object Timer:
     val minutes = totalSeconds / 60
     val seconds = totalSeconds % 60
     f"$minutes%02d:$seconds%02d"
+
+  def getRemainingTime(state: TimerState): Option[Duration] = state match
+    case Running(startedAt, totalDuration, remaining) =>
+      Some(remaining)
+    case Paused(totalDuration, remaining) => Some(remaining)
+    case Ready                            => None
+    case Finished                         => Some(Duration.Zero)
