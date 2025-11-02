@@ -56,3 +56,14 @@ object TimerLogic:
     triggers.filter: trigger =>
       currentTimeRemaining <= trigger.triggerAtRemaining &&
         previousTimeRemaining > trigger.triggerAtRemaining
+
+class Timer(
+    val totalDuration: Duration,
+    val triggers: List[TriggerEvent] = List.empty
+):
+
+  private var _state: TimerState = TimerState.Ready
+  def state: TimerState = _state
+
+  def start(): Unit =
+    _state = TimerLogic.start(totalDuration, System.currentTimeMillis())
