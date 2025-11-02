@@ -110,21 +110,24 @@ class TimerTest extends AnyWordSpec with Matchers:
         val current = 5.seconds
         val previous = 7.seconds
 
-        val activated = TimerLogic.checkTriggers(current, previous, List(trigger6))
+        val activated =
+          TimerLogic.checkTriggers(current, previous, List(trigger6))
         activated should contain only trigger6
 
       "not activate trigger when not crossing threshold" in:
         val current = 7.seconds
         val previous = 8.seconds
 
-        val activated = TimerLogic.checkTriggers(current, previous, List(trigger6))
+        val activated =
+          TimerLogic.checkTriggers(current, previous, List(trigger6))
         activated shouldBe empty
 
       "activate trigger when current time equals trigger time" in:
         val current = 5.seconds
         val previous = 6.seconds
 
-        val activated = TimerLogic.checkTriggers(current, previous, List(trigger5))
+        val activated =
+          TimerLogic.checkTriggers(current, previous, List(trigger5))
 
         activated should contain only trigger5
 
@@ -132,7 +135,8 @@ class TimerTest extends AnyWordSpec with Matchers:
         val current = 4.seconds
         val previous = 5.seconds
 
-        val activated = TimerLogic.checkTriggers(current, previous, List(trigger6))
+        val activated =
+          TimerLogic.checkTriggers(current, previous, List(trigger6))
 
         activated shouldBe empty
 
@@ -190,3 +194,18 @@ class TimerTest extends AnyWordSpec with Matchers:
         timer.state shouldBe a[TimerState.Running]
         Thread.sleep(1000)
         timer.state shouldBe a[TimerState.Running]
+
+    "completing" should:
+      "transition to Finished state when time expires" in:
+        val timer3 = Timer(totalDuration = 5.seconds)
+        timer3.start()
+        timer3.state shouldBe a[TimerState.Running]
+        Thread.sleep(6000)
+        timer3.state shouldBe TimerState.Finished
+
+      "have zero remaining time when Finished" in:
+        val timer4 = Timer(totalDuration = 5.seconds)
+        timer4.start()
+        Thread.sleep(6000)
+        timer4.state shouldBe TimerState.Finished
+        TimerLogic.getRemainingTime(timer4.state) shouldBe Some(Duration.Zero)
