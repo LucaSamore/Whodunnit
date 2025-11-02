@@ -112,3 +112,64 @@ class TimerTest extends AnyWordSpec with Matchers:
           remaining = 5.seconds
         )
         Timer.getRemainingTime(state) shouldBe Some(5.seconds)
+
+    "checking triggers" should:
+      "return empty list when no triggers are defined" in:
+        val triggers = List.empty[TriggerEvent]
+        val current = 5.seconds
+        val previous = 8.seconds
+
+        val activated = Timer.checkTriggers(current, previous, triggers)
+
+        activated shouldBe empty
+
+      "activate trigger when crossing the threshold" in:
+        val trigger = TriggerEvent(6.seconds, "6 seconds remaining!")
+        val triggers = List(trigger)
+        val current = 5.seconds
+        val previous = 7.seconds
+
+        val activated = Timer.checkTriggers(current, previous, triggers)
+
+        activated should contain only trigger
+
+      "not activate trigger when not crossing threshold" in:
+        val trigger = TriggerEvent(6.seconds, "6 seconds remaining!")
+        val triggers = List(trigger)
+        val current = 7.seconds
+        val previous = 8.seconds
+
+        val activated = Timer.checkTriggers(current, previous, triggers)
+
+        activated shouldBe empty
+
+      "activate trigger when current time equals trigger time" in:
+        val trigger = TriggerEvent(5.seconds, "5 seconds remaining!")
+        val triggers = List(trigger)
+        val current = 5.seconds
+        val previous = 6.seconds
+
+        val activated = Timer.checkTriggers(current, previous, triggers)
+
+        activated should contain only trigger
+
+      "not activate trigger if already past it" in:
+        val trigger = TriggerEvent(6.seconds, "6 seconds remaining!")
+        val triggers = List(trigger)
+        val current = 4.seconds
+        val previous = 5.seconds
+
+        val activated = Timer.checkTriggers(current, previous, triggers)
+
+        activated shouldBe empty
+
+      "activate only crossed triggers when multiple are defined" in:
+        val trigger1 = TriggerEvent(6.seconds, "6 seconds!")
+        val trigger2 = TriggerEvent(3.seconds, "3 seconds!")
+        val triggers = List(trigger1, trigger2)
+        val current = 5.seconds
+        val previous = 7.seconds
+
+        val activated = Timer.checkTriggers(current, previous, triggers)
+
+        activated should contain only trigger1
