@@ -103,6 +103,15 @@ class GameStateTest extends AnyWordSpec with Matchers:
       "have no snapshot" in:
         timeMachine.hasSnapshot shouldBe false
 
+    "newly created with a snapshot" should:
+      val maxSize = 5
+      val gameHistory = GameHistory(maxSize)
+      val snapshot = Snapshot(gameHistory, LocalDateTime.now())
+      val timeMachine = HistoryTimeMachine[History](Some(snapshot))
+
+      "have a snapshot" in:
+        timeMachine.hasSnapshot shouldBe true
+
     "a snapshot is taken" should:
       val timeMachine = HistoryTimeMachine[History]()
       val maxSize = 5
