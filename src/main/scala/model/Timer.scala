@@ -2,6 +2,8 @@ package model
 
 import scala.concurrent.duration.{Duration, DurationLong}
 
+case class TriggerEvent(triggerAtRemaining: Duration, message: String)
+
 enum TimerState:
   case Ready
   case Running(startedAt: Long, totalDuration: Duration, remaining: Duration)
@@ -45,3 +47,12 @@ object Timer:
     case Paused(totalDuration, remaining) => Some(remaining)
     case Ready                            => None
     case Finished                         => Some(Duration.Zero)
+
+  def checkTriggers(
+      currentTimeRemaining: Duration,
+      previousTimeRemaining: Duration,
+      triggers: List[TriggerEvent]
+  ): List[TriggerEvent] =
+    triggers.filter: trigger =>
+      currentTimeRemaining <= trigger.triggerAtRemaining &&
+        previousTimeRemaining > trigger.triggerAtRemaining
