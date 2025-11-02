@@ -88,3 +88,27 @@ class TimerTest extends AnyWordSpec with Matchers:
       "format exact minutes correctly" in:
         val duration = 3.minutes
         Timer.formatDuration(duration) shouldBe "03:00"
+
+    "getting remaining time" should:
+      "return None for Ready state" in:
+        val state = Ready
+        Timer.getRemainingTime(state) shouldBe None
+
+      "return Some(Duration.Zero) for Finished state" in:
+        val state = Finished
+        Timer.getRemainingTime(state) shouldBe Some(Duration.Zero)
+
+      "return remaining time for Running state" in:
+        val state = Running(
+          startedAt = 1000L,
+          totalDuration = 10.seconds,
+          remaining = 7.seconds
+        )
+        Timer.getRemainingTime(state) shouldBe Some(7.seconds)
+
+      "return remaining time for Paused state" in:
+        val state = Paused(
+          totalDuration = 10.seconds,
+          remaining = 5.seconds
+        )
+        Timer.getRemainingTime(state) shouldBe Some(5.seconds)
