@@ -1,10 +1,10 @@
 package model
 
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration.{Duration, DurationLong}
 
 enum TimerState:
   case Ready
-  case Running(startedAt: Long, remaining: Duration, totalDuration: Duration)
+  case Running(startedAt: Long, totalDuration: Duration, remaining: Duration)
   case Paused(totalDuration: Duration, remaining: Duration)
   case Finished
 
@@ -17,3 +17,18 @@ object Timer:
       totalDuration = totalDuration,
       remaining = totalDuration
     )
+
+  def updateTimer(
+      state: TimerState,
+      currentTime: Long
+  ): (TimerState, Option[Duration]) = state match
+    case Running(startedAt, totalDuration, remaining) =>
+      val elapsed = (currentTime - startedAt).millis
+      val newRemaining = (totalDuration - elapsed).max(Duration.Zero)
+
+      if newRemaining <= Duration.Zero then
+        (Finished, Some(Duration.Zero))
+      else
+        val newState = Running(startedAt, totalDuration, newRemaining)
+        (newState, Some(newRemaining))
+    case other => (other, None)

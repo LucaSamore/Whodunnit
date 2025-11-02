@@ -1,6 +1,6 @@
 package model
 
-import model.TimerState.Running
+import model.TimerState.*
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
 import scala.concurrent.duration.*
@@ -32,11 +32,10 @@ class TimerTest extends AnyWordSpec with Matchers:
           remaining = 10.seconds
         )
 
-        val (newState, remainingOpt) =
+        val (newState, remainingTime) =
           Timer.updateTimer(initialState, currentTime)
 
-        remainingOpt shouldBe defined
-        remainingOpt.get shouldBe 7.seconds
+        remainingTime.get shouldBe 7.seconds
         newState shouldBe Running(
           startedAt = startTime,
           totalDuration = 10.seconds,
@@ -52,11 +51,11 @@ class TimerTest extends AnyWordSpec with Matchers:
           remaining = 10.seconds
         )
 
-        val (newState, remainingOpt) =
+        val (newState, remainingTime) =
           Timer.updateTimer(initialState, currentTime)
 
         newState shouldBe Finished
-        remainingOpt shouldBe Some(Duration.Zero)
+        remainingTime shouldBe Some(Duration.Zero)
 
       "not go below zero for remaining time" in:
         val startTime = 1000L
@@ -67,7 +66,8 @@ class TimerTest extends AnyWordSpec with Matchers:
           remaining = 10.seconds
         )
 
-        val (newState, remainingOpt) =
+        val (newState, remainingTime) =
           Timer.updateTimer(initialState, currentTime)
 
-        remainingOpt shouldBe Some(Duration.Zero)
+        newState shouldBe Finished
+        remainingTime shouldBe Some(Duration.Zero)
