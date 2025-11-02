@@ -88,6 +88,10 @@ class Timer(
           println(s"\n ${trigger.message}")
         }
 
+        if _state == TimerState.Finished then
+          println("\n Time over!")
+          stopTicker()
+
       case _ => ()
 
   private def startTicker(): Unit =
@@ -99,3 +103,7 @@ class Timer(
     thread.setDaemon(true)
     thread.start()
     tickerThread = Some(thread)
+
+  private def stopTicker(): Unit =
+    tickerThread.foreach(_.interrupt())
+    tickerThread = None
