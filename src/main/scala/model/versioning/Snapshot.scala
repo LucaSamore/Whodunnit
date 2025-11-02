@@ -6,9 +6,9 @@ trait Snapshot[+A]:
   def subject: A
   def timestamp: LocalDateTime
 
-trait Snapshottable[S]:
-  def snap(s: S): Snapshot[S]
-  def restore(snapshot: Snapshot[S]): S
+trait Snapshottable[-S]:
+  def snap[T <: S](s: T): Snapshot[T]
+  def restore[T <: S](snapshot: Snapshot[T]): T
 
 object Snapshot:
   def apply[S: Snapshottable](
@@ -25,39 +25,39 @@ object Snapshot:
 
   object Snapshotters:
     given Snapshottable[Int] with
-      def snap(value: Int): Snapshot[Int] =
+      def snap[T <: Int](value: T): Snapshot[T] =
         SnapshotImpl(value, LocalDateTime.now())
 
-      def restore(snapshot: Snapshot[Int]): Int =
+      def restore[T <: Int](snapshot: Snapshot[T]): T =
         snapshot.subject
 
     given Snapshottable[String] with
-      def snap(value: String): Snapshot[String] =
+      def snap[T <: String](value: T): Snapshot[T] =
         SnapshotImpl(value, LocalDateTime.now())
 
-      def restore(snapshot: Snapshot[String]): String =
+      def restore[T <: String](snapshot: Snapshot[T]): T =
         snapshot.subject
 
     given Snapshottable[ImmutableHistory] with
-      def snap(history: ImmutableHistory): Snapshot[ImmutableHistory] =
-        SnapshotImpl(history.deepCopy(), LocalDateTime.now())
+      def snap[T <: ImmutableHistory](history: T): Snapshot[T] =
+        SnapshotImpl(history.deepCopy().asInstanceOf[T], LocalDateTime.now())
 
-      def restore(snapshot: Snapshot[ImmutableHistory]): ImmutableHistory =
-        snapshot.subject.deepCopy()
+      def restore[T <: ImmutableHistory](snapshot: Snapshot[T]): T =
+        snapshot.subject.deepCopy().asInstanceOf[T]
 
     given Snapshottable[MutableHistory] with
-      def snap(history: MutableHistory): Snapshot[MutableHistory] =
-        SnapshotImpl(history.deepCopy(), LocalDateTime.now())
+      def snap[T <: MutableHistory](history: T): Snapshot[T] =
+        SnapshotImpl(history.deepCopy().asInstanceOf[T], LocalDateTime.now())
 
-      def restore(snapshot: Snapshot[MutableHistory]): MutableHistory =
-        snapshot.subject.deepCopy()
+      def restore[T <: MutableHistory](snapshot: Snapshot[T]): T =
+        snapshot.subject.deepCopy().asInstanceOf[T]
 
     given Snapshottable[History] with
-      def snap(history: History): Snapshot[History] =
-        SnapshotImpl(history.deepCopy(), LocalDateTime.now())
+      def snap[T <: History](history: T): Snapshot[T] =
+        SnapshotImpl(history.deepCopy().asInstanceOf[T], LocalDateTime.now())
 
-      def restore(snapshot: Snapshot[History]): History =
-        snapshot.subject.deepCopy()
+      def restore[T <: History](snapshot: Snapshot[T]): T =
+        snapshot.subject.deepCopy().asInstanceOf[T]
 
 case class ImmutableHistory(elements: List[Int]) {
   def add(element: Int): ImmutableHistory = {
