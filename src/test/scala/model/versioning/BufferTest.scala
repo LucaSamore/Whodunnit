@@ -78,6 +78,15 @@ class BufferTest extends AnyWordSpec with Matchers:
   "A navigable Buffer" when:
     "newly created" should:
       val buffer = NavigableBuffer[Int](maxSize)
+
+      "have cursor at initial position" in:
+        buffer.currentPosition shouldBe 0
+
+      "have current element at first inserted" in:
+        buffer.currentElement shouldBe None
+
+    "elements add" should:
+      val buffer = NavigableBuffer[Int](maxSize)
       buffer.push(1)
       buffer.push(2)
       buffer.push(3)
