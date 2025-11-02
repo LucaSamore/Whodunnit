@@ -124,10 +124,14 @@ class GameStateTest extends AnyWordSpec with Matchers:
         timeMachine.hasSnapshot shouldBe true
 
       "snapshot time should be within the correct time bounds" in:
-          val snapshotTime = timeMachine.snapshotTime
-          snapshotTime shouldBe defined
-          snapshotTime.get.isAfter(beforeSnapshot) || snapshotTime.get.isEqual(beforeSnapshot) shouldBe true
-          snapshotTime.get.isBefore(afterSnapshot) || snapshotTime.get.isEqual(afterSnapshot) shouldBe true
+        val snapshotTime = timeMachine.snapshotTime
+        snapshotTime shouldBe defined
+        snapshotTime.get.isAfter(beforeSnapshot) || snapshotTime.get.isEqual(
+          beforeSnapshot
+        ) shouldBe true
+        snapshotTime.get.isBefore(afterSnapshot) || snapshotTime.get.isEqual(
+          afterSnapshot
+        ) shouldBe true
 
     "a snapshot is cleared" should:
       val timeMachine = HistoryTimeMachine[History]()
