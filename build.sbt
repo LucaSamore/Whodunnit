@@ -31,6 +31,6 @@ lazy val root = (project in file("."))
     assembly / assemblyOutputPath := target.value / "scala-3" / "whodunnit.jar",
     assembly / assemblyMergeStrategy := {
       case PathList("META-INF", _*) => MergeStrategy.discard
-      case _ => MergeStrategy.first
+      case _                        => MergeStrategy.first
     }
   ).enablePlugins(AssemblyPlugin)
