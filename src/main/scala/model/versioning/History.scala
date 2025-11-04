@@ -1,7 +1,8 @@
 package model.versioning
 
-trait KnowledgeGraph:
-  def deepCopy(): KnowledgeGraph
+import model.knowledgegraph.CaseKnowledgeGraph
+
+type KnowledgeGraph = CaseKnowledgeGraph
 
 trait History:
   def addState(kg: KnowledgeGraph): Unit
