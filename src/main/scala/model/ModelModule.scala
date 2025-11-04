@@ -1,6 +1,7 @@
 package model
 
 import model.casegeneration.*
+import model.knowledgegraph.CaseKnowledgeGraph
 
 object ModelModule:
 

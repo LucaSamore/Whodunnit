@@ -1,7 +1,7 @@
 package view
 
 import model.casegeneration.*
-import model.{CaseKnowledgeGraph, Link}
+import model.knowledgegraph.{CaseKnowledgeGraph, Link}
 import scalafx.Includes.eventClosureWrapperWithZeroParam
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene

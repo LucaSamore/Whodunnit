@@ -1,6 +1,7 @@
-package model
+package model.knowledgegraph
 
 import model.casegeneration.Entity
+import model.*
 
 import scala.collection.mutable
 
