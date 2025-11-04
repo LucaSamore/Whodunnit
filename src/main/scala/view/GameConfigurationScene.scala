@@ -23,7 +23,10 @@ object GameConfigurationScene extends Scene(1280, 720):
 
   private object Typography:
     private def loadFont(size: Int): Font =
-      Font.loadFont(getClass.getResourceAsStream("/fonts/LibreBaskerville-Regular.ttf"), size)
+      Font.loadFont(
+        getClass.getResourceAsStream("/fonts/LibreBaskerville-Regular.ttf"),
+        size
+      )
 
     val titleFont: Font = loadFont(32)
     val sectionFont: Font = loadFont(24)
@@ -46,7 +49,9 @@ object GameConfigurationScene extends Scene(1280, 720):
         -fx-background-radius: 4px;
         -fx-border-color: rgba(30, 30, 30, 0.75);
         -fx-border-width: 2px;
-        -fx-background-color: ${if isSelected then "rgba(30, 30, 30, 0.25)" else "transparent"};
+        -fx-background-color: ${
+          if isSelected then "rgba(30, 30, 30, 0.25)" else "transparent"
+        };
         -fx-padding: 8px;
       """
 
@@ -63,18 +68,24 @@ object GameConfigurationScene extends Scene(1280, 720):
     minHeight = 48
     promptText = "Choose a theme"
     items = ObservableBuffer("Option 1", "Option 2", "Option 3")
-    style = Styles.borderedBox() + s"-fx-font-family: '${Typography.sectionFont.getName}';"
+    style =
+      Styles.borderedBox() + s"-fx-font-family: '${Typography.sectionFont.getName}';"
   }
 
   private val difficultyToggleGroup: ToggleGroup = ToggleGroup()
 
-  private val easyRadio: RadioButton = createCustomRadioButton(difficultyToggleGroup)
-  private val mediumRadio: RadioButton = createCustomRadioButton(difficultyToggleGroup)
-  private val hardRadio: RadioButton = createCustomRadioButton(difficultyToggleGroup)
+  private val easyRadio: RadioButton =
+    createCustomRadioButton(difficultyToggleGroup)
+  private val mediumRadio: RadioButton =
+    createCustomRadioButton(difficultyToggleGroup)
+  private val hardRadio: RadioButton =
+    createCustomRadioButton(difficultyToggleGroup)
 
   private def createBackground(): Background =
     val image = BackgroundImage(
-      image = Image(getClass.getResourceAsStream("/images/game-configuration/desk.png")),
+      image = Image(
+        getClass.getResourceAsStream("/images/game-configuration/desk.png")
+      ),
       repeatX = BackgroundRepeat.NoRepeat,
       repeatY = BackgroundRepeat.NoRepeat,
       position = BackgroundPosition.Center,
@@ -106,7 +117,11 @@ object GameConfigurationScene extends Scene(1280, 720):
       style = Styles.borderedBox(Theme.smallBorderWidth)
     }
 
-  private def createStyledText(content: String, textFont: Font, alignment: TextAlignment = TextAlignment.Left): Text =
+  private def createStyledText(
+      content: String,
+      textFont: Font,
+      alignment: TextAlignment = TextAlignment.Left
+  ): Text =
     new Text(content) {
       font = textFont
       textAlignment = alignment
@@ -137,7 +152,10 @@ object GameConfigurationScene extends Scene(1280, 720):
 
     radioButton
 
-  private def createDifficultyOption(label: String, radioButton: RadioButton): HBox =
+  private def createDifficultyOption(
+      label: String,
+      radioButton: RadioButton
+  ): HBox =
     new HBox {
       alignment = Pos.CenterLeft
       spacing = 16
@@ -152,7 +170,11 @@ object GameConfigurationScene extends Scene(1280, 720):
       alignment = Pos.Center
       spacing = 16
       children = Seq(
-        createStyledText("Game Configuration", Typography.titleFont, TextAlignment.Center)
+        createStyledText(
+          "Game Configuration",
+          Typography.titleFont,
+          TextAlignment.Center
+        )
       )
     }
 
@@ -198,12 +220,13 @@ object GameConfigurationScene extends Scene(1280, 720):
   private def handlePlay(): Unit =
     val selectedTheme = Option(themeComboBox.value.value).getOrElse("None")
 
-    val selectedDifficulty = Option(difficultyToggleGroup.selectedToggle.value).flatMap { toggle =>
-      if toggle == easyRadio.delegate then Some("Easy")
-      else if toggle == mediumRadio.delegate then Some("Medium")
-      else if toggle == hardRadio.delegate then Some("Hard")
-      else None
-    }.getOrElse("None")
+    val selectedDifficulty =
+      Option(difficultyToggleGroup.selectedToggle.value).flatMap { toggle =>
+        if toggle == easyRadio.delegate then Some("Easy")
+        else if toggle == mediumRadio.delegate then Some("Medium")
+        else if toggle == hardRadio.delegate then Some("Hard")
+        else None
+      }.getOrElse("None")
 
     println(s"Selected Theme: $selectedTheme")
     println(s"Selected Difficulty: $selectedDifficulty")

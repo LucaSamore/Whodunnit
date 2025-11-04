@@ -4,21 +4,21 @@ import sttp.client3.*
 import io.circe.generic.auto.*
 
 case class GroqRequest(
-                        messages: List[Message],
-                        model: String,
-                        temperature: Double = 0.7,
-                        max_tokens: Int = 4000
-                      )
+    messages: List[Message],
+    model: String,
+    temperature: Double = 0.7,
+    max_tokens: Int = 4000
+)
 
 case class Message(role: String, content: String)
 case class GroqResponse(choices: List[Choice])
 case class Choice(message: Message)
 
 class GroqLLMService(
-                      apiKey: String,
-                      model: String,
-                      backend: SttpBackend[Identity, Any]
-                    ) extends LLMService:
+    apiKey: String,
+    model: String,
+    backend: SttpBackend[Identity, Any]
+) extends LLMService:
 
   import sttp.client3.circe._
   import io.circe.syntax._

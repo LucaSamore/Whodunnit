@@ -1,11 +1,6 @@
 package model.casegeneration
 
-import Constraint.{
-  CaseFilesRange,
-  CharactersRange,
-  PrerequisitesRange,
-  Theme
-}
+import Constraint.{CaseFilesRange, CharactersRange, PrerequisitesRange, Theme}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -66,25 +61,25 @@ class ConstraintTest extends AnyWordSpec with Matchers:
       constraints should contain(PrerequisitesRange(2, 5))
       constraints should have size 3
 
-  "Constraint.toPromptDescription" should :
-    "describe Theme constraint" in :
+  "Constraint.toPromptDescription" should:
+    "describe Theme constraint" in:
       val theme = Theme("Murder Mystery")
       theme.toPromptDescription shouldBe "Theme: Murder Mystery"
 
-    "describe CharactersRange constraint" in :
+    "describe CharactersRange constraint" in:
       val range = CharactersRange(2, 4)
       range.toPromptDescription shouldBe "Number of characters: between 2 and 4"
 
-    "describe CaseFilesRange constraint" in :
+    "describe CaseFilesRange constraint" in:
       val range = CaseFilesRange(3, 8)
       range.toPromptDescription shouldBe "Number of case files: between 3 and 8"
 
-    "describe PrerequisitesRange constraint" in :
+    "describe PrerequisitesRange constraint" in:
       val range = PrerequisitesRange(1, 3)
       range.toPromptDescription shouldBe "Solution prerequisites: between 1 and 3"
 
-  "Constraint.expandConstraints" should :
-    "expand Easy difficulty to easy preset constraints without theme" in :
+  "Constraint.expandConstraints" should:
+    "expand Easy difficulty to easy preset constraints without theme" in:
       import Constraint.Difficulty.Easy
 
       val result = Constraint.expandConstraints(Seq(Theme("Murder"), Easy))
@@ -95,7 +90,7 @@ class ConstraintTest extends AnyWordSpec with Matchers:
       result should contain(PrerequisitesRange(1, 2))
       result should have size 4
 
-    "expand Medium difficulty to medium preset constraints" in :
+    "expand Medium difficulty to medium preset constraints" in:
       import Constraint.Difficulty.Medium
 
       val result = Constraint.expandConstraints(Seq(Medium))
@@ -105,7 +100,7 @@ class ConstraintTest extends AnyWordSpec with Matchers:
       result should contain(PrerequisitesRange(1, 3))
       result should have size 3
 
-    "expand Hard difficulty to hard preset constraints" in :
+    "expand Hard difficulty to hard preset constraints" in:
       import Constraint.Difficulty.Hard
 
       val result = Constraint.expandConstraints(Seq(Hard))
@@ -115,10 +110,10 @@ class ConstraintTest extends AnyWordSpec with Matchers:
       result should contain(PrerequisitesRange(2, 5))
       result should have size 3
 
-    "return only explicit constraints when no difficulty is provided" in :
+    "return only explicit constraints when no difficulty is provided" in:
       val result = Constraint.expandConstraints(
         Seq(Theme("Mystery"), CharactersRange(3, 5))
       )
 
-      result should contain only(Theme("Mystery"), CharactersRange(3, 5))
+      result should contain only (Theme("Mystery"), CharactersRange(3, 5))
       result should have size 2

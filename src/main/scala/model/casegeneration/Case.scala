@@ -16,7 +16,9 @@ object Case:
       solution: Solution
   ): Case = CaseImpl(plot, caseFiles, characters, solution)
 
-  def generate(constraints: Constraint*)(using cg: CaseGenerator): Either[GenerationError, Case] =
+  def generate(constraints: Constraint*)(using
+      cg: CaseGenerator
+  ): Either[GenerationError, Case] =
     val expandedConstraints = Constraint.expandConstraints(constraints)
     cg.generate(expandedConstraints*)
 

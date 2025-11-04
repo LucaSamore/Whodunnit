@@ -5,7 +5,8 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.EitherValues
 import org.scalamock.scalatest.MockFactory
 
-class LLMCaseGeneratorTest extends AnyWordSpec with Matchers with EitherValues with MockFactory:
+class LLMCaseGeneratorTest extends AnyWordSpec with Matchers with EitherValues
+    with MockFactory:
 
   "LLMCaseGenerator" when:
     "generating with valid LLM response" should:

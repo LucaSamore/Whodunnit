@@ -3,16 +3,16 @@
 layout: home
 
 hero:
-  name: "Whodunnit"
-  text: "Investigate, connect the clues and build the network of relationships to unveil the culprit in this detective game with adaptive AI support."
-  tagline: My great project tagline
+  name: "PPS-24-whodunnit"
+  text: "Whodunnit"
+  tagline: PPS Project
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: Report
+      link: report/0-introduction
     - theme: alt
-      text: API Examples
-      link: /api-examples
+      text: Coverage
+      link: https://coveralls.io/github/LuciaCastellucci/PPS-24-whodunnit
 
 features:
   - title: Feature A
@@ -22,4 +22,3 @@ features:
   - title: Feature C
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 ---
-

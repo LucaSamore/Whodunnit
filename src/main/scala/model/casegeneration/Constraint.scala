@@ -21,11 +21,12 @@ object Constraint:
         s"Number of case files: between $min and $max"
       case PrerequisitesRange(min, max) =>
         s"Solution prerequisites: between $min and $max"
+      case _: Difficulty => ""
 
   def expandConstraints(constraints: Seq[Constraint]): Seq[Constraint] =
     val (difficulties, others) = constraints.partition {
       case _: Difficulty => true
-      case _ => false
+      case _             => false
     }
 
     val expandedFromDifficulty = difficulties.headOption match

@@ -20,7 +20,7 @@ object JsonParser extends Parser:
   private def parseJson(input: String): Either[ParseError, CaseDTO] =
     Try(read[CaseDTO](input)) match
       case Success(dto) => Right(dto)
-      case Failure(e) => Left(handleJsonError(e))
+      case Failure(e)   => Left(handleJsonError(e))
 
   private def handleJsonError(e: Throwable): ParseError =
     val rootCause = getRootCause(e)
@@ -45,12 +45,21 @@ object JsonParser extends Parser:
 
   private def extractFieldName(errorMsg: String): String =
     val fieldPatterns = Map(
-      "plot" -> "plot", "characters" -> "characters", "files" -> "files",
-      "title" -> "title", "content" -> "content", "name" -> "name",
-      "role" -> "role", "kind" -> "kind", "solution" -> "solution",
-      "culprit" -> "culprit", "prerequisite" -> "prerequisite",
-      "firstEntity" -> "firstEntity", "secondEntity" -> "secondEntity",
-      "semantic" -> "semantic", "motive" -> "motive"
+      "plot" -> "plot",
+      "characters" -> "characters",
+      "files" -> "files",
+      "title" -> "title",
+      "content" -> "content",
+      "name" -> "name",
+      "role" -> "role",
+      "kind" -> "kind",
+      "solution" -> "solution",
+      "culprit" -> "culprit",
+      "prerequisite" -> "prerequisite",
+      "firstEntity" -> "firstEntity",
+      "secondEntity" -> "secondEntity",
+      "semantic" -> "semantic",
+      "motive" -> "motive"
     )
     fieldPatterns.find((_, pattern) => errorMsg.contains(pattern))
       .map(_._1)
@@ -65,11 +74,19 @@ object JsonParser extends Parser:
   private def parseTimestamp(tsStr: String): Option[LocalDateTime] =
     Try(LocalDateTime.parse(tsStr)).toOption
 
-  private def parseTimestampEither(tsStr: String): Either[ParseError, LocalDateTime] =
-    parseTimestamp(tsStr).toRight(InvalidFieldError("file.date", s"Invalid timestamp: $tsStr"))
+  private def parseTimestampEither(tsStr: String)
+      : Either[ParseError, LocalDateTime] =
+    parseTimestamp(tsStr).toRight(InvalidFieldError(
+      "file.date",
+      s"Invalid timestamp: $tsStr"
+    ))
 
-  private def validateNonEmpty[A](set: Set[A], name: String): Either[ParseError, Set[A]] =
-    if set.isEmpty then Left(InvalidFieldError(name, "must not be empty")) else Right(set)
+  private def validateNonEmpty[A](
+      set: Set[A],
+      name: String
+  ): Either[ParseError, Set[A]] =
+    if set.isEmpty then Left(InvalidFieldError(name, "must not be empty"))
+    else Right(set)
 
   private given CaseDTOOps: AnyRef with
     extension (dto: CaseDTO)
@@ -89,56 +106,114 @@ object JsonParser extends Parser:
     extension (dto: PlotDTO)
       def toPlot: Either[ParseError, Plot] =
         for {
-          _ <- Either.cond(dto.title.nonEmpty, (), InvalidFieldError("plot.title", "must not be empty"))
-          _ <- Either.cond(dto.content.nonEmpty, (), InvalidFieldError("plot.content", "must not be empty"))
+          _ <- Either.cond(
+            dto.title.nonEmpty,
+            (),
+            InvalidFieldError("plot.title", "must not be empty")
+          )
+          _ <- Either.cond(
+            dto.content.nonEmpty,
+            (),
+            InvalidFieldError("plot.content", "must not be empty")
+          )
         } yield Plot(dto.title, dto.content)
 
   private given CharacterDTOOps: AnyRef with
     extension (dto: CharacterDTO)
       def toCharacter: Either[ParseError, Character] =
         for {
-          _ <- Either.cond(dto.name.nonEmpty, (), InvalidFieldError("character.name", "must not be empty"))
-          roleValue <- parseRole(dto.role).toRight(InvalidFieldError("character.role", s"Unknown role: ${dto.role}"))
+          _ <- Either.cond(
+            dto.name.nonEmpty,
+            (),
+            InvalidFieldError("character.name", "must not be empty")
+          )
+          roleValue <- parseRole(dto.role).toRight(InvalidFieldError(
+            "character.role",
+            s"Unknown role: ${dto.role}"
+          ))
         } yield Character(dto.name, roleValue)
 
   private given CaseFileDTOOps: AnyRef with
     extension (dto: CaseFileDTO)
       def toCaseFile(characters: Set[Character]): Either[ParseError, CaseFile] =
         for {
-          _ <- Either.cond(dto.title.nonEmpty, (), InvalidFieldError("file.title", "must not be empty"))
-          _ <- Either.cond(dto.content.nonEmpty, (), InvalidFieldError("file.content", "must not be empty"))
-          fileType <- parseFileType(dto.kind).toRight(InvalidFieldError("file.kind", s"Unknown type: ${dto.kind}"))
+          _ <- Either.cond(
+            dto.title.nonEmpty,
+            (),
+            InvalidFieldError("file.title", "must not be empty")
+          )
+          _ <- Either.cond(
+            dto.content.nonEmpty,
+            (),
+            InvalidFieldError("file.content", "must not be empty")
+          )
+          fileType <- parseFileType(dto.kind).toRight(InvalidFieldError(
+            "file.kind",
+            s"Unknown type: ${dto.kind}"
+          ))
           validatedSender <- validateCharacter(dto.sender, characters, "sender")
-          validatedReceiver <- validateCharacter(dto.receiver, characters, "receiver")
+          validatedReceiver <-
+            validateCharacter(dto.receiver, characters, "receiver")
           timestamp <- dto.date.traverse(parseTimestampEither)
-        } yield CaseFile(dto.title, dto.content, fileType, validatedSender, validatedReceiver, timestamp)
+        } yield CaseFile(
+          dto.title,
+          dto.content,
+          fileType,
+          validatedSender,
+          validatedReceiver,
+          timestamp
+        )
 
-      private def validateCharacter(name: Option[String], characters: Set[Character], field: String): Either[ParseError, Option[Character]] =
+      private def validateCharacter(
+          name: Option[String],
+          characters: Set[Character],
+          field: String
+      ): Either[ParseError, Option[Character]] =
         name.traverse { n =>
-          characters.find(_.name == n).toRight(InvalidFieldError(s"file.$field", s"Character '$n' not found"))
+          characters.find(_.name == n).toRight(InvalidFieldError(
+            s"file.$field",
+            s"Character '$n' not found"
+          ))
         }
 
   private given SolutionDTOOps: AnyRef with
     extension (dto: SolutionDTO)
-      def toSolution(characters: Set[Character], files: Set[CaseFile]): Either[ParseError, CaseSolution] =
+      def toSolution(
+          characters: Set[Character],
+          files: Set[CaseFile]
+      ): Either[ParseError, CaseSolution] =
         for {
           culpritChar <- characters.find(_.name == dto.culprit)
-            .toRight(InvalidFieldError("solution.culprit", s"Character '${dto.culprit}' not found"))
-          prerequisites <- dto.prerequisite.traverse(_.toKGPrerequisite(characters, files))
+            .toRight(InvalidFieldError(
+              "solution.culprit",
+              s"Character '${dto.culprit}' not found"
+            ))
+          prerequisites <-
+            dto.prerequisite.traverse(_.toKGPrerequisite(characters, files))
         } yield CaseSolution(prerequisites.toSet, culpritChar, dto.motive)
 
   private given PrerequisiteDTOOps: AnyRef with
     extension (dto: PrerequisiteDTO)
-      def toKGPrerequisite(characters: Set[Character], files: Set[CaseFile]): Either[ParseError, KGPrerequisite] =
+      def toKGPrerequisite(
+          characters: Set[Character],
+          files: Set[CaseFile]
+      ): Either[ParseError, KGPrerequisite] =
         for {
           first <- resolveEntity(dto.firstEntity, characters, files)
           second <- resolveEntity(dto.secondEntity, characters, files)
         } yield KGPrerequisite(first, second, dto.semantic)
 
-      private def resolveEntity(name: String, characters: Set[Character], files: Set[CaseFile]): Either[ParseError, Character | CaseFile] =
+      private def resolveEntity(
+          name: String,
+          characters: Set[Character],
+          files: Set[CaseFile]
+      ): Either[ParseError, Character | CaseFile] =
         characters.find(_.name == name)
           .orElse(files.find(_.title == name))
-          .toRight(InvalidFieldError("solution.prerequisite", s"Entity '$name' not found"))
+          .toRight(InvalidFieldError(
+            "solution.prerequisite",
+            s"Entity '$name' not found"
+          ))
           .asInstanceOf[Either[ParseError, Character | CaseFile]]
 
 sealed trait ParseError:

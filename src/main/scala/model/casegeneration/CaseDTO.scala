@@ -3,32 +3,32 @@ package model.casegeneration
 import upickle.default.*
 
 case class CaseDTO(
-                    plot: PlotDTO,
-                    characters: List[CharacterDTO],
-                    files: List[CaseFileDTO],
-                    solution: SolutionDTO
-                  )
+    plot: PlotDTO,
+    characters: List[CharacterDTO],
+    files: List[CaseFileDTO],
+    solution: SolutionDTO
+)
 
 case class PlotDTO(title: String, content: String)
 case class CharacterDTO(name: String, role: String)
 case class CaseFileDTO(
-                        title: String,
-                        kind: String,
-                        sender: Option[String] = None,
-                        receiver: Option[String] = None,
-                        date: Option[String] = None,
-                        content: String
-                      )
+    title: String,
+    kind: String,
+    sender: Option[String] = None,
+    receiver: Option[String] = None,
+    date: Option[String] = None,
+    content: String
+)
 case class SolutionDTO(
-                        prerequisite: List[PrerequisiteDTO],
-                        culprit: String,
-                        motive: String
-                      )
+    prerequisite: List[PrerequisiteDTO],
+    culprit: String,
+    motive: String
+)
 case class PrerequisiteDTO(
-                            firstEntity: String,
-                            secondEntity: String,
-                            semantic: String
-                          )
+    firstEntity: String,
+    secondEntity: String,
+    semantic: String
+)
 
 object CaseDTO {
   given ReadWriter[PlotDTO] = macroRW
