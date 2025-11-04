@@ -19,4 +19,4 @@ object CaseGenerationModel:
         IO(generator.generate(constraints*))
 
       def parseCaseFromJson(json: String): Either[ParseError, Case] =
-        ???
+        parser.parse(json)
