@@ -2,15 +2,16 @@ package model.knowledgegraph
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import GraphUtils._
 
-class BaseGraphTest extends AnyWordSpec with Matchers:
+class BaseOrientedGraphTest extends AnyWordSpec with Matchers:
 
-  private def graph: BaseGraph { type Node = Int; type Edge = String } =
-    new BaseGraph:
+  private def graph: BaseOrientedGraph { type Node = Int; type Edge = String } =
+    new BaseOrientedGraph:
       override type Node = Int
       override type Edge = String
 
-  "A BaseGraph" when:
+  "A BaseOrientedGraph" when:
     "created" should:
       "be initially empty" in:
         graph.isEmpty shouldBe true
@@ -20,6 +21,9 @@ class BaseGraphTest extends AnyWordSpec with Matchers:
 
       "contain one node after adding it" in:
         graph.withNodes(1).nodes.size shouldBe 1
+
+      "have density conventionally equals to zero" in:
+        graph.density shouldBe 0
 
     "querying out edges" should:
       "be empty for an orphan node" in:
@@ -50,6 +54,9 @@ class BaseGraphTest extends AnyWordSpec with Matchers:
           "test",
           2
         ).withEdge(1, "test", 2).outEdges(1).size shouldBe 1
+
+      "have density greater than zero" in:
+        graph.withNodes(1, 2).withEdge(1, "test", 2).density should be > 0.0
 
     "removing nodes" should:
       "make graph empty when it was the only node" in:
