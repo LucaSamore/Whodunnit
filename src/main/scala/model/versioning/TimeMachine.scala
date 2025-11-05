@@ -13,19 +13,19 @@ case class GameTimeMachine[S: Snapshottable](
     private var currentSnapshot: Option[Snapshot[S]] = None
 ) extends TimeMachine[S]:
 
-  def save(state: S): Unit =
+  override def save(state: S): Unit =
     currentSnapshot = Some(Snapshot(state))
 
-  def restore(): Option[S] =
+  override def restore(): Option[S] =
     currentSnapshot.map(Snapshot.restore)
 
-  def hasSnapshot: Boolean = currentSnapshot.isDefined
+  override def hasSnapshot: Boolean = currentSnapshot.isDefined
 
-  def clear(): Unit =
+  override def clear(): Unit =
     currentSnapshot = None
 
-  def snapshotTime: Option[LocalDateTime] =
-    currentSnapshot.flatMap(snapshot => Some(snapshot.timestamp))
+  override def snapshotTime: Option[LocalDateTime] =
+    currentSnapshot.flatMap(snapshot => Some(snapshot.createdAt))
 
 object GameTimeMachine:
   def apply[S: Snapshottable](): TimeMachine[S] =

@@ -4,7 +4,7 @@ trait Buffer:
   type Element
   val capacity: Int
   def isEmpty: Boolean
-  def elements: List[Element]
+  def elements: Seq[Element]
   def set(index: Int, element: Element): Unit
   def push(element: Element): Unit
   def replaceOnFull(element: Element): Unit
@@ -22,7 +22,7 @@ abstract class BaseBuffer[E](override val capacity: Int)(using
 
   override def isEmpty: Boolean = _size == 0
 
-  override def elements: List[E] = buffer.take(_size).flatten.toList
+  override def elements: Seq[E] = buffer.take(_size).flatten
 
   override def set(index: Int, element: E): Unit =
     buffer(index) = Some(element)
@@ -47,11 +47,11 @@ trait CircularBuffer extends Buffer:
     set(head, element)
     head = (head + 1) % capacity
 
-  abstract override def elements: List[Element] =
+  abstract override def elements: Seq[Element] =
     if size < capacity then
       super.elements
     else
-      (0 until capacity).map(i => super.elements((head + i) % capacity)).toList
+      (0 until capacity).map(i => super.elements((head + i) % capacity))
 
 trait Navigability:
   self: Buffer =>

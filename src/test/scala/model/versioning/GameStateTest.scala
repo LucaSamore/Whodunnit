@@ -1,6 +1,7 @@
 package model.versioning
 
 import model.versioning.Snapshot.Snapshotters.given_Snapshottable_History
+import model.versioning.Snapshot.SnapshotImpl
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
