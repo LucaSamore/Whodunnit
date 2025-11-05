@@ -32,3 +32,13 @@ class HintEngineTest extends AnyFlatSpec with Matchers with GivenWhenThen:
 
     Then("the check should evaluate to true")
     check.eval(history) shouldBe true
+
+  it should "evaluate to false when condition does not match" in:
+    Given("a history of graphs with incrementing density")
+    val history = List(graph.withNodes(1, 2, 3))
+
+    When("checking if density is increasing")
+    val check = when(density) is Increasing
+
+    Then("the check should evaluate to false")
+    check.eval(history) shouldBe false
