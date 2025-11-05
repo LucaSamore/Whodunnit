@@ -17,7 +17,7 @@ final case class MetricCheck[T](eval: List[T] => Boolean):
 final case class Rule[T](condition: MetricCheck[T], hint: Hint)
 
 final case class MetricExpr[T](compute: T => MetricValue):
-  infix def is(trend: Trend)(using analyzer: TrendAnalyzer): MetricCheck[T] =
+  infix def ==(trend: Trend)(using analyzer: TrendAnalyzer): MetricCheck[T] =
     MetricCheck[T] { history =>
       val values = history.map(compute)
       analyzer.analyze(values) == trend
