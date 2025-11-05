@@ -2,7 +2,7 @@ package model
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import model.casegeneration.TestUtils.mockCase
+import utils.TestUtils.mockCase
 
 class GameStateTest extends AnyWordSpec with Matchers:
 

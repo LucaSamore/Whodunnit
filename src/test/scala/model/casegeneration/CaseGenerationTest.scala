@@ -1,11 +1,9 @@
 package model.casegeneration
 
+import utils.TestUtils.mockCase
 import cats.effect.unsafe.implicits.global
-import model.casegeneration.TestUtils.mockCase
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-
-import java.time.LocalDateTime
 
 class CaseGenerationTest extends AnyWordSpec with Matchers:
 

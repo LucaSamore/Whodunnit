@@ -1,7 +1,6 @@
 package model.casegeneration
 
 import cats.effect.IO
-import cats.syntax.all.*
 
 trait CaseGenerationModel:
   def generateCase(constraints: Seq[Constraint])
