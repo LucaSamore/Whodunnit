@@ -1,33 +1,13 @@
 package model.casegeneration
 
 import cats.effect.unsafe.implicits.global
+import model.casegeneration.TestUtils.mockCase
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 import java.time.LocalDateTime
 
 class CaseGenerationTest extends AnyWordSpec with Matchers:
-
-  private val mockPlot = Plot("Plot Title", "Plot Content")
-  private val mockCaseFiles = Set(CaseFile(
-    "title",
-    "content",
-    CaseFileType.Message,
-    None,
-    None,
-    Some(LocalDateTime.now())
-  ))
-  private val mockCharacters = Set(
-    Character("John Doe", CaseRole.Suspect),
-    Character("Jane Smith", CaseRole.Victim)
-  )
-  private val mockSolution = CaseSolution(
-    Set(),
-    Character("John Doe", CaseRole.Suspect),
-    "Motive description"
-  )
-  private val mockCase =
-    Case(mockPlot, mockCaseFiles, mockCharacters, mockSolution)
 
   "CaseGenerationModel" when:
     "generateCase is called" should:
