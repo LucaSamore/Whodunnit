@@ -5,15 +5,6 @@ import model.knowledgegraph.CaseKnowledgeGraph
 
 object ModelModule:
 
-  // Placeholder State class
-  // TODO: Replace with actual state properties
-  case class State(
-      currentCase: Option[Case] = None,
-      knowledgeGraph: Option[CaseKnowledgeGraph] = None,
-      isLoading: Boolean = false,
-      error: Option[String] = None
-  )
-
   trait Model[S]:
     def createNothing(): Unit
 
