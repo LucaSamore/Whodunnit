@@ -6,28 +6,20 @@ trait Case:
   def caseFiles: Set[CaseFile]
   def solution: Solution
 
-final case class Plot(title: String, content: String)
+private final case class CaseImpl(
+    plot: Plot,
+    caseFiles: Set[CaseFile],
+    characters: Set[Character],
+    solution: Solution
+) extends Case
 
 object Case:
-  def apply(
-      plot: Plot,
-      caseFiles: Set[CaseFile],
-      characters: Set[Character],
-      solution: Solution
-  ): Case = CaseImpl(plot, caseFiles, characters, solution)
+  def apply(constraints: Constraint*)(using
+      producer: Producer[Case]
+  ): Either[ProductionError, Case] =
+    producer.produce(constraints*)
 
-  def generate(constraints: Constraint*)(using
-      cg: CaseGenerator
-  ): Either[GenerationError, Case] =
-    val expandedConstraints = Constraint.expandConstraints(constraints)
-    cg.generate(expandedConstraints*)
-
-  private case class CaseImpl(
-      plot: Plot,
-      caseFiles: Set[CaseFile],
-      characters: Set[Character],
-      solution: Solution
-  ) extends Case
+final case class Plot(title: String, content: String)
 
 sealed trait Solution:
   def culprit: Character
