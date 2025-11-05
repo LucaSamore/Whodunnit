@@ -29,7 +29,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
       val maxSize = 3
       val originalHistory = GameHistory(maxSize)
       case class MockKnowledgeGraph(id: Int) extends KnowledgeGraph:
-        def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
+        override def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
       val kg2 = MockKnowledgeGraph(2)
       originalHistory.addState(MockKnowledgeGraph(1))
       originalHistory.addState(kg2)
@@ -41,7 +41,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
       val maxSize = 3
       val originalHistory = GameHistory(maxSize)
       case class MockKnowledgeGraph(id: Int) extends KnowledgeGraph:
-        def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
+        override def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
       val kg1 = MockKnowledgeGraph(1)
       originalHistory.addState(kg1)
       originalHistory.addState(MockKnowledgeGraph(2))
@@ -53,7 +53,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
       val maxSize = 3
       val originalHistory = GameHistory(maxSize)
       case class MockKnowledgeGraph(id: Int) extends KnowledgeGraph:
-        def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
+        override def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
       val kg2 = MockKnowledgeGraph(2)
       originalHistory.addState(MockKnowledgeGraph(1))
       originalHistory.addState(kg2)
@@ -68,7 +68,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
       val maxSize = 3
       val originalHistory = GameHistory(maxSize)
       case class MockKnowledgeGraph(id: Int) extends KnowledgeGraph:
-        def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
+        override def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
 
       val kg1 = MockKnowledgeGraph(1)
       val kg2 = MockKnowledgeGraph(2)
@@ -98,7 +98,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
 
   "A game Time Machine" when:
     "newly created" should:
-      val timeMachine = HistoryTimeMachine[History]()
+      val timeMachine = GameTimeMachine[History]()
 
       "have no snapshot" in:
         timeMachine.hasSnapshot shouldBe false
@@ -107,13 +107,13 @@ class GameStateTest extends AnyWordSpec with Matchers:
       val maxSize = 5
       val gameHistory = GameHistory(maxSize)
       val snapshot = Snapshot(gameHistory, LocalDateTime.now())
-      val timeMachine = HistoryTimeMachine[History](Some(snapshot))
+      val timeMachine = GameTimeMachine[History](Some(snapshot))
 
       "have a snapshot" in:
         timeMachine.hasSnapshot shouldBe true
 
     "a snapshot is taken" should:
-      val timeMachine = HistoryTimeMachine[History]()
+      val timeMachine = GameTimeMachine[History]()
       val maxSize = 5
       val gameHistory = GameHistory(maxSize)
       val beforeSnapshot = LocalDateTime.now()
@@ -134,7 +134,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
         ) shouldBe true
 
     "a snapshot is cleared" should:
-      val timeMachine = HistoryTimeMachine[History]()
+      val timeMachine = GameTimeMachine[History]()
       val maxSize = 5
       val gameHistory = GameHistory(maxSize)
       timeMachine.save(gameHistory)
@@ -144,7 +144,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
         timeMachine.hasSnapshot shouldBe false
 
     "a snapshot is restored" should:
-      val timeMachine = HistoryTimeMachine[History]()
+      val timeMachine = GameTimeMachine[History]()
       val maxSize = 5
       val gameHistory = GameHistory(maxSize)
       timeMachine.save(gameHistory)
@@ -160,14 +160,14 @@ class GameStateTest extends AnyWordSpec with Matchers:
       "preserve the state if modified after snapshot" in:
         val modifiedHistory = gameHistory.deepCopy()
         case class MockKnowledgeGraph(id: Int) extends KnowledgeGraph:
-          def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
+          override def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
         modifiedHistory.addState(MockKnowledgeGraph(1))
         modifiedHistory should not equal gameHistory
         val restoredAfterModification = timeMachine.restore()
         restoredAfterModification shouldBe Some(gameHistory)
 
     "restoring without a snapshot" should:
-      val timeMachine = HistoryTimeMachine[History]()
+      val timeMachine = GameTimeMachine[History]()
       val restoredHistory = timeMachine.restore()
       "return None" in:
         restoredHistory shouldBe None
