@@ -17,3 +17,8 @@ class GameStateTest extends AnyWordSpec with Matchers:
       "have all fields as None" in:
         val gameState = GameState.empty()
         gameState shouldEqual emptyGameState
+
+      "initialized" should:
+        "have all fields properly set" in:
+          val gameState = GameState.initialize(mockCase, timer = 60)
+          gameState shouldEqual initializedGameState
