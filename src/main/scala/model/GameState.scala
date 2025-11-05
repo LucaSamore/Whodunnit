@@ -9,6 +9,10 @@ import model.versioning.Snapshot.Snapshotters.given_Snapshottable_History
 type Timer = Int
 type Hint = Set[String]
 
+trait State:
+  def getState: GameState
+  def reset: GameState
+
 case class GameState(
     var investigativeCase: Option[Case],
     var graph: Option[Graph],
@@ -16,7 +20,11 @@ case class GameState(
     var timeMachine: Option[TimeMachine[History]],
     var hints: Option[Seq[Hint]],
     var timer: Option[Timer]
-)
+) extends State:
+  override def getState: GameState = this
+
+  override def reset: GameState =
+    GameState.empty()
 
 object GameState:
   def empty(): GameState =
