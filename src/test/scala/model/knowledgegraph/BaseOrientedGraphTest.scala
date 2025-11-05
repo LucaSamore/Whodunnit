@@ -2,7 +2,7 @@ package model.knowledgegraph
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import GraphUtils._
+import model.hint.Metric.density
 
 class BaseOrientedGraphTest extends AnyWordSpec with Matchers:
 

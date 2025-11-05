@@ -5,6 +5,7 @@ import model.knowledgegraph.CaseKnowledgeGraph
 type KnowledgeGraph = CaseKnowledgeGraph
 
 trait History:
+  def states: List[KnowledgeGraph]
   def addState(kg: KnowledgeGraph): Unit
   def undo(): Option[KnowledgeGraph]
   def redo(): Option[KnowledgeGraph]
@@ -15,6 +16,9 @@ case class GameHistory(
     private val historySize: Int,
     private val timeline: RingNavigableBuffer[KnowledgeGraph]
 ) extends History:
+
+  override def states: List[KnowledgeGraph] = timeline.elements
+
   def addState(kg: KnowledgeGraph): Unit =
     timeline.push(kg)
 
