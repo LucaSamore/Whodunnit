@@ -1,7 +1,7 @@
 package view
 
 import model.casegeneration.{CaseFile, Character, CustomEntity, Entity}
-import model.{CaseKnowledgeGraph, Link}
+import model.knowledgegraph.{CaseKnowledgeGraph, Link}
 import scalafx.Includes.*
 import scalafx.geometry.{Insets, Point2D, Pos}
 import scalafx.scene.image.{Image, ImageView}

@@ -1,6 +1,7 @@
-package model
+package model.knowledgegraph
 
 import model.casegeneration.Entity
+import model.*
 
 import scala.collection.mutable
 
@@ -26,7 +27,7 @@ trait Graph:
     this
 
 abstract class BaseGraph extends Graph:
-  private val data = mutable.Map[Node, List[(Node, Edge)]]()
+  protected val data = mutable.Map[Node, List[(Node, Edge)]]()
 
   override def nodes: Set[Node] = data.keys.toSet
 
@@ -68,4 +69,17 @@ case class Link(semantic: String)
 
 class CaseKnowledgeGraph extends BaseGraph
     with KnowledgeGraph
-    with CaseNodesAndEdges
+    with CaseNodesAndEdges:
+  def deepCopy(): CaseKnowledgeGraph =
+    val newGraph = new CaseKnowledgeGraph
+    nodes.foreach(newGraph.addNode)
+    nodes
+      .flatMap(n1 =>
+        outEdges(n1).flatMap(e =>
+          nodes
+            .filter(n2 => data.get(n1).exists(_.contains((n2, e))))
+            .map((n1, e, _))
+        )
+      )
+      .foreach { case (n1, e, n2) => newGraph.addEdge(n1, e, n2) }
+    newGraph
