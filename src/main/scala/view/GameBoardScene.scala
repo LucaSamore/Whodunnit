@@ -10,6 +10,7 @@ import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight}
+import scalafx.scene.shape.Circle
 
 //class GameBoardScene(knowledgeGraph: CaseKnowledgeGraph) extends Scene(1280, 720):
 class GameBoardScene extends Scene(1280, 720):
@@ -51,6 +52,23 @@ class GameBoardScene extends Scene(1280, 720):
     viewDimensions = (sceneWidth, sceneHeight)
   )
 
+  private val notificationsPanel = NotificationsPanel(iconsFont)
+
+  private val notificationBadge = new StackPane:
+    prefWidth = 22
+    prefHeight = 22
+    translateX = 25
+    translateY = -30
+    mouseTransparent = true
+    visible = true
+    private val circle = new Circle:
+      radius = 8
+      fill = Color.Red
+      stroke = Color.White
+      strokeWidth = 2
+
+    children = Seq(circle)
+
   private def createIconButton(
       description: String,
       iconImage: Image,
@@ -85,10 +103,15 @@ class GameBoardScene extends Scene(1280, 720):
     60,
     60,
     () => {
-      println("Notifications button clicked")
-      // Handle notifications action here
+      notificationsPanel.toggleVisibility()
+      notificationBadge.visible = false
     }
   )
+
+  private val notificationsButtonContainer = new StackPane:
+    alignment = Pos.TopCenter
+    children = Seq(notificationsButton, notificationBadge)
+
   private val cluesButton = createIconButton(
     "Clues",
     documentsIconImage,
@@ -170,7 +193,7 @@ class GameBoardScene extends Scene(1280, 720):
         minHeight = topBarHeight
         alignment = Pos.CenterLeft
         padding = Insets(topPadding, 10, 0, 70)
-        children = Seq(notificationsButton)
+        children = Seq(notificationsButtonContainer)
       center = new HBox:
         minWidth = boxWidth
         minHeight = topBarHeight
@@ -191,6 +214,11 @@ class GameBoardScene extends Scene(1280, 720):
           prefWidth = sceneWidth
           prefHeight = sceneHeight
           children = Seq(graphView)
+        ,
+        new StackPane:
+          alignment = Pos.TopLeft
+          padding = Insets(topBarHeight - 190, 0, 0, 70)
+          children = Seq(notificationsPanel)
       )
 
     bottom = new BorderPane:
