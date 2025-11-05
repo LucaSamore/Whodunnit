@@ -1,7 +1,6 @@
-package model.casegeneration
+/*package model.casegeneration
 
 import cats.effect.IO
-import cats.syntax.all.*
 
 trait CaseGenerationModel:
   def generateCase(constraints: Seq[Constraint])
@@ -19,4 +18,4 @@ object CaseGenerationModel:
         IO(generator.generate(constraints*))
 
       def parseCaseFromJson(json: String): Either[ParseError, Case] =
-        parser.parse(json)
+        parser.parse(json)*/

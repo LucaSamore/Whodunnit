@@ -15,36 +15,8 @@ import scalafx.scene.text.{Font, FontWeight}
 class GameBoardScene extends Scene(1280, 720):
 
   import Config.*
-
-  /* Mock data for testing purposes */
-  private object MockData:
-    val mike: Character = Character("Mike", CaseRole.Suspect)
-    val frank: Character = Character("Frank", CaseRole.Victim)
-    val chatMikeFrank: CaseFile = CaseFile(
-      title = "Chat: Mike-Frank",
-      content = "...",
-      kind = CaseFileType.Message,
-      sender = Some(mike),
-      receiver = None,
-      date = None
-    )
-    val mockCase: Case = Case(
-      plot = Plot("Mock case", "Content test"),
-      characters = Set(mike, frank),
-      caseFiles = Set(chatMikeFrank),
-      solution = CaseSolution(Set.empty, culprit = mike, motive = "Test.")
-    )
-
-  private val mockKnowledgeGraph = CaseKnowledgeGraph()
-  mockInitializeKnowledgeGraph()
-  private def mockInitializeKnowledgeGraph(): Unit =
-    val mike = MockData.mockCase.characters.find(_.name == "Mike").get
-    val frank = MockData.mockCase.characters.find(_.name == "Frank").get
-    mockKnowledgeGraph.addNode(mike)
-    mockKnowledgeGraph.addNode(frank)
-    mockKnowledgeGraph.addEdge(mike, Link("informed"), frank)
-
-  /* End of mock data */
+  
+  val mockKnowledgeGraph = CaseKnowledgeGraph()
 
   private val graphView = KnowledgeGraphView(
     mockKnowledgeGraph,

@@ -1,4 +1,6 @@
-package model.casegeneration
+package utils
+
+import model.casegeneration.*
 
 import java.time.LocalDateTime
 

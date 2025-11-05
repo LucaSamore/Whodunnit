@@ -2,7 +2,7 @@ package model
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import model.casegeneration.TestUtils.mockCase
+import utils.TestUtils.mockCase
 
 class GameStateTest extends AnyWordSpec with Matchers:
 
@@ -18,12 +18,12 @@ class GameStateTest extends AnyWordSpec with Matchers:
         val gameState = GameState.empty()
         gameState shouldEqual emptyGameState
 
-      "initialized" should:
-        "have all fields properly set" in:
-          val gameState = GameState.initialize(mockCase, timer = 60)
-          gameState shouldEqual initializedGameState
+    "initialized" should:
+      "have all fields properly set" in:
+        val gameState = GameState.initialize(mockCase, timer = 60)
+        gameState shouldEqual initializedGameState
 
-      "reset" should:
-        "return an empty GameState" in:
-          val resetState = initializedGameState.reset
-          resetState shouldEqual emptyGameState
+    "reset" should:
+      "return an empty GameState" in:
+        val resetState = initializedGameState.reset
+        resetState shouldEqual emptyGameState
