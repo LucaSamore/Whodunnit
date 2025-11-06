@@ -1,5 +1,6 @@
 package view
 
+import controller.ControllerModule.Controller
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
@@ -9,7 +10,7 @@ import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, Text, TextAlignment}
 
-object GameConfigurationScene extends Scene(1280, 720):
+class GameConfigurationScene(controller: Controller[model.State]) extends Scene(1280, 720):
 
   private object Theme:
     val primaryColor: Color = Color.rgb(30, 30, 30, 0.75)
@@ -67,7 +68,7 @@ object GameConfigurationScene extends Scene(1280, 720):
     prefHeight = 48
     minHeight = 48
     promptText = "Choose a theme"
-    items = ObservableBuffer("Option 1", "Option 2", "Option 3")
+    items = ObservableBuffer("Spy", "Detective", "Computer Science", "Classic")
     style =
       Styles.borderedBox() + s"-fx-font-family: '${Typography.sectionFont.getName}';"
   }
@@ -215,7 +216,7 @@ object GameConfigurationScene extends Scene(1280, 720):
 
   private def handleCancel(): Unit =
     println("Cancel button clicked")
-    WhodunnitApp.changeScene(new HomepageScene)
+    WhodunnitApp.changeScene(new HomepageScene(controller))
 
   private def handlePlay(): Unit =
     val selectedTheme = Option(themeComboBox.value.value).getOrElse("None")
@@ -228,8 +229,11 @@ object GameConfigurationScene extends Scene(1280, 720):
         else None
       }.getOrElse("None")
 
-    println(s"Selected Theme: $selectedTheme")
-    println(s"Selected Difficulty: $selectedDifficulty")
+    println(s"[View] Selected Theme: $selectedTheme")
+    println(s"[View] Selected Difficulty: $selectedDifficulty")
+
+    controller.onPlayClicked(selectedDifficulty, selectedTheme)
+    WhodunnitApp.changeScene(new GameBoardScene())
 
   private def createActionButton(label: String, onClick: => Unit): Button =
     new Button(label) {

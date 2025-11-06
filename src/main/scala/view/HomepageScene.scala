@@ -17,8 +17,10 @@ import scalafx.scene.layout.{
 }
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight, Text, TextAlignment}
+import controller.ControllerModule.*
 
-class HomepageScene extends Scene(1280, 720):
+class HomepageScene(controller: Controller[model.State])
+  extends Scene(1280, 720):
 
   import Config._
 
@@ -61,8 +63,9 @@ class HomepageScene extends Scene(1280, 720):
         -fx-background-radius: 35;
       """
     onAction = _ => {
-      println("Play Now clicked - Changing to Game scene")
-      WhodunnitApp.changeScene(GameConfigurationScene)
+      println("[View] Play Now clicked - Changing to Game scene")
+      controller.onPlayNowClicked()
+      WhodunnitApp.changeScene(GameConfigurationScene(controller))
     }
 
   private val resumeButton = new Button("Resume Game"):
