@@ -6,7 +6,12 @@ object ControllerModule:
 
   trait Controller[S]:
     def onPlayNowClicked(): Unit
-    def onPlayClicked(difficulty: String, theme: String): Unit
+    def onPlayClicked(
+        difficulty: String,
+        theme: String,
+        onSuccess: () => Unit,
+        onError: String => Unit
+    ): Unit
 
   trait Provider[S]:
     val controller: Controller[S]
@@ -24,7 +29,12 @@ object ControllerModule:
       def onPlayNowClicked(): Unit =
         println("[Controller] Play Now button clicked!")
 
-      def onPlayClicked(difficulty: String, theme: String): Unit =
+      def onPlayClicked(
+          difficulty: String,
+          theme: String,
+          onSuccess: () => Unit,
+          onError: String => Unit
+      ): Unit =
         println(
           s"[Controller] Play clicked with difficulty: $difficulty and theme: $theme"
         )
@@ -36,19 +46,23 @@ object ControllerModule:
           case "Hard"   => Constraint.Difficulty.Hard
           case _        => Constraint.Difficulty.Easy
 
-        // Ora la generazione è delegata completamente al model
         context.model.generateNewCase(
           themeOption,
           difficultyConstraint
         ).unsafeRunAsync {
-          case Right(Right(generatedCase)) =>
-            println(
-              s"[Controller] Case generato con successo: ${generatedCase.plot.title}"
-            )
-          case Right(Left(error)) =>
-            println(s"[Controller] Errore durante la generazione: $error")
+          case Right(result) =>
+            result match
+              case Right(generatedCase) =>
+                println(
+                  s"[Controller] Case generated successfully: ${generatedCase.plot.title}"
+                )
+                onSuccess()
+              case Left(error) =>
+                println(s"[Controller] Error during generation: $error")
+                onError(error.message)
           case Left(exception) =>
-            println(s"[Controller] Eccezione: ${exception.getMessage}")
+            println(s"[Controller] Exception: ${exception.getMessage}")
+            onError(s"Exception: ${exception.getMessage}")
         }
 
   trait Interface[S] extends Provider[S] with Component[S]:
