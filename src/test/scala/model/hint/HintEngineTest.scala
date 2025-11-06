@@ -49,10 +49,26 @@ class HintEngineTest extends AnyFlatSpec with Matchers with GivenWhenThen:
       graph.withNodes(1, 2, 3).withEdge(1, "link1", 2),
       graph.withNodes(1, 2, 3)
     )
+    val coverage = coverageFor(reference)
 
     When("checking both conditions with 'and'")
-    val coverage = coverageFor(reference)
     val check = when(coverage) == Increasing and when(density) == Worsening
 
     Then("the combined check should evaluate to true")
+    check.eval(history) shouldBe true
+
+  it should "work with 'or' operator" in:
+    Given("a history with increasing coverage and stable density")
+    val reference = graph.withNodes(1)
+    val history = List(
+      graph.withNodes(1, 2, 3),
+      graph.withNodes(1, 2),
+      graph.withNodes(1)
+    )
+    val coverage = coverageFor(reference)
+
+    When("checking with 'or' where one condition is true")
+    val check = when(coverage) == Increasing or when(density) == Worsening
+
+    Then("the check should evaluate to true")
     check.eval(history) shouldBe true
