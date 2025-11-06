@@ -73,3 +73,14 @@ class HintEngineTest extends AnyFlatSpec with Matchers with GivenWhenThen:
 
     Then("the check should evaluate to true")
     check.eval(history) shouldBe true
+
+  "RuleCreation" should "create a rule with hence operator" in:
+    Given("a metrick check")
+    val check = when(density) == Increasing
+
+    When("creating a rule with 'hence'")
+    val rule = check hence Hint(Misleading)
+
+    Then("the rule should have the correct hint")
+    rule.hint shouldBe Hint(Misleading)
+    rule.condition shouldBe check
