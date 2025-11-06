@@ -84,3 +84,21 @@ final class RuleDSLTest extends AnyFlatSpec with Matchers with GivenWhenThen:
     Then("the rule should have the correct hint")
     rule.hint shouldBe Hint(Misleading)
     rule.condition shouldBe check
+
+  "HintEngine.evaluate" should "return Some(hint) when condition matches" in:
+    Given("a rule and matching history")
+    val reference = graph.withNodes(1, 2, 3)
+    val history = List(
+      graph.withNodes(1),
+      graph.withNodes(1, 2),
+      graph.withNodes(1, 2, 3)
+    )
+    val coverage = coverageFor(reference)
+
+    val rule = when(coverage) == Increasing hence Hint(Misleading)
+
+    When("evaluating the rule")
+    val result = HintEngine.evaluate(history)(using rule)
+
+    Then("it should return the hint")
+    result shouldBe Some(Hint(Misleading))
