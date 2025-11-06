@@ -19,6 +19,3 @@ object WhodunnitApp extends JFXApp3:
 
   def changeScene(newScene: Scene): Unit =
     stage.scene = newScene
-
-  // Expose launcher for access from scenes
-  def getController = launcher.controller
