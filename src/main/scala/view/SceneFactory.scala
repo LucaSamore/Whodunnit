@@ -50,10 +50,10 @@ object SceneFactory:
           case ScenePage.GameConfiguration => new GameConfigurationSceneImpl()
           case ScenePage.GameBoard => new GameBoardSceneImpl()
           case ScenePage.CluesManagement => 
-            // TODO: implementare CluesManagementScene
+            // TODO: implement CluesManagementScene
             throw new NotImplementedError("CluesManagementScene not yet implemented")
           case ScenePage.Accuse => 
-            // TODO: implementare AccuseScene
+            // TODO: implement AccuseScene
             throw new NotImplementedError("AccuseScene not yet implemented")
 
   trait Provider[S]:

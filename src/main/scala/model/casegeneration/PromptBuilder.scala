@@ -15,7 +15,6 @@ object PromptBuilder:
     def build(constraints: Constraint*): Either[ProductionError, String] =
       loadTemplate("/prompts/caseGenerationPrompt.txt").map { template =>
         val expandedConstraints = Constraint.expandConstraints(constraints)
-        println(s"Expanded Constraints: $expandedConstraints")
         val constraintsText = expandedConstraints
           .map(_.toPromptDescription)
           .mkString("\n- ", "\n- ", "")

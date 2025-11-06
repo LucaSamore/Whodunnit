@@ -37,9 +37,9 @@ object ResponseParser:
 
       // TODO: Remove debug printing
       result.foreach { generatedCase =>
-        println("[Model] =" * 80)
+        println("=" * 80)
         println("[Model] GENERATED CASE SUMMARY")
-        println("[Model] =" * 80)
+        println("=" * 80)
         println(s"[Model] Title: ${generatedCase.plot.title}")
         println(s"[Model] Characters: ${generatedCase.characters.size}")
         generatedCase.characters.foreach(c =>

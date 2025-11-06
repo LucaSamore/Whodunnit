@@ -21,7 +21,7 @@ import controller.ControllerModule.*
 
 abstract class HomepageScene[S] extends Scene(1280, 720):
   
-  // Le dipendenze sono fornite dal Component
+  // Dependencies are provided by the Component
   protected def controller: Controller[S]
   protected def navigateTo(page: ScenePage): Unit
 
