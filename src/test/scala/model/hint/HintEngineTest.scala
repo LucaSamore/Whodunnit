@@ -1,5 +1,6 @@
 package model.hint
 
+import model.hint.HintKind.Misleading
 import model.hint.Metric.{coverageFor, density}
 import model.hint.Trend.{Increasing, Stable, Worsening}
 import model.hint.TrendAnalyzers.simpleTrendAnalyzer
@@ -59,11 +60,11 @@ class HintEngineTest extends AnyFlatSpec with Matchers with GivenWhenThen:
 
   it should "work with 'or' operator" in:
     Given("a history with increasing coverage and stable density")
-    val reference = graph.withNodes(1)
+    val reference = graph.withNodes(1, 2, 3).withEdge(1, "link1", 2)
     val history = List(
-      graph.withNodes(1, 2, 3),
+      graph.withNodes(1),
       graph.withNodes(1, 2),
-      graph.withNodes(1)
+      graph.withNodes(1, 2, 3)
     )
     val coverage = coverageFor(reference)
 

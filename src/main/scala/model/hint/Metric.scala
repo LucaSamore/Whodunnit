@@ -19,16 +19,16 @@ object Metric:
         if source.isEmpty then 1.0
         else source.intersect(target).size.toDouble / source.size
 
-      (graph.isEmpty, other.isEmpty) match
+      (other.isEmpty, graph.isEmpty) match
         case (true, _)     => 1.0
         case (false, true) => 0.0
         case _             =>
           (ratio(
-            graph.nodes,
-            other.nodes.asInstanceOf[Set[graph.Node]]
+            other.nodes.asInstanceOf[Set[graph.Node]],
+            graph.nodes
           ) + ratio(
-            graph.edges,
-            other.edges.asInstanceOf[Set[(graph.Node, graph.Edge, graph.Node)]]
+            other.edges.asInstanceOf[Set[(graph.Node, graph.Edge, graph.Node)]],
+            graph.edges
           )) / 2.0
 
   def coverageFor[G <: BaseOrientedGraph](refGraph: G): G => MetricValue =

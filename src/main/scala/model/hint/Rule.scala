@@ -3,7 +3,11 @@ package model.hint
 import model.hint.Metric.MetricValue
 
 // TODO: move Hint to a more appropriate file
-case class Hint(description: String)
+case class Hint(kind: HintKind)
+
+enum HintKind:
+  case Helpful
+  case Misleading
 
 final case class MetricCheck[T](eval: List[T] => Boolean):
   infix def and(other: MetricCheck[T]): MetricCheck[T] =
@@ -12,7 +16,7 @@ final case class MetricCheck[T](eval: List[T] => Boolean):
   infix def or(other: MetricCheck[T]): MetricCheck[T] =
     MetricCheck(history => eval(history) || other.eval(history))
 
-  infix def soThen(hint: Hint): Rule[T] = Rule[T](this, hint)
+  infix def hence(hint: Hint): Rule[T] = Rule[T](this, hint)
 
 final case class Rule[T](condition: MetricCheck[T], hint: Hint)
 
