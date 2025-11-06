@@ -1,6 +1,7 @@
 package view
 
 import controller.ControllerModule.Controller
+import scalafx.application.Platform
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
@@ -84,6 +85,46 @@ abstract class GameConfigurationScene[S] extends Scene(1280, 720):
     createCustomRadioButton(difficultyToggleGroup)
   private val hardRadio: RadioButton =
     createCustomRadioButton(difficultyToggleGroup)
+
+  private val loadingOverlay: StackPane = new StackPane:
+    visible = false
+    managed = false
+    background = new Background(Array(
+      new BackgroundFill(
+        Color.rgb(0, 0, 0, 0.7),
+        CornerRadii.Empty,
+        Insets.Empty
+      )
+    ))
+    children = Seq(
+      new VBox:
+        alignment = Pos.Center
+        spacing = 20
+        children = Seq(
+          new Text("Generating case..."):
+            font = Typography.sectionFont
+            fill = Color.White
+            textAlignment =
+              TextAlignment.Center
+          ,
+          new Text("Please wait while creating your mystery case"):
+            font = Typography.subsectionFont
+            fill = Color.White
+            textAlignment = TextAlignment.Center
+        )
+    )
+
+  private def showLoadingState(): Unit =
+    loadingOverlay.visible = true
+    loadingOverlay.managed = true
+
+  private def hideLoadingState(): Unit =
+    loadingOverlay.visible = false
+    loadingOverlay.managed = false
+
+  private def showErrorMessage(message: String): Unit =
+    // TODO: Improve error display (e.g., Alert dialog)
+    println(s"[View] Showing error to user: $message")
 
   private def createBackground(): Background =
     val image = BackgroundImage(
@@ -235,8 +276,26 @@ abstract class GameConfigurationScene[S] extends Scene(1280, 720):
     println(s"[View] Selected Theme: $selectedTheme")
     println(s"[View] Selected Difficulty: $selectedDifficulty")
 
-    controller.onPlayClicked(selectedDifficulty, selectedTheme)
-    navigateTo(ScenePage.GameBoard)
+    showLoadingState()
+
+    controller.onPlayClicked(
+      selectedDifficulty,
+      selectedTheme,
+      onSuccess = () => {
+        Platform.runLater {
+          println(s"[View] Case generation successful, switching to Game Board")
+          hideLoadingState()
+          navigateTo(ScenePage.GameBoard)
+        }
+      },
+      onError = (errorMessage: String) => {
+        Platform.runLater {
+          println(s"[View] Error in generation: $errorMessage")
+          hideLoadingState()
+          showErrorMessage(errorMessage)
+        }
+      }
+    )
 
   private def createActionButton(label: String, onClick: => Unit): Button =
     new Button(label) {
@@ -276,6 +335,7 @@ abstract class GameConfigurationScene[S] extends Scene(1280, 720):
           createHorizontalDivider(),
           createFooter()
         )
-      }
+      },
+      loadingOverlay
     )
   }
