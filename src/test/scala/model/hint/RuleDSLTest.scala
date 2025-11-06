@@ -11,7 +11,7 @@ import org.scalatest.matchers.should.Matchers
 
 import scala.language.postfixOps
 
-class HintEngineTest extends AnyFlatSpec with Matchers with GivenWhenThen:
+final class RuleDSLTest extends AnyFlatSpec with Matchers with GivenWhenThen:
 
   private def graph: BaseOrientedGraph { type Node = Int; type Edge = String } =
     new BaseOrientedGraph:
