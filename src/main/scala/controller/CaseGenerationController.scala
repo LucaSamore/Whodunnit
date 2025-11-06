@@ -8,11 +8,11 @@ trait CaseGenerationController:
       theme: Option[String],
       difficulty: Constraint.Difficulty,
       customConstraints: Seq[Constraint] = Seq.empty
-  ): IO[Either[GenerationError, Case]]
+  ): IO[Either[ProductionError, Case]]
 
   def generateCaseWithConstraints(
       constraints: Seq[Constraint]
-  ): IO[Either[GenerationError, Case]]
+  ): IO[Either[ProductionError, Case]]
 
 object CaseGenerationController:
   def apply(caseGenModel: CaseGenerationModel): CaseGenerationController =
@@ -22,7 +22,7 @@ object CaseGenerationController:
           theme: Option[String],
           difficulty: Constraint.Difficulty,
           customConstraints: Seq[Constraint] = Seq.empty
-      ): IO[Either[GenerationError, Case]] =
+      ): IO[Either[ProductionError, Case]] =
         val baseConstraints = Seq(difficulty) ++ customConstraints
         val allConstraints = theme match
           case Some(t) => baseConstraints :+ Constraint.Theme(t)
@@ -32,5 +32,5 @@ object CaseGenerationController:
 
       def generateCaseWithConstraints(
           constraints: Seq[Constraint]
-      ): IO[Either[GenerationError, Case]] =
+      ): IO[Either[ProductionError, Case]] =
         caseGenModel.generateCase(constraints)

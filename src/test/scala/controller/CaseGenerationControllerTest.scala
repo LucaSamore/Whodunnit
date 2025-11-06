@@ -12,17 +12,15 @@ class CaseGenerationControllerTest extends AnyWordSpec with Matchers
     with EitherValues:
 
   class MockCaseGenerationModel(
-      response: Seq[Constraint] => IO[Either[GenerationError, Case]]
+      response: Seq[Constraint] => IO[Either[ProductionError, Case]]
   ) extends CaseGenerationModel:
     var lastConstraints: Seq[Constraint] = Seq.empty
 
     override def generateCase(
         constraints: Seq[Constraint]
-    ): IO[Either[GenerationError, Case]] =
+    ): IO[Either[ProductionError, Case]] =
       lastConstraints = constraints
       response(constraints)
-
-    override def parseCaseFromJson(json: String): Either[ParseError, Case] = ???
 
   "CaseGenerationController" should:
     "include difficulty constraint in generateNewCase" in:
@@ -69,7 +67,7 @@ class CaseGenerationControllerTest extends AnyWordSpec with Matchers
       )
 
     "return error when model fails in generateNewCase" in:
-      val error = GenerationError.LLMError("LLM service failed")
+      val error = ProductionError.LLMError("LLM service failed")
       val model = MockCaseGenerationModel(_ => IO.pure(Left(error)))
       val controller = CaseGenerationController(model)
 

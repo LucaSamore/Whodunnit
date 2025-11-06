@@ -26,5 +26,8 @@ object TestUtils:
     mockCharacterJD,
     "John Doe wanted revenge."
   )
-  val mockCase =
-    Case(mockPlot, mockCaseFiles, mockCharacters, mockSolution)
+  val mockCase: Case = new Case:
+    def plot: Plot = mockPlot
+    def caseFiles: Set[CaseFile] = mockCaseFiles
+    def characters: Set[Character] = mockCharacters
+    def solution: Solution = mockSolution
