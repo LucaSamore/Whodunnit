@@ -46,8 +46,8 @@ class HintEngineTest extends AnyFlatSpec with Matchers with GivenWhenThen:
     Given("a history with increasing coverage and worsening density")
     val reference = graph.withNodes(1, 2, 3)
     val history = List(
-      graph.withNodes(1, 2, 3).withEdge(1, "link1", 2).withEdge(2, "link2", 3),
-      graph.withNodes(1, 2, 3).withEdge(1, "link1", 2),
+      graph.withNodes(1, 2).withEdge(1, "link1", 2),
+      graph.withNodes(1, 2),
       graph.withNodes(1, 2, 3)
     )
     val coverage = coverageFor(reference)
