@@ -1,7 +1,6 @@
 package view
 
-import model.casegeneration.*
-import model.knowledgegraph.{CaseKnowledgeGraph, Link}
+import model.knowledgegraph.CaseKnowledgeGraph
 import scalafx.Includes.eventClosureWrapperWithZeroParam
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
@@ -12,10 +11,12 @@ import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight}
 
 //class GameBoardScene(knowledgeGraph: CaseKnowledgeGraph) extends Scene(1280, 720):
-class GameBoardScene extends Scene(1280, 720):
+abstract class GameBoardScene extends Scene(1280, 720):
+
+  protected def navigateTo(page: ScenePage): Unit
 
   import Config.*
-  
+
   val mockKnowledgeGraph = CaseKnowledgeGraph()
 
   private val graphView = KnowledgeGraphView(
@@ -68,7 +69,7 @@ class GameBoardScene extends Scene(1280, 720):
     60,
     () => {
       println("Clues button clicked")
-      // WhodunnitApp.changeScene(new CluesManagementScene)
+      navigateTo(ScenePage.CluesManagement)
     }
   )
   private val snapshotButton = createIconButton(
@@ -88,7 +89,7 @@ class GameBoardScene extends Scene(1280, 720):
     60,
     () => {
       println("Accuse button clicked")
-      // WhodunnitApp.changeScene(new AccuseScene())
+      navigateTo(ScenePage.Accuse)
     }
   )
   private val undoButton = createIconButton(
@@ -205,7 +206,3 @@ class GameBoardScene extends Scene(1280, 720):
       getClass.getResourceAsStream("/fonts/GloriaHallelujah-Regular.ttf"),
       18
     )
-
-object GameBoardScene:
-  // def apply(knowledgeGraph: CaseKnowledgeGraph) = new GameBoardScene(knowledgeGraph)
-  def apply() = new GameBoardScene()

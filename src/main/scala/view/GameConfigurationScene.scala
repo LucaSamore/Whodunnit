@@ -10,7 +10,10 @@ import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, Text, TextAlignment}
 
-class GameConfigurationScene(controller: Controller[model.State]) extends Scene(1280, 720):
+abstract class GameConfigurationScene[S] extends Scene(1280, 720):
+
+  protected def controller: Controller[S]
+  protected def navigateTo(page: ScenePage): Unit
 
   private object Theme:
     val primaryColor: Color = Color.rgb(30, 30, 30, 0.75)
@@ -216,7 +219,7 @@ class GameConfigurationScene(controller: Controller[model.State]) extends Scene(
 
   private def handleCancel(): Unit =
     println("Cancel button clicked")
-    WhodunnitApp.changeScene(new HomepageScene(controller))
+    navigateTo(ScenePage.Homepage)
 
   private def handlePlay(): Unit =
     val selectedTheme = Option(themeComboBox.value.value).getOrElse("None")
@@ -233,7 +236,7 @@ class GameConfigurationScene(controller: Controller[model.State]) extends Scene(
     println(s"[View] Selected Difficulty: $selectedDifficulty")
 
     controller.onPlayClicked(selectedDifficulty, selectedTheme)
-    WhodunnitApp.changeScene(new GameBoardScene())
+    navigateTo(ScenePage.GameBoard)
 
   private def createActionButton(label: String, onClick: => Unit): Button =
     new Button(label) {

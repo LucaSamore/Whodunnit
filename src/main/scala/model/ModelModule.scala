@@ -1,13 +1,18 @@
 package model
 
-import cats.effect.IO
 import model.casegeneration.*
-import model.casegeneration.Constraint.{Difficulty, Theme}
+import cats.effect.IO
 
 object ModelModule:
 
   trait Model[S]:
-    def generateCase(constraints: Seq[Constraint]): IO[Either[ProductionError, Case]]
+    val producer: Producer[Case]
+
+    def generateNewCase(
+        theme: Option[String],
+        difficulty: Constraint.Difficulty,
+        customConstraints: Seq[Constraint] = Seq.empty
+    ): IO[Either[ProductionError, Case]]
 
   trait Provider[S]:
     val model: Model[S]
@@ -15,9 +20,23 @@ object ModelModule:
   trait Component[S]:
 
     class ModelImpl extends Model[S]:
-      import Producers.given 
-      override def generateCase(constraints: Seq[Constraint]): IO[Either[ProductionError, Case]] =
-        CaseGenerationModel.apply(summon[Producer[Case]]).generateCase(constraints)
+      import Producers.given
+      val producer: Producer[Case] = summon[Producer[Case]]
+
+      private def generateCase(constraints: Seq[Constraint])
+          : IO[Either[ProductionError, Case]] =
+        IO(producer.produce(constraints*))
+
+      def generateNewCase(
+          theme: Option[String],
+          difficulty: Constraint.Difficulty,
+          customConstraints: Seq[Constraint] = Seq.empty
+      ): IO[Either[ProductionError, Case]] =
+        val baseConstraints = Seq(difficulty) ++ customConstraints
+        val allConstraints = theme match
+          case Some(t) => baseConstraints :+ Constraint.Theme(t)
+          case None    => baseConstraints
+        generateCase(allConstraints)
 
   trait Interface[S] extends Provider[S] with Component[S]:
     def Model(): Model[S] = new ModelImpl()
