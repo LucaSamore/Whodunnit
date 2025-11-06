@@ -2,7 +2,7 @@ package model.hint
 
 import model.hint.HintKind.Misleading
 import model.hint.Metric.{coverageFor, density}
-import model.hint.Trend.{Increasing, Stable, Worsening}
+import model.hint.Trend.{Increasing, Worsening}
 import model.hint.TrendAnalyzers.simpleTrendAnalyzer
 import model.knowledgegraph.BaseOrientedGraph
 import org.scalatest.GivenWhenThen
