@@ -2,12 +2,13 @@ package view
 
 import controller.ControllerModule
 import model.ModelModule
-import model.ModelModule.State
+import model.State
 
 class WhodunnitLauncher
     extends ModelModule.Interface[State]
     with ControllerModule.Interface[State]
-    with ViewModule.Interface[State]:
+    with ViewModule.Interface[State]
+    with SceneFactory.Interface[State]:
 
   val model: ModelModule.Model[State] = Model()
   val controller: ControllerModule.Controller[State] = Controller()

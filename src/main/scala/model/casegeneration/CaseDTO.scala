@@ -4,8 +4,8 @@ import upickle.default.*
 
 case class CaseDTO(
     plot: PlotDTO,
-    characters: List[CharacterDTO],
-    files: List[CaseFileDTO],
+    characters: Set[CharacterDTO],
+    caseFiles: Set[CaseFileDTO],
     solution: SolutionDTO
 )
 
@@ -20,7 +20,7 @@ case class CaseFileDTO(
     content: String
 )
 case class SolutionDTO(
-    prerequisite: List[PrerequisiteDTO],
+    prerequisite: Set[PrerequisiteDTO],
     culprit: String,
     motive: String
 )

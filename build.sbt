@@ -25,7 +25,8 @@ lazy val root = (project in file("."))
       "io.circe" %% "circe-generic" % "0.14.15",
       "io.circe" %% "circe-parser" % "0.14.15",
       "io.github.cdimascio" % "dotenv-java" % "3.2.0",
-      "org.typelevel" %% "cats-core" % "2.13.0"
+      "org.typelevel" %% "cats-core" % "2.13.0",
+      "org.typelevel" %% "cats-effect" % "3.6.3"
     ),
     mainClass := Some("Launcher"),
     assembly / assemblyOutputPath := target.value / "scala-3" / "whodunnit.jar",
