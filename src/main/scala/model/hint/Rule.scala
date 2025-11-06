@@ -9,6 +9,8 @@ enum HintKind:
   case Helpful
   case Misleading
 
+// T is a game obj (e.g., case KG)
+
 final case class MetricCheck[T](eval: List[T] => Boolean):
   infix def and(other: MetricCheck[T]): MetricCheck[T] =
     MetricCheck(history => eval(history) && other.eval(history))
