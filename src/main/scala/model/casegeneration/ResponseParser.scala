@@ -27,12 +27,33 @@ object ResponseParser:
       input.replaceAll("```json", "").replaceAll("```", "").trim
 
     private def convertDTOToCase(dto: CaseDTO): Either[ProductionError, Case] =
-      for
-        plot <- convertPlot(dto.plot)
-        characters <- convertCharacters(dto.characters)
-        caseFiles <- convertCaseFiles(dto.caseFiles, characters)
-        solution <- convertSolution(dto.solution, characters, caseFiles)
-      yield CaseImpl(plot, caseFiles, characters, solution)
+      val result =
+        for
+          plot <- convertPlot(dto.plot)
+          characters <- convertCharacters(dto.characters)
+          caseFiles <- convertCaseFiles(dto.caseFiles, characters)
+          solution <- convertSolution(dto.solution, characters, caseFiles)
+        yield CaseImpl(plot, caseFiles, characters, solution)
+
+      // TODO: Remove debug printing
+      result.foreach { generatedCase =>
+        println("[Model] =" * 80)
+        println("[Model] GENERATED CASE SUMMARY")
+        println("[Model] =" * 80)
+        println(s"[Model] Title: ${generatedCase.plot.title}")
+        println(s"[Model] Characters: ${generatedCase.characters.size}")
+        generatedCase.characters.foreach(c =>
+          println(s"[Model]  - ${c.name} (${c.role})")
+        )
+        println(s"[Model] Case files: ${generatedCase.caseFiles.size}")
+        generatedCase.caseFiles.foreach(f =>
+          println(s"[Model]  - ${f.title} (${f.kind})")
+        )
+        println(s"[Model] Culprit: ${generatedCase.solution.culprit.name}")
+        println(s"[Model] Motive: ${generatedCase.solution.motive}")
+        println("=" * 80)
+      }
+      result
 
     private def convertPlot(dto: PlotDTO): Either[ProductionError, Plot] =
       Right(Plot(dto.title, dto.content))
