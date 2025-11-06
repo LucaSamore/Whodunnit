@@ -1,6 +1,6 @@
 package model.hint
 
-import model.hint.Trend.{Increasing, Worsening}
+import model.hint.Trend.{Increasing, Stable, Worsening}
 import org.scalatest.GivenWhenThen
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -27,3 +27,13 @@ class TrendAnalyzerTest extends AnyFlatSpec with Matchers with GivenWhenThen:
 
     Then("it should detect Worsening")
     trend shouldBe Worsening
+
+  it should "detect stable trends" in:
+    Given("values with clear worsening trend")
+    val values = List(0.5, 0.4, 0.5, 0.4, 0.5)
+
+    When("analyzing the trend")
+    val trend = summon[TrendAnalyzer].analyze(values)
+
+    Then("it should detect Worsening")
+    trend shouldBe Stable
