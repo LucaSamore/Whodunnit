@@ -2,7 +2,7 @@ package model.hint
 
 import model.hint.HintKind.Misleading
 import model.hint.Metric.{coverageFor, density}
-import model.hint.Trend.{Increasing, Worsening}
+import model.hint.Trend.{Increasing, Stable, Worsening}
 import model.hint.TrendAnalyzers.simpleTrendAnalyzer
 import model.knowledgegraph.BaseOrientedGraph
 import org.scalatest.GivenWhenThen
@@ -120,3 +120,22 @@ final class RuleDSLTest extends AnyFlatSpec with Matchers with GivenWhenThen:
 
     Then("it should return None")
     result shouldBe None
+
+  "Complex rule combination" should "work correctly" in:
+    Given("a complex rule with multiple conditions")
+    val reference = graph.withNodes(1, 2, 3)
+    val history = List(
+      graph.withNodes(1),
+      graph.withNodes(1, 2),
+      graph.withNodes(1, 2, 3)
+    )
+    val coverage = coverageFor(reference)
+
+    val rule = when(coverage) == Increasing and
+      when(density) == Stable hence Hint(Misleading)
+
+    When("evaluating the complex rule")
+    val result = HintEngine.evaluate(history)(using rule)
+
+    Then("it should match correctly")
+    result shouldBe Some(Hint(Misleading))
