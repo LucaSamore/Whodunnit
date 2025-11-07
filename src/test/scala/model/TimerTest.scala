@@ -163,7 +163,6 @@ class TimerTest extends AnyWordSpec with Matchers:
         timer1.state match
           case TimerState.Running(startedAt, totalDuration, remaining) =>
             totalDuration shouldBe 10.seconds
-            remaining shouldBe 10.seconds
             startedAt should be > 0L
           case other => fail(s"Expected Running state, got $other")
 

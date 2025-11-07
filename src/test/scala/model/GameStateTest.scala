@@ -3,13 +3,15 @@ package model
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import utils.TestUtils.mockCase
+import scala.concurrent.duration.*
 
 class GameStateTest extends AnyWordSpec with Matchers:
 
   val emptyGameState = GameState(None, None, None, None, None, None)
+  val mockTimer = new Timer(3600.seconds, List.empty)
   val initializedGameState: GameState = GameState.initialize(
     mockCase,
-    timer = 60
+    timer = mockTimer
   )
 
   "A GameState" when:
@@ -20,7 +22,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
 
     "initialized" should:
       "have all fields properly set" in:
-        val gameState = GameState.initialize(mockCase, timer = 60)
+        val gameState = GameState.initialize(mockCase, mockTimer)
         gameState shouldEqual initializedGameState
 
     "reset" should:

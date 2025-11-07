@@ -1,12 +1,11 @@
 package model
 
 import model.casegeneration.Case
-import model.knowledgegraph.{CaseKnowledgeGraph, Graph}
+import model.knowledgegraph.CaseKnowledgeGraph
 import model.versioning.{GameHistory, GameTimeMachine, History, TimeMachine}
 import model.versioning.Snapshot.Snapshotters.given_Snapshottable_History
 
 // TODO: Define Timer and Hint properly
-type Timer = Int
 type Hint = Set[String]
 
 trait State:
@@ -15,7 +14,7 @@ trait State:
 
 case class GameState(
     var investigativeCase: Option[Case],
-    var graph: Option[Graph],
+    var graph: Option[CaseKnowledgeGraph],
     var history: Option[History],
     var timeMachine: Option[TimeMachine[History]],
     var hints: Option[Seq[Hint]],
