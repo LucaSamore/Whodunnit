@@ -48,7 +48,9 @@ object SceneFactory:
         override protected def navigateTo(page: ScenePage): Unit =
           SceneFactoryImpl.this.navigateTo(page)
 
-      private class GameBoardSceneImpl extends GameBoardScene:
+      private class GameBoardSceneImpl extends GameBoardScene[S]:
+        override protected def controller: ControllerModule.Controller[S] =
+          context.controller
         override protected def navigateTo(page: ScenePage): Unit =
           SceneFactoryImpl.this.navigateTo(page)
 

@@ -1,10 +1,12 @@
 package view
 
+import controller.ControllerModule.Controller
+import model.casegeneration.Case
 import model.knowledgegraph.CaseKnowledgeGraph
 import scalafx.Includes.eventClosureWrapperWithZeroParam
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
-import scalafx.scene.control.{Button, ContentDisplay, Label, TextArea}
+import scalafx.scene.control.{Button, ContentDisplay, Label}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
@@ -12,8 +14,8 @@ import scalafx.scene.text.{Font, FontWeight, TextAlignment}
 import scalafx.stage.{Modality, Stage}
 
 //class GameBoardScene(knowledgeGraph: CaseKnowledgeGraph) extends Scene(1280, 720):
-abstract class GameBoardScene extends Scene(1280, 720):
-
+abstract class GameBoardScene[S] extends Scene:
+  protected def controller: Controller[S]
   protected def navigateTo(page: ScenePage): Unit
 
   import Config.*
@@ -31,22 +33,12 @@ abstract class GameBoardScene extends Scene(1280, 720):
       title = "Case Plot"
       resizable = false
 
-    val plotTitle = "The Mystery of the Stolen Artifact"
-    val plotContent =
-      """In the heart of London, a priceless artifact has vanished from
-        |the British Museum under mysterious circumstances. The security
-        |system was disabled exactly at midnight, and three individuals
-        |were seen near the exhibit hall that evening.
-        |
-        |Detective Inspector Morrison has been assigned to the case,
-        |but the evidence is contradictory. Each suspect has a solid
-        |alibi, yet someone must be lying. As you investigate deeper,
-        |you discover that the relationships between the suspects are
-        |far more complex than initially thought.
-        |
-        |Your task is to uncover the truth by analyzing the clues,
-        |connecting the evidence, and identifying the real culprit
-        |before they can escape with the priceless treasure.""".stripMargin
+    val (plotTitle, plotContent) =
+      controller.getGameState.investigativeCase match
+        case Some(currentCase) =>
+          (currentCase.plot.title, currentCase.plot.content)
+        case None =>
+          ("No Case Available", "No plot information available.")
 
     val titleLabel = new Label(plotTitle):
       font = iconsFont
@@ -88,7 +80,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
           -fx-background-color: rgba(240, 235, 220, 0.95);
         """
 
-    popup.scene = new Scene(600, 500):
+    popup.scene = new Scene(600, 350):
       root = popupLayout
 
     popup.showAndWait()
@@ -282,7 +274,9 @@ abstract class GameBoardScene extends Scene(1280, 720):
       getClass.getResourceAsStream(gameboardImagesPath + "icons/redo-icon.png")
     )
     val parchmentImage: Image = new Image(
-      getClass.getResourceAsStream(gameboardImagesPath + "icons/parchment-icon.png")
+      getClass.getResourceAsStream(
+        gameboardImagesPath + "icons/parchment-icon.png"
+      )
     )
     val iconsFont: Font = Font.loadFont(
       getClass.getResourceAsStream("/fonts/GloriaHallelujah-Regular.ttf"),

@@ -1,17 +1,21 @@
 package controller
 
 import cats.effect.unsafe.implicits.global
+import model.GameState
+import model.casegeneration.Case
 
 object ControllerModule:
 
   trait Controller[S]:
     def onPlayNowClicked(): Unit
     def onPlayClicked(
-        difficulty: String,
-        theme: String,
-        onSuccess: () => Unit,
-        onError: String => Unit
-    ): Unit
+                       difficulty: String,
+                       theme: String,
+                       onSuccess: () => Unit,
+                       onError: String => Unit
+                     ): Unit
+
+    def getGameState: GameState
 
   trait Provider[S]:
     val controller: Controller[S]
@@ -28,13 +32,13 @@ object ControllerModule:
 
       def onPlayNowClicked(): Unit =
         println("[Controller] Play Now button clicked!")
-
+      
       def onPlayClicked(
-          difficulty: String,
-          theme: String,
-          onSuccess: () => Unit,
-          onError: String => Unit
-      ): Unit =
+                         difficulty: String,
+                         theme: String,
+                         onSuccess: () => Unit,
+                         onError: String => Unit
+                       ): Unit =
         println(
           s"[Controller] Play clicked with difficulty: $difficulty and theme: $theme"
         )
@@ -56,14 +60,15 @@ object ControllerModule:
                 println(
                   s"[Controller] Case generated successfully: ${generatedCase.plot.title}"
                 )
+                context.model.gameState.investigativeCase = Some(generatedCase)
                 onSuccess()
-              case Left(error) =>
-                println(s"[Controller] Error during generation: $error")
-                onError(error.message)
+
           case Left(exception) =>
             println(s"[Controller] Exception: ${exception.getMessage}")
             onError(s"Exception: ${exception.getMessage}")
         }
+
+      override def getGameState: GameState = context.model.gameState
 
   trait Interface[S] extends Provider[S] with Component[S]:
     self: Requirements[S] =>
