@@ -1,9 +1,9 @@
-package model.knowledgegraph
+package model.game
 
 import model.game.BaseOrientedGraph
+import model.hint.Metric.density
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import model.hint.Metric.density
 
 class BaseOrientedGraphTest extends AnyWordSpec with Matchers:
 

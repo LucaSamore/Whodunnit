@@ -1,4 +1,4 @@
-package model
+package model.game
 
 import model.game.{GameState, Timer}
 import org.scalatest.matchers.should.Matchers

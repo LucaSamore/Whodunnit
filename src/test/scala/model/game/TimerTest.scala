@@ -1,9 +1,9 @@
-package model
+package model.game
 
-import model.game.{Timer, TimerLogic, TimerState, TriggerEvent}
 import model.game.TimerState.*
-import org.scalatest.wordspec.AnyWordSpec
+import model.game.{Timer, TimerLogic, TimerState, TriggerEvent}
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 import scala.concurrent.duration.*
 

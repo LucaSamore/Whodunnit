@@ -1,4 +1,4 @@
-package model.generation
+package model.game
 
 import model.game.{
   Case,
@@ -10,9 +10,10 @@ import model.game.{
   Character,
   Plot
 }
-import org.scalatest.{EitherValues, OptionValues}
+import model.generation.{Constraint, Producer, ProductionError}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{EitherValues, OptionValues}
 
 class CaseTest extends AnyWordSpec with Matchers with EitherValues
     with OptionValues:
