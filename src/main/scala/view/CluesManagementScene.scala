@@ -1,5 +1,6 @@
 package view
 
+import controller.ControllerModule.Controller
 import scalafx.scene.Scene
 import scalafx.scene.image.Image
 import scalafx.scene.layout.*
@@ -9,9 +10,12 @@ import scalafx.geometry.*
 import scalafx.scene.text.Font
 import scalafx.stage.{Modality, Stage}
 
-class CluesManagementScene extends Scene(1280, 720):
+abstract class CluesManagementScene[S] extends Scene(1280, 720):
 
   import Config._
+
+  protected def controller: Controller[S]
+  protected def navigateTo(page: ScenePage): Unit
 
   private val notesTextArea = new TextArea():
     promptText = "Notes"

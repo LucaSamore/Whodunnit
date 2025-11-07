@@ -55,17 +55,20 @@ object SceneFactory:
         override protected def navigateTo(page: ScenePage): Unit =
           SceneFactoryImpl.this.navigateTo(page)
 
+      private class CluesManagementSceneImpl extends CluesManagementScene[S]:
+        override protected def controller: ControllerModule.Controller[S] =
+          context.controller
+
+        override protected def navigateTo(page: ScenePage): Unit =
+          SceneFactoryImpl.this.navigateTo(page)
+
       override def createScene(page: ScenePage): Scene =
         page match
           case ScenePage.Homepage          => new HomepageSceneImpl()
           case ScenePage.GameConfiguration => new GameConfigurationSceneImpl()
           case ScenePage.GameBoard         => new GameBoardSceneImpl()
-          case ScenePage.CluesManagement   =>
-            // TODO: implement CluesManagementScene
-            throw new NotImplementedError(
-              "CluesManagementScene not yet implemented"
-            )
-          case ScenePage.Accuse =>
+          case ScenePage.CluesManagement   => new CluesManagementSceneImpl()
+          case ScenePage.Accuse            =>
             // TODO: implement AccuseScene
             throw new NotImplementedError("AccuseScene not yet implemented")
 
