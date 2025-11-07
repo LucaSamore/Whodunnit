@@ -1,5 +1,6 @@
 package view
 
+import controller.ControllerModule.Controller
 import model.knowledgegraph.CaseKnowledgeGraph
 import scalafx.Includes.eventClosureWrapperWithZeroParam
 import scalafx.geometry.{Insets, Pos}
@@ -11,16 +12,15 @@ import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight}
 
 //class GameBoardScene(knowledgeGraph: CaseKnowledgeGraph) extends Scene(1280, 720):
-abstract class GameBoardScene extends Scene(1280, 720):
+abstract class GameBoardScene[S] extends Scene(1280, 720):
 
+  protected def controller: Controller[S]
   protected def navigateTo(page: ScenePage): Unit
 
   import Config.*
 
-  val mockKnowledgeGraph = CaseKnowledgeGraph()
-
   private val graphView = KnowledgeGraphView(
-    mockKnowledgeGraph,
+    controller.currentGameState.graph.getOrElse(new CaseKnowledgeGraph()),
     viewDimensions = (sceneWidth, sceneHeight)
   )
 

@@ -1,6 +1,8 @@
 package controller
 
 import cats.effect.unsafe.implicits.global
+import model.GameState
+import model.knowledgegraph.CaseKnowledgeGraph
 
 object ControllerModule:
 
@@ -12,6 +14,8 @@ object ControllerModule:
         onSuccess: () => Unit,
         onError: String => Unit
     ): Unit
+
+    def currentGameState: GameState
 
   trait Provider[S]:
     val controller: Controller[S]
@@ -56,6 +60,13 @@ object ControllerModule:
                 println(
                   s"[Controller] Case generated successfully: ${generatedCase.plot.title}"
                 )
+                // garbage
+                context.model.gameState.investigativeCase = Some(generatedCase)
+                context.model.gameState.graph = Some(
+                  new CaseKnowledgeGraph().withNodes(
+                    generatedCase.characters.toSeq: _*
+                  )
+                )
                 onSuccess()
               case Left(error) =>
                 println(s"[Controller] Error during generation: $error")
@@ -64,6 +75,8 @@ object ControllerModule:
             println(s"[Controller] Exception: ${exception.getMessage}")
             onError(s"Exception: ${exception.getMessage}")
         }
+
+      override def currentGameState: GameState = context.model.gameState
 
   trait Interface[S] extends Provider[S] with Component[S]:
     self: Requirements[S] =>

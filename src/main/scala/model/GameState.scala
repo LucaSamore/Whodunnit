@@ -15,7 +15,7 @@ trait State:
 
 case class GameState(
     var investigativeCase: Option[Case],
-    var graph: Option[Graph],
+    var graph: Option[CaseKnowledgeGraph],
     var history: Option[History],
     var timeMachine: Option[TimeMachine[History]],
     var hints: Option[Seq[Hint]],

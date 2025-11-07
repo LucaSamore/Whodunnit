@@ -8,6 +8,8 @@ object ModelModule:
   trait Model[S]:
     val producer: Producer[Case]
 
+    def gameState: GameState
+
     def generateNewCase(
         theme: Option[String],
         difficulty: Constraint.Difficulty,
@@ -22,6 +24,8 @@ object ModelModule:
     class ModelImpl extends Model[S]:
       import Producers.given
       val producer: Producer[Case] = summon[Producer[Case]]
+
+      override val gameState: GameState = GameState.empty()
 
       private def generateCase(constraints: Seq[Constraint])
           : IO[Either[ProductionError, Case]] =
