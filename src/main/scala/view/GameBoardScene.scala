@@ -1,56 +1,91 @@
 package view
 
-import model.casegeneration.*
-import model.knowledgegraph.{CaseKnowledgeGraph, Link}
+import controller.ControllerModule.Controller
+import model.casegeneration.Case
+import model.knowledgegraph.CaseKnowledgeGraph
 import scalafx.Includes.eventClosureWrapperWithZeroParam
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
-import scalafx.scene.control.{Button, ContentDisplay}
+import scalafx.scene.control.{Button, ContentDisplay, Label}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
+import scalafx.scene.text.{Font, FontWeight, TextAlignment}
+import scalafx.stage.{Modality, Stage}
 import scalafx.scene.text.{Font, FontWeight}
 import scalafx.scene.shape.Circle
 
 //class GameBoardScene(knowledgeGraph: CaseKnowledgeGraph) extends Scene(1280, 720):
-class GameBoardScene extends Scene(1280, 720):
+abstract class GameBoardScene[S] extends Scene:
+  protected def controller: Controller[S]
+  protected def navigateTo(page: ScenePage): Unit
 
   import Config.*
 
-  /* Mock data for testing purposes */
-  private object MockData:
-    val mike: Character = Character("Mike", CaseRole.Suspect)
-    val frank: Character = Character("Frank", CaseRole.Victim)
-    val chatMikeFrank: CaseFile = CaseFile(
-      title = "Chat: Mike-Frank",
-      content = "...",
-      kind = CaseFileType.Message,
-      sender = Some(mike),
-      receiver = None,
-      date = None
-    )
-    val mockCase: Case = Case(
-      plot = Plot("Mock case", "Content test"),
-      characters = Set(mike, frank),
-      caseFiles = Set(chatMikeFrank),
-      solution = CaseSolution(Set.empty, culprit = mike, motive = "Test.")
-    )
-
-  private val mockKnowledgeGraph = CaseKnowledgeGraph()
-  mockInitializeKnowledgeGraph()
-  private def mockInitializeKnowledgeGraph(): Unit =
-    val mike = MockData.mockCase.characters.find(_.name == "Mike").get
-    val frank = MockData.mockCase.characters.find(_.name == "Frank").get
-    mockKnowledgeGraph.addNode(mike)
-    mockKnowledgeGraph.addNode(frank)
-    mockKnowledgeGraph.addEdge(mike, Link("informed"), frank)
-
-  /* End of mock data */
+  val mockKnowledgeGraph = CaseKnowledgeGraph()
 
   private val graphView = KnowledgeGraphView(
     mockKnowledgeGraph,
     viewDimensions = (sceneWidth, sceneHeight)
   )
+
+  private def showPlotPopup(): Unit =
+    val popup = new Stage():
+      initModality(Modality.ApplicationModal)
+      title = "Case Plot"
+      resizable = false
+
+    val (plotTitle, plotContent) =
+      controller.getGameState.investigativeCase match
+        case Some(currentCase) =>
+          (currentCase.plot.title, currentCase.plot.content)
+        case None =>
+          ("No Case Available", "No plot information available.")
+
+    val titleLabel = new Label(plotTitle):
+      font = iconsFont
+      textFill = Color.web("#1E1E1E")
+      wrapText = true
+      textAlignment = TextAlignment.Center
+      maxWidth = 560
+      alignment = Pos.Center
+
+    val contentArea = new Label(plotContent):
+      text = plotContent
+      textFill = Color.web("#1E1E1E")
+      wrapText = true
+      textAlignment = TextAlignment.Center
+      maxWidth = 560
+      alignment = Pos.Center
+      alignment = Pos.Center
+
+    val closeButton = new Button("Close"):
+      font = iconsFont
+      prefWidth = 100
+      onAction = _ => popup.close()
+
+    val popupContent = new VBox(15):
+      padding = Insets(20)
+      alignment = Pos.TopCenter
+      children = Seq(
+        titleLabel,
+        contentArea,
+        new HBox():
+          alignment = Pos.Center
+          children = Seq(closeButton)
+      )
+
+    val popupLayout = new BorderPane():
+      center = popupContent
+      style =
+        """
+          -fx-background-color: rgba(240, 235, 220, 0.95);
+        """
+
+    popup.scene = new Scene(600, 350):
+      root = popupLayout
+
+    popup.showAndWait()
 
   private val notificationsPanel = NotificationsPanel(iconsFont)
 
@@ -112,6 +147,16 @@ class GameBoardScene extends Scene(1280, 720):
     alignment = Pos.TopCenter
     children = Seq(notificationsButton, notificationBadge)
 
+  private val plotButton = createIconButton(
+    "Plot",
+    parchmentImage,
+    60,
+    60,
+    () => {
+      println("Plot button clicked")
+      showPlotPopup()
+    }
+  )
   private val cluesButton = createIconButton(
     "Clues",
     documentsIconImage,
@@ -119,7 +164,7 @@ class GameBoardScene extends Scene(1280, 720):
     60,
     () => {
       println("Clues button clicked")
-      // WhodunnitApp.changeScene(new CluesManagementScene)
+      navigateTo(ScenePage.CluesManagement)
     }
   )
   private val snapshotButton = createIconButton(
@@ -139,7 +184,7 @@ class GameBoardScene extends Scene(1280, 720):
     60,
     () => {
       println("Accuse button clicked")
-      // WhodunnitApp.changeScene(new AccuseScene())
+      navigateTo(ScenePage.Accuse)
     }
   )
   private val undoButton = createIconButton(
@@ -206,7 +251,7 @@ class GameBoardScene extends Scene(1280, 720):
         alignment = Pos.CenterRight
         spacing = 50
         padding = Insets(topPadding, 70, 0, 10)
-        children = Seq(cluesButton, snapshotButton, accuseButton)
+        children = Seq(plotButton, cluesButton, snapshotButton, accuseButton)
 
     center = new StackPane:
       children = Seq(
@@ -257,11 +302,12 @@ class GameBoardScene extends Scene(1280, 720):
     val redoIconImage: Image = new Image(
       getClass.getResourceAsStream(gameboardImagesPath + "icons/redo-icon.png")
     )
+    val parchmentImage: Image = new Image(
+      getClass.getResourceAsStream(
+        gameboardImagesPath + "icons/parchment-icon.png"
+      )
+    )
     val iconsFont: Font = Font.loadFont(
       getClass.getResourceAsStream("/fonts/GloriaHallelujah-Regular.ttf"),
       18
     )
-
-object GameBoardScene:
-  // def apply(knowledgeGraph: CaseKnowledgeGraph) = new GameBoardScene(knowledgeGraph)
-  def apply() = new GameBoardScene()

@@ -17,8 +17,13 @@ import scalafx.scene.layout.{
 }
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight, Text, TextAlignment}
+import controller.ControllerModule.*
 
-class HomepageScene extends Scene(1280, 720):
+abstract class HomepageScene[S] extends Scene(1280, 720):
+
+  // Dependencies are provided by the Component
+  protected def controller: Controller[S]
+  protected def navigateTo(page: ScenePage): Unit
 
   import Config._
 
@@ -61,8 +66,9 @@ class HomepageScene extends Scene(1280, 720):
         -fx-background-radius: 35;
       """
     onAction = _ => {
-      println("Play Now clicked - Changing to Game scene")
-      WhodunnitApp.changeScene(GameConfigurationScene)
+      println("[View] Play Now clicked - Changing to Game scene")
+      controller.onPlayNowClicked()
+      navigateTo(ScenePage.GameConfiguration)
     }
 
   private val resumeButton = new Button("Resume Game"):

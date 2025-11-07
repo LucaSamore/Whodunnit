@@ -1,28 +1,45 @@
 package model
 
 import model.casegeneration.*
-import model.knowledgegraph.CaseKnowledgeGraph
+import cats.effect.IO
 
 object ModelModule:
 
-  // Placeholder State class
-  // TODO: Replace with actual state properties
-  case class State(
-      currentCase: Option[Case] = None,
-      knowledgeGraph: Option[CaseKnowledgeGraph] = None,
-      isLoading: Boolean = false,
-      error: Option[String] = None
-  )
-
   trait Model[S]:
-    def createNothing(): Unit
+    val producer: Producer[Case]
+    def gameState: GameState
+
+    def generateNewCase(
+                         theme: Option[String],
+                         difficulty: Constraint.Difficulty,
+                         customConstraints: Seq[Constraint] = Seq.empty
+                       ): IO[Either[ProductionError, Case]]
 
   trait Provider[S]:
     val model: Model[S]
 
   trait Component[S]:
+
     class ModelImpl extends Model[S]:
-      override def createNothing(): Unit = println("Creating nothing...")
+      import Producers.given
+      val producer: Producer[Case] = summon[Producer[Case]]
+
+      private def generateCase(constraints: Seq[Constraint])
+      : IO[Either[ProductionError, Case]] =
+        IO(producer.produce(constraints*))
+
+      def generateNewCase(
+                           theme: Option[String],
+                           difficulty: Constraint.Difficulty,
+                           customConstraints: Seq[Constraint] = Seq.empty
+                         ): IO[Either[ProductionError, Case]] =
+        val baseConstraints = Seq(difficulty) ++ customConstraints
+        val allConstraints = theme match
+          case Some(t) => baseConstraints :+ Constraint.Theme(t)
+          case None    => baseConstraints
+        generateCase(allConstraints)
+
+      override val gameState: GameState = GameState.empty()
 
   trait Interface[S] extends Provider[S] with Component[S]:
     def Model(): Model[S] = new ModelImpl()
