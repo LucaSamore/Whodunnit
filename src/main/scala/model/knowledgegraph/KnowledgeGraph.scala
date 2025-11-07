@@ -10,6 +10,7 @@ trait Graph:
   type Edge
 
   def nodes: Set[Node]
+  def edges: Set[(Node, Edge, Node)]
   def addNode(n: Node): Unit
   def removeNode(n: Node): Unit
   def addEdge(n1: Node, e: Edge, n2: Node): Unit
@@ -26,10 +27,17 @@ trait Graph:
     addEdge(n1, edge, n2)
     this
 
-abstract class BaseGraph extends Graph:
-  protected val data = mutable.Map[Node, List[(Node, Edge)]]()
+abstract class BaseOrientedGraph extends Graph:
+  protected val data: mutable.Map[Node, List[(Node, Edge)]] =
+    mutable.Map[Node, List[(Node, Edge)]]()
 
   override def nodes: Set[Node] = data.keys.toSet
+
+  override def edges: Set[(Node, Edge, Node)] =
+    (for
+      (src, edgeList) <- data
+      (dest, edge) <- edgeList
+    yield (src, edge, dest)).toSet
 
   override def addNode(n: Node): Unit = data.addOne(n -> List())
 
@@ -67,7 +75,7 @@ trait CaseNodesAndEdges:
 
 case class Link(semantic: String)
 
-class CaseKnowledgeGraph extends BaseGraph
+class CaseKnowledgeGraph extends BaseOrientedGraph
     with KnowledgeGraph
     with CaseNodesAndEdges:
   def deepCopy(): CaseKnowledgeGraph =
