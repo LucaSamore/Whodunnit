@@ -4,11 +4,12 @@ import model.knowledgegraph.CaseKnowledgeGraph
 import scalafx.Includes.eventClosureWrapperWithZeroParam
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
-import scalafx.scene.control.{Button, ContentDisplay}
+import scalafx.scene.control.{Button, ContentDisplay, Label, TextArea}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
-import scalafx.scene.text.{Font, FontWeight}
+import scalafx.scene.text.{Font, FontWeight, TextAlignment}
+import scalafx.stage.{Modality, Stage}
 
 //class GameBoardScene(knowledgeGraph: CaseKnowledgeGraph) extends Scene(1280, 720):
 abstract class GameBoardScene extends Scene(1280, 720):
@@ -23,6 +24,74 @@ abstract class GameBoardScene extends Scene(1280, 720):
     mockKnowledgeGraph,
     viewDimensions = (sceneWidth, sceneHeight)
   )
+
+  private def showPlotPopup(): Unit =
+    val popup = new Stage():
+      initModality(Modality.ApplicationModal)
+      title = "Case Plot"
+      resizable = false
+
+    val plotTitle = "The Mystery of the Stolen Artifact"
+    val plotContent =
+      """In the heart of London, a priceless artifact has vanished from
+        |the British Museum under mysterious circumstances. The security
+        |system was disabled exactly at midnight, and three individuals
+        |were seen near the exhibit hall that evening.
+        |
+        |Detective Inspector Morrison has been assigned to the case,
+        |but the evidence is contradictory. Each suspect has a solid
+        |alibi, yet someone must be lying. As you investigate deeper,
+        |you discover that the relationships between the suspects are
+        |far more complex than initially thought.
+        |
+        |Your task is to uncover the truth by analyzing the clues,
+        |connecting the evidence, and identifying the real culprit
+        |before they can escape with the priceless treasure.""".stripMargin
+
+    val titleLabel = new Label(plotTitle):
+      font = iconsFont
+      textFill = Color.web("#1E1E1E")
+      wrapText = true
+      textAlignment = TextAlignment.Center
+      maxWidth = 560
+      alignment = Pos.Center
+
+    val contentArea = new Label(plotContent):
+      text = plotContent
+      textFill = Color.web("#1E1E1E")
+      wrapText = true
+      textAlignment = TextAlignment.Center
+      maxWidth = 560
+      alignment = Pos.Center
+      alignment = Pos.Center
+
+    val closeButton = new Button("Close"):
+      font = iconsFont
+      prefWidth = 100
+      onAction = _ => popup.close()
+
+    val popupContent = new VBox(15):
+      padding = Insets(20)
+      alignment = Pos.TopCenter
+      children = Seq(
+        titleLabel,
+        contentArea,
+        new HBox():
+          alignment = Pos.Center
+          children = Seq(closeButton)
+      )
+
+    val popupLayout = new BorderPane():
+      center = popupContent
+      style =
+        """
+          -fx-background-color: rgba(240, 235, 220, 0.95);
+        """
+
+    popup.scene = new Scene(600, 500):
+      root = popupLayout
+
+    popup.showAndWait()
 
   private def createIconButton(
       description: String,
@@ -60,6 +129,16 @@ abstract class GameBoardScene extends Scene(1280, 720):
     () => {
       println("Notifications button clicked")
       // Handle notifications action here
+    }
+  )
+  private val plotButton = createIconButton(
+    "Plot",
+    parchmentImage,
+    60,
+    60,
+    () => {
+      println("Plot button clicked")
+      showPlotPopup()
     }
   )
   private val cluesButton = createIconButton(
@@ -156,7 +235,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
         alignment = Pos.CenterRight
         spacing = 50
         padding = Insets(topPadding, 70, 0, 10)
-        children = Seq(cluesButton, snapshotButton, accuseButton)
+        children = Seq(plotButton, cluesButton, snapshotButton, accuseButton)
 
     center = new StackPane:
       children = Seq(
@@ -201,6 +280,9 @@ abstract class GameBoardScene extends Scene(1280, 720):
     )
     val redoIconImage: Image = new Image(
       getClass.getResourceAsStream(gameboardImagesPath + "icons/redo-icon.png")
+    )
+    val parchmentImage: Image = new Image(
+      getClass.getResourceAsStream(gameboardImagesPath + "icons/parchment-icon.png")
     )
     val iconsFont: Font = Font.loadFont(
       getClass.getResourceAsStream("/fonts/GloriaHallelujah-Regular.ttf"),
