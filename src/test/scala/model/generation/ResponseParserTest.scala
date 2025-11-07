@@ -1,5 +1,7 @@
-package model.casegeneration
+package model.generation
 
+import model.game
+import model.game.{CaseFile, CaseFileType, CaseRole, CaseSolution}
 import org.scalatest.{EitherValues, OptionValues}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -394,8 +396,8 @@ class ResponseParserTest extends AnyWordSpec with Matchers with EitherValues
         solution.prerequisite should have size 1
         val prereq = solution.prerequisite.head
         prereq.firstEntity match
-          case char: Character => char.name shouldBe "Alice"
-          case _               => fail("First entity should be a Character")
+          case char: game.Character => char.name shouldBe "Alice"
+          case _ => fail("First entity should be a Character")
         prereq.secondEntity match
           case file: CaseFile => file.title shouldBe "Threatening Email"
           case _              => fail("Second entity should be a CaseFile")
@@ -454,7 +456,7 @@ class ResponseParserTest extends AnyWordSpec with Matchers with EitherValues
         result shouldBe a[Right[_, _]]
         val solution = result.value.solution.asInstanceOf[CaseSolution]
         val prereq = solution.prerequisite.head
-        prereq.firstEntity shouldBe a[Character]
+        prereq.firstEntity shouldBe a[game.Character]
         prereq.secondEntity shouldBe a[CaseFile]
 
     "parsing malformed JSON" should:

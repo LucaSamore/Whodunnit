@@ -1,4 +1,6 @@
-package model.casegeneration
+package model.generation
+
+import model.game.Case
 
 trait PromptBuilder[T]:
   def systemPrompt: String

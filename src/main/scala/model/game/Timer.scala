@@ -1,4 +1,4 @@
-package model
+package model.game
 
 import scala.concurrent.duration.{Duration, DurationLong}
 

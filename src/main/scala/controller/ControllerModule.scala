@@ -1,8 +1,7 @@
 package controller
 
 import cats.effect.unsafe.implicits.global
-import model.GameState
-import model.knowledgegraph.CaseKnowledgeGraph
+import model.game.{CaseKnowledgeGraph, GameState}
 
 object ControllerModule:
 
@@ -28,7 +27,7 @@ object ControllerModule:
 
     class ControllerImpl extends Controller[S]:
 
-      import _root_.model.casegeneration.Constraint
+      import _root_.model.generation.Constraint
 
       def onPlayNowClicked(): Unit =
         println("[Controller] Play Now button clicked!")

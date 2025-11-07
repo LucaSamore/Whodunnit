@@ -1,4 +1,4 @@
-package model.casegeneration
+package model.generation
 
 trait ProductionError:
   def message: String

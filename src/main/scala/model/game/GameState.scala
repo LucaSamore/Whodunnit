@@ -1,12 +1,6 @@
-package model
+package model.game
 
-import model.casegeneration.Case
-import model.knowledgegraph.CaseKnowledgeGraph
-import model.versioning.{GameHistory, GameTimeMachine, History, TimeMachine}
 import model.versioning.Snapshot.Snapshotters.given_Snapshottable_History
-
-// TODO: Define Timer and Hint properly
-type Hint = Set[String]
 
 trait State:
   def getState: GameState

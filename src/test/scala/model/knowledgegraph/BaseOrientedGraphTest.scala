@@ -1,5 +1,6 @@
 package model.knowledgegraph
 
+import model.game.BaseOrientedGraph
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import model.hint.Metric.density

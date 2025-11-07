@@ -1,7 +1,7 @@
 package view
 
 import controller.ControllerModule.Controller
-import model.knowledgegraph.CaseKnowledgeGraph
+import model.game.CaseKnowledgeGraph
 import scalafx.Includes.eventClosureWrapperWithZeroParam
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene

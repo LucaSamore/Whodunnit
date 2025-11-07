@@ -1,7 +1,8 @@
 package model
 
-import model.casegeneration.*
+import model.generation.*
 import cats.effect.IO
+import model.game.{Case, GameState}
 
 object ModelModule:
 

@@ -1,5 +1,7 @@
 package model.versioning
 
+import model.game
+import model.game.{CaseKnowledgeGraph, GameHistory, GameTimeMachine, History}
 import model.versioning.Snapshot.Snapshotters.given_Snapshottable_History
 import model.versioning.Snapshot.SnapshotImpl
 import org.scalatest.matchers.should.Matchers
@@ -29,10 +31,10 @@ class GameStateTest extends AnyWordSpec with Matchers:
     "elements are added" should:
       val maxSize = 3
       val originalHistory = GameHistory(maxSize)
-      case class MockKnowledgeGraph(id: Int) extends KnowledgeGraph:
-        override def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
-      val kg2 = MockKnowledgeGraph(2)
-      originalHistory.addState(MockKnowledgeGraph(1))
+      case class MockCaseKnowledgeGraph(id: Int) extends CaseKnowledgeGraph:
+        override def deepCopy(): CaseKnowledgeGraph = MockCaseKnowledgeGraph(id)
+      val kg2 = MockCaseKnowledgeGraph(2)
+      originalHistory.addState(MockCaseKnowledgeGraph(1))
       originalHistory.addState(kg2)
 
       "maintain the correct current state" in:
@@ -41,11 +43,12 @@ class GameStateTest extends AnyWordSpec with Matchers:
     "undo operation is called" should:
       val maxSize = 3
       val originalHistory = GameHistory(maxSize)
-      case class MockKnowledgeGraph(id: Int) extends KnowledgeGraph:
-        override def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
-      val kg1 = MockKnowledgeGraph(1)
+      case class MockCaseKnowledgeGraph(id: Int)
+          extends game.CaseKnowledgeGraph:
+        override def deepCopy(): CaseKnowledgeGraph = MockCaseKnowledgeGraph(id)
+      val kg1 = MockCaseKnowledgeGraph(1)
       originalHistory.addState(kg1)
-      originalHistory.addState(MockKnowledgeGraph(2))
+      originalHistory.addState(MockCaseKnowledgeGraph(2))
 
       "revert to the previous state" in:
         originalHistory.undo() shouldBe Some(kg1)
@@ -53,12 +56,13 @@ class GameStateTest extends AnyWordSpec with Matchers:
     "redo operation is called" should:
       val maxSize = 3
       val originalHistory = GameHistory(maxSize)
-      case class MockKnowledgeGraph(id: Int) extends KnowledgeGraph:
-        override def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
-      val kg2 = MockKnowledgeGraph(2)
-      originalHistory.addState(MockKnowledgeGraph(1))
+      case class MockCaseKnowledgeGraph(id: Int)
+          extends game.CaseKnowledgeGraph:
+        override def deepCopy(): CaseKnowledgeGraph = MockCaseKnowledgeGraph(id)
+      val kg2 = MockCaseKnowledgeGraph(2)
+      originalHistory.addState(MockCaseKnowledgeGraph(1))
       originalHistory.addState(kg2)
-      originalHistory.addState(MockKnowledgeGraph(3))
+      originalHistory.addState(MockCaseKnowledgeGraph(3))
 
       "reload to the subsequent state" in:
         originalHistory.undo()
@@ -68,12 +72,13 @@ class GameStateTest extends AnyWordSpec with Matchers:
     "combination of undo and redo are called" should:
       val maxSize = 3
       val originalHistory = GameHistory(maxSize)
-      case class MockKnowledgeGraph(id: Int) extends KnowledgeGraph:
-        override def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
+      case class MockCaseKnowledgeGraph(id: Int)
+          extends game.CaseKnowledgeGraph:
+        override def deepCopy(): CaseKnowledgeGraph = MockCaseKnowledgeGraph(id)
 
-      val kg1 = MockKnowledgeGraph(1)
-      val kg2 = MockKnowledgeGraph(2)
-      val kg3 = MockKnowledgeGraph(3)
+      val kg1 = MockCaseKnowledgeGraph(1)
+      val kg2 = MockCaseKnowledgeGraph(2)
+      val kg3 = MockCaseKnowledgeGraph(3)
       originalHistory.addState(kg1)
       originalHistory.addState(kg2)
       originalHistory.addState(kg3)
@@ -90,7 +95,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
       "adding a new state after undo clears redo history" in:
         originalHistory.undo() shouldBe Some(kg2)
         originalHistory.undo() shouldBe Some(kg1)
-        val kg4 = MockKnowledgeGraph(4)
+        val kg4 = MockCaseKnowledgeGraph(4)
         originalHistory.addState(kg4)
         originalHistory.redo() shouldBe None // redo should not be possible anymore
         originalHistory.currentState shouldBe Some(kg4)
@@ -160,9 +165,11 @@ class GameStateTest extends AnyWordSpec with Matchers:
 
       "preserve the state if modified after snapshot" in:
         val modifiedHistory = gameHistory.deepCopy()
-        case class MockKnowledgeGraph(id: Int) extends KnowledgeGraph:
-          override def deepCopy(): KnowledgeGraph = MockKnowledgeGraph(id)
-        modifiedHistory.addState(MockKnowledgeGraph(1))
+        case class MockCaseKnowledgeGraph(id: Int)
+            extends game.CaseKnowledgeGraph:
+          override def deepCopy(): CaseKnowledgeGraph =
+            MockCaseKnowledgeGraph(id)
+        modifiedHistory.addState(MockCaseKnowledgeGraph(1))
         modifiedHistory should not equal gameHistory
         val restoredAfterModification = timeMachine.restore()
         restoredAfterModification shouldBe Some(gameHistory)

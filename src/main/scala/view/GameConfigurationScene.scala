@@ -72,7 +72,12 @@ abstract class GameConfigurationScene[S] extends Scene(1280, 720):
     prefHeight = 48
     minHeight = 48
     promptText = "Choose a theme"
-    items = ObservableBuffer("Spy", "Detective", "Computer Science", "Classic")
+    items = ObservableBuffer(
+      "Murder",
+      "Theft",
+      "Hacking",
+      "Fantasy"
+    )
     style =
       Styles.borderedBox() + s"-fx-font-family: '${Typography.sectionFont.getName}';"
   }
@@ -271,7 +276,7 @@ abstract class GameConfigurationScene[S] extends Scene(1280, 720):
         else if toggle == mediumRadio.delegate then Some("Medium")
         else if toggle == hardRadio.delegate then Some("Hard")
         else None
-      }.getOrElse("None")
+      }.getOrElse("Easy")
 
     println(s"[View] Selected Theme: $selectedTheme")
     println(s"[View] Selected Difficulty: $selectedDifficulty")

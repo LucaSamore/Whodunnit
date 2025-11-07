@@ -1,4 +1,4 @@
-package model.casegeneration
+package model.generation
 
 import Constraint.{CaseFilesRange, CharactersRange, PrerequisitesRange, Theme}
 import org.scalatest.matchers.should.Matchers

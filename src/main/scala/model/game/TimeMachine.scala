@@ -1,4 +1,6 @@
-package model.versioning
+package model.game
+
+import model.versioning.{Snapshot, Snapshottable}
 
 import java.time.LocalDateTime
 

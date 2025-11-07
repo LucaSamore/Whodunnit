@@ -1,4 +1,4 @@
-package model.casegeneration
+package model.generation
 
 abstract class BaseLLMClient(protected val apiKey: String):
   type Request

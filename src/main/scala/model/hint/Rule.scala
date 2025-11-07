@@ -1,6 +1,7 @@
 package model.hint
 
 import model.hint.Metric.MetricValue
+import model.game.Hint
 
 /** A composable condition that evaluates a predicate over a list of objects.
   *

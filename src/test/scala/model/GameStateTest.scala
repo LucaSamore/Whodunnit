@@ -1,8 +1,10 @@
 package model
 
+import model.game.{GameState, Timer}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import utils.TestUtils.mockCase
+
 import scala.concurrent.duration.*
 
 class GameStateTest extends AnyWordSpec with Matchers:

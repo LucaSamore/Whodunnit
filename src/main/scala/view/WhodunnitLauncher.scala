@@ -2,7 +2,7 @@ package view
 
 import controller.ControllerModule
 import model.ModelModule
-import model.State
+import model.game.State
 
 class WhodunnitLauncher
     extends ModelModule.Interface[State]

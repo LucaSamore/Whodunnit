@@ -1,6 +1,5 @@
-package model.knowledgegraph
+package model.game
 
-import model.casegeneration.Entity
 import model.*
 
 import scala.collection.mutable

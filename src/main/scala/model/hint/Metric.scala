@@ -1,6 +1,6 @@
 package model.hint
 
-import model.knowledgegraph.BaseOrientedGraph
+import model.game.BaseOrientedGraph
 
 object Metric:
   type MetricValue = Double

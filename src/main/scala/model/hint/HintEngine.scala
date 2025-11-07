@@ -1,7 +1,6 @@
 package model.hint
 
-// TODO: move Hint to a more appropriate file
-case class Hint(kind: HintKind)
+import model.game.Hint
 
 enum HintKind:
   case Helpful

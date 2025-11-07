@@ -1,4 +1,4 @@
-package model.casegeneration
+package model.game
 
 import java.time.LocalDateTime
 

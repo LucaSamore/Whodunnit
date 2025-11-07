@@ -1,5 +1,15 @@
-package model.casegeneration
+package model.generation
 
+import model.game.{
+  Case,
+  CaseFile,
+  CaseFileType,
+  CaseImpl,
+  CaseRole,
+  CaseSolution,
+  Character,
+  Plot
+}
 import org.scalatest.{EitherValues, OptionValues}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

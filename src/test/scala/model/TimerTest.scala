@@ -1,8 +1,10 @@
 package model
 
-import model.TimerState.*
+import model.game.{Timer, TimerLogic, TimerState, TriggerEvent}
+import model.game.TimerState.*
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
+
 import scala.concurrent.duration.*
 
 class TimerTest extends AnyWordSpec with Matchers:

@@ -1,10 +1,10 @@
 package model.hint
 
+import model.game.{BaseOrientedGraph, Hint}
 import model.hint.HintKind.Misleading
 import model.hint.Metric.{coverageFor, density}
 import model.hint.Trend.{Increasing, Stable, Worsening}
 import model.hint.TrendAnalyzers.simpleTrendAnalyzer
-import model.knowledgegraph.BaseOrientedGraph
 import org.scalatest.GivenWhenThen
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

@@ -1,4 +1,4 @@
-package model.casegeneration
+package model.generation
 
 class GroqLLMProducer[T](
     apiKey: String

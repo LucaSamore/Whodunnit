@@ -1,4 +1,6 @@
-package model.casegeneration
+package model.generation
+
+import model.game.Case
 
 trait Producer[T]:
   def produce(constraints: Constraint*): Either[ProductionError, T]

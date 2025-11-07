@@ -1,6 +1,20 @@
-package model.casegeneration
+package model.generation
 
+import model.game
+import model.game.{
+  Case,
+  CaseFile,
+  CaseFileType,
+  CaseImpl,
+  CaseRole,
+  CaseSolution,
+  Character,
+  KGPrerequisite,
+  Plot,
+  Solution
+}
 import upickle.default.*
+
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -59,7 +73,7 @@ object ResponseParser:
       Right(Plot(dto.title, dto.content))
 
     private def convertCharacters(dtos: Set[CharacterDTO])
-        : Either[ProductionError, Set[Character]] =
+        : Either[ProductionError, Set[game.Character]] =
       val converted = dtos.map { dto =>
         parseCaseRole(dto.role).map(role => Character(dto.name, role))
       }

@@ -1,4 +1,6 @@
-package model.casegeneration
+package model.game
+
+import model.generation.{Constraint, Producer, ProductionError}
 
 trait Case:
   def plot: Plot
@@ -6,7 +8,7 @@ trait Case:
   def caseFiles: Set[CaseFile]
   def solution: Solution
 
-private final case class CaseImpl(
+final case class CaseImpl(
     plot: Plot,
     caseFiles: Set[CaseFile],
     characters: Set[Character],
