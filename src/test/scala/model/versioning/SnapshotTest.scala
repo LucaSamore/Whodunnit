@@ -1,6 +1,6 @@
 package model.versioning
 
-import model.versioning.Snapshot.Snapshotters.{
+import model.versioning.TestSnapshotters.{
   given_Snapshottable_ImmutableHistory,
   given_Snapshottable_Int,
   given_Snapshottable_MutableHistory,
