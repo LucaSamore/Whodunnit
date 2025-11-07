@@ -1,6 +1,16 @@
 package utils
 
-import model.casegeneration.*
+import model.game.{
+  Case,
+  CaseFile,
+  CaseFileType,
+  CaseRole,
+  CaseSolution,
+  Character,
+  KGPrerequisite,
+  Plot,
+  Solution
+}
 
 import java.time.LocalDateTime
 

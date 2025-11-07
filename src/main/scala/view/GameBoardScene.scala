@@ -1,8 +1,7 @@
 package view
 
 import controller.ControllerModule.Controller
-import model.casegeneration.Case
-import model.knowledgegraph.CaseKnowledgeGraph
+import model.game.CaseKnowledgeGraph
 import scalafx.Includes.eventClosureWrapperWithZeroParam
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
@@ -15,17 +14,15 @@ import scalafx.stage.{Modality, Stage}
 import scalafx.scene.text.{Font, FontWeight}
 import scalafx.scene.shape.Circle
 
-//class GameBoardScene(knowledgeGraph: CaseKnowledgeGraph) extends Scene(1280, 720):
-abstract class GameBoardScene[S] extends Scene:
+abstract class GameBoardScene[S] extends Scene(1280, 720):
+
   protected def controller: Controller[S]
   protected def navigateTo(page: ScenePage): Unit
 
   import Config.*
 
-  val mockKnowledgeGraph = CaseKnowledgeGraph()
-
   private val graphView = KnowledgeGraphView(
-    mockKnowledgeGraph,
+    controller.currentGameState.graph.getOrElse(new CaseKnowledgeGraph()),
     viewDimensions = (sceneWidth, sceneHeight)
   )
 
@@ -36,7 +33,7 @@ abstract class GameBoardScene[S] extends Scene:
       resizable = false
 
     val (plotTitle, plotContent) =
-      controller.getGameState.investigativeCase match
+      controller.currentGameState.investigativeCase match
         case Some(currentCase) =>
           (currentCase.plot.title, currentCase.plot.content)
         case None =>

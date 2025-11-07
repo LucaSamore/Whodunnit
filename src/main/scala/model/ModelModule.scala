@@ -1,7 +1,8 @@
 package model
 
-import model.casegeneration.*
+import model.generation.*
 import cats.effect.IO
+import model.game.{Case, GameState}
 
 object ModelModule:
 
@@ -10,10 +11,10 @@ object ModelModule:
     def gameState: GameState
 
     def generateNewCase(
-                         theme: Option[String],
-                         difficulty: Constraint.Difficulty,
-                         customConstraints: Seq[Constraint] = Seq.empty
-                       ): IO[Either[ProductionError, Case]]
+        theme: Option[String],
+        difficulty: Constraint.Difficulty,
+        customConstraints: Seq[Constraint] = Seq.empty
+    ): IO[Either[ProductionError, Case]]
 
   trait Provider[S]:
     val model: Model[S]
@@ -24,22 +25,22 @@ object ModelModule:
       import Producers.given
       val producer: Producer[Case] = summon[Producer[Case]]
 
+      override val gameState: GameState = GameState.empty()
+
       private def generateCase(constraints: Seq[Constraint])
-      : IO[Either[ProductionError, Case]] =
+          : IO[Either[ProductionError, Case]] =
         IO(producer.produce(constraints*))
 
       def generateNewCase(
-                           theme: Option[String],
-                           difficulty: Constraint.Difficulty,
-                           customConstraints: Seq[Constraint] = Seq.empty
-                         ): IO[Either[ProductionError, Case]] =
+          theme: Option[String],
+          difficulty: Constraint.Difficulty,
+          customConstraints: Seq[Constraint] = Seq.empty
+      ): IO[Either[ProductionError, Case]] =
         val baseConstraints = Seq(difficulty) ++ customConstraints
         val allConstraints = theme match
           case Some(t) => baseConstraints :+ Constraint.Theme(t)
           case None    => baseConstraints
         generateCase(allConstraints)
-
-      override val gameState: GameState = GameState.empty()
 
   trait Interface[S] extends Provider[S] with Component[S]:
     def Model(): Model[S] = new ModelImpl()

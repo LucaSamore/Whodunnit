@@ -1,0 +1,98 @@
+package model.game
+
+import model.game
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+
+class HistoryTest extends AnyWordSpec with Matchers:
+
+  "A game History" when:
+    "newly created" should:
+      val maxSize = 5
+      val gameHistory = GameHistory(maxSize)
+
+      "have current state as None" in:
+        gameHistory.currentState shouldBe None
+
+    "deep copied" should:
+      val maxSize = 5
+      val originalHistory = GameHistory(maxSize)
+      val copiedHistory = originalHistory.deepCopy()
+
+      "be a deep copy (equal but distinct instance)" in:
+        copiedHistory should not be theSameInstanceAs(originalHistory)
+        copiedHistory shouldEqual originalHistory
+
+    "elements are added" should:
+      val maxSize = 3
+      val originalHistory = GameHistory(maxSize)
+      case class MockCaseKnowledgeGraph(id: Int) extends CaseKnowledgeGraph:
+        override def deepCopy(): CaseKnowledgeGraph = MockCaseKnowledgeGraph(id)
+      val kg2 = MockCaseKnowledgeGraph(2)
+      originalHistory.addState(MockCaseKnowledgeGraph(1))
+      originalHistory.addState(kg2)
+
+      "maintain the correct current state" in:
+        originalHistory.currentState shouldBe Some(kg2)
+
+    "undo operation is called" should:
+      val maxSize = 3
+      val originalHistory = GameHistory(maxSize)
+      case class MockCaseKnowledgeGraph(id: Int)
+          extends game.CaseKnowledgeGraph:
+        override def deepCopy(): CaseKnowledgeGraph = MockCaseKnowledgeGraph(id)
+      val kg1 = MockCaseKnowledgeGraph(1)
+      originalHistory.addState(kg1)
+      originalHistory.addState(MockCaseKnowledgeGraph(2))
+
+      "revert to the previous state" in:
+        originalHistory.undo() shouldBe Some(kg1)
+
+    "redo operation is called" should:
+      val maxSize = 3
+      val originalHistory = GameHistory(maxSize)
+      case class MockCaseKnowledgeGraph(id: Int)
+          extends game.CaseKnowledgeGraph:
+        override def deepCopy(): CaseKnowledgeGraph = MockCaseKnowledgeGraph(id)
+      val kg2 = MockCaseKnowledgeGraph(2)
+      originalHistory.addState(MockCaseKnowledgeGraph(1))
+      originalHistory.addState(kg2)
+      originalHistory.addState(MockCaseKnowledgeGraph(3))
+
+      "reload to the subsequent state" in:
+        originalHistory.undo()
+        originalHistory.undo()
+        originalHistory.redo() shouldBe Some(kg2)
+
+    "combination of undo and redo are called" should:
+      val maxSize = 3
+      val originalHistory = GameHistory(maxSize)
+      case class MockCaseKnowledgeGraph(id: Int)
+          extends game.CaseKnowledgeGraph:
+        override def deepCopy(): CaseKnowledgeGraph = MockCaseKnowledgeGraph(id)
+
+      val kg1 = MockCaseKnowledgeGraph(1)
+      val kg2 = MockCaseKnowledgeGraph(2)
+      val kg3 = MockCaseKnowledgeGraph(3)
+      originalHistory.addState(kg1)
+      originalHistory.addState(kg2)
+      originalHistory.addState(kg3)
+
+      "work correctly" in:
+        originalHistory.redo() shouldBe None
+        originalHistory.currentState shouldBe Some(kg3)
+        originalHistory.undo() shouldBe Some(kg2)
+        originalHistory.redo() shouldBe Some(kg3)
+        originalHistory.currentState shouldBe Some(kg3)
+        originalHistory.redo() shouldBe None
+        originalHistory.currentState shouldBe Some(kg3)
+
+      "adding a new state after undo clears redo history" in:
+        originalHistory.undo() shouldBe Some(kg2)
+        originalHistory.undo() shouldBe Some(kg1)
+        val kg4 = MockCaseKnowledgeGraph(4)
+        originalHistory.addState(kg4)
+        originalHistory.redo() shouldBe None // redo should not be possible anymore
+        originalHistory.currentState shouldBe Some(kg4)
+        originalHistory.undo() shouldBe Some(kg1)
+        originalHistory.undo() shouldBe None
