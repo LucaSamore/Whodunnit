@@ -59,12 +59,14 @@ object ControllerModule:
                 println(
                   s"[Controller] Case generated successfully: ${generatedCase.plot.title}"
                 )
-                context.model.gameState.investigativeCase = Some(generatedCase)
+                context.model.gameState = context.model.initializeGame(generatedCase)
+                context.model.initializeGame(generatedCase)
                 context.model.gameState.graph = Some(
                   new CaseKnowledgeGraph().withNodes(
                     generatedCase.characters.toSeq: _*
                   )
                 )
+                context.model.startTimer()
                 onSuccess()
               case Left(error) =>
                 println(s"[Controller] Error during generation: $error")

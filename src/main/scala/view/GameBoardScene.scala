@@ -3,6 +3,7 @@ package view
 import controller.ControllerModule.Controller
 import model.game.CaseKnowledgeGraph
 import scalafx.Includes.eventClosureWrapperWithZeroParam
+import scalafx.application.Platform
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.control.{Button, ContentDisplay, Label}
@@ -11,7 +12,6 @@ import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight, TextAlignment}
 import scalafx.stage.{Modality, Stage}
-import scalafx.scene.text.{Font, FontWeight}
 import scalafx.scene.shape.Circle
 
 abstract class GameBoardScene[S] extends Scene(1280, 720):
@@ -25,6 +25,22 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
     controller.currentGameState.graph.getOrElse(new CaseKnowledgeGraph()),
     viewDimensions = (sceneWidth, sceneHeight)
   )
+
+  private val timerLabel = new Label("--:--"):
+    font = Font.font(
+      iconsFont.getFamily,
+      FontWeight.Bold,
+      28
+    )
+    textFill = Color.web("#FFFFFF")
+    alignment = Pos.Center
+
+  controller.currentGameState.timer.foreach { timer =>
+    timer.onTimeUpdate = timeString =>
+      Platform.runLater {
+        timerLabel.text = timeString
+      }
+  }
 
   private def showPlotPopup(): Unit =
     val popup = new Stage():
@@ -53,7 +69,6 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
       wrapText = true
       textAlignment = TextAlignment.Center
       maxWidth = 560
-      alignment = Pos.Center
       alignment = Pos.Center
 
     val closeButton = new Button("Close"):
@@ -241,7 +256,7 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
         minHeight = topBarHeight
         alignment = Pos.Center
         padding = Insets(topPadding, 0, 0, 0)
-        children = Seq( /* TODO: Timer */ )
+        children = Seq(timerLabel)
       right = new HBox:
         minWidth = boxWidth
         minHeight = topBarHeight
@@ -260,6 +275,7 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
         new StackPane:
           alignment = Pos.TopLeft
           padding = Insets(topBarHeight - 190, 0, 0, 70)
+          mouseTransparent = true
           children = Seq(notificationsPanel)
       )
 
