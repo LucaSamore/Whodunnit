@@ -60,7 +60,8 @@ object TimerLogic:
 class Timer(
     val totalDuration: Duration,
     val triggers: List[TriggerEvent] = List.empty,
-    var onTimeUpdate: String => Unit = _ => ()
+    var onTimeUpdate: String => Unit = _ => (),
+    var onTimeExpired: () => Unit = () => ()
 ):
 
   private var _state: TimerState = TimerState.Ready
@@ -94,7 +95,7 @@ class Timer(
 
         if _state == TimerState.Finished then
           println("[Model] Time over!")
-          onTimeUpdate("00:00")
+          onTimeExpired()
           stopTicker()
 
       case _ => ()
