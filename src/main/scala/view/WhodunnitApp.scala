@@ -15,9 +15,7 @@ object WhodunnitApp extends JFXApp3:
       minWidth = 1280
       minHeight = 720
 
-    launcher.view.showPage(
-      launcher.sceneFactory.createScene(ScenePage.Homepage)
-    )
+    launcher.view.showPage(ScenePage.Homepage)
 
   def changeScene(newScene: Scene): Unit =
     stage.scene = newScene
