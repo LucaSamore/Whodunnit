@@ -28,7 +28,7 @@ lazy val root = (project in file("."))
       "org.typelevel" %% "cats-core" % "2.13.0",
       "org.typelevel" %% "cats-effect" % "3.6.3"
     ),
-    mainClass := Some("Launcher"),
+    mainClass := Some("view.WhodunnitApp"),
     assembly / assemblyOutputPath := target.value / "scala-3" / "whodunnit.jar",
     assembly / assemblyMergeStrategy := {
       case PathList("META-INF", _*) => MergeStrategy.discard
