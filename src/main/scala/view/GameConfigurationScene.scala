@@ -1,6 +1,6 @@
 package view
 
-import controller.ControllerModule.Controller
+import controller.CaseGenerationController
 import scalafx.application.Platform
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
@@ -13,7 +13,7 @@ import scalafx.scene.text.{Font, Text, TextAlignment}
 
 abstract class GameConfigurationScene[S] extends Scene(1280, 720):
 
-  protected def controller: Controller[S]
+  protected def controller: CaseGenerationController[S]
   protected def navigateTo(page: ScenePage): Unit
 
   private object Theme:

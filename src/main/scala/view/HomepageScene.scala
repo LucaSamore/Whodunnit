@@ -5,24 +5,15 @@ import scalafx.scene.Scene
 import scalafx.scene.control.Button
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.layout.{
-  Background,
-  BackgroundImage,
-  BackgroundPosition,
-  BackgroundRepeat,
-  BackgroundSize,
-  BorderPane,
-  HBox,
-  VBox
-}
+import scalafx.scene.layout.{Background, BackgroundImage, BackgroundPosition, BackgroundRepeat, BackgroundSize, BorderPane, HBox, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight, Text, TextAlignment}
-import controller.ControllerModule.*
+import controller.HomePageController
 
 abstract class HomepageScene[S] extends Scene(1280, 720):
 
   // Dependencies are provided by the Component
-  protected def controller: Controller[S]
+  protected def controller: HomePageController[S]
   protected def navigateTo(page: ScenePage): Unit
 
   import Config._
