@@ -2,6 +2,7 @@ package view
 
 import controller.CaseGenerationController
 import scalafx.application.Platform
+import scalafx.beans.property.BooleanProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
@@ -90,6 +91,14 @@ abstract class GameConfigurationScene[S] extends Scene(1280, 720):
     createCustomRadioButton(difficultyToggleGroup)
   private val hardRadio: RadioButton =
     createCustomRadioButton(difficultyToggleGroup)
+
+  private val isConfigurationValid: BooleanProperty = BooleanProperty(false)
+
+  private def updateConfigurationValidity(): Unit =
+    val isThemeSelected = themeComboBox.value.value != null
+    val isDifficultySelected =
+      difficultyToggleGroup.selectedToggle.value != null
+    isConfigurationValid.value = isThemeSelected && isDifficultySelected
 
   private val loadingOverlay: StackPane = new StackPane:
     visible = false
@@ -198,6 +207,7 @@ abstract class GameConfigurationScene[S] extends Scene(1280, 720):
       val radioBox = radioButton.delegate.lookup(".radio")
       if radioBox != null then
         radioBox.setStyle(Styles.radioBox(isSelected))
+      updateConfigurationValidity()
     }
 
     radioButton
@@ -268,15 +278,14 @@ abstract class GameConfigurationScene[S] extends Scene(1280, 720):
     navigateTo(ScenePage.Homepage)
 
   private def handlePlay(): Unit =
-    val selectedTheme = Option(themeComboBox.value.value).getOrElse("None")
+    val selectedTheme = themeComboBox.value.value
 
     val selectedDifficulty =
-      Option(difficultyToggleGroup.selectedToggle.value).flatMap { toggle =>
-        if toggle == easyRadio.delegate then Some("Easy")
-        else if toggle == mediumRadio.delegate then Some("Medium")
-        else if toggle == hardRadio.delegate then Some("Hard")
-        else None
-      }.getOrElse("Easy")
+      if difficultyToggleGroup.selectedToggle.value == easyRadio.delegate then
+        "Easy"
+      else if difficultyToggleGroup.selectedToggle.value == mediumRadio.delegate
+      then "Medium"
+      else "Hard"
 
     println(s"[View] Selected Theme: $selectedTheme")
     println(s"[View] Selected Difficulty: $selectedDifficulty")
@@ -313,14 +322,21 @@ abstract class GameConfigurationScene[S] extends Scene(1280, 720):
     }
 
   private def createFooter(): HBox =
+    val playButton = createActionButton("Play", handlePlay())
+    playButton.disable <== !isConfigurationValid
+
     new HBox {
       spacing = 100
       alignment = Pos.Center
       children = Seq(
         createActionButton("Cancel", handleCancel()),
-        createActionButton("Play", handlePlay())
+        playButton
       )
     }
+
+  themeComboBox.value.onChange { (_, _, _) =>
+    updateConfigurationValidity()
+  }
 
   root = new StackPane {
     background = createBackground()
