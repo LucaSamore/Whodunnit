@@ -1,6 +1,11 @@
 package view
 
-import controller.{CaseGenerationController, ControllerModule, GameBoardController, HomePageController}
+import controller.{
+  CaseGenerationController,
+  ControllerModule,
+  GameBoardController,
+  HomePageController
+}
 import scalafx.application.Platform
 import scalafx.scene.Scene
 

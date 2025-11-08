@@ -1,15 +1,5 @@
 package model.game
 
-import model.game.{
-  Case,
-  CaseFile,
-  CaseFileType,
-  CaseImpl,
-  CaseRole,
-  CaseSolution,
-  Character,
-  Plot
-}
 import model.generation.{Constraint, Producer, ProductionError}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

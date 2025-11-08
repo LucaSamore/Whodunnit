@@ -66,7 +66,7 @@ object CaseGenerationController:
               println(
                 s"[Controller] Case generated successfully: ${generatedCase.plot.title}"
               )
-              //TODO Can we use model.gameState.initialize(...) -> add 'model' parameter?
+              // TODO Can we use model.gameState.initialize(...) -> add 'model' parameter?
               gameState.timer = Some(Timer(30.seconds, List.empty))
               gameState.investigativeCase = Some(generatedCase)
               gameState.graph = Some(

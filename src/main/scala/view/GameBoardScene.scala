@@ -48,20 +48,20 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
   }
 
   private case class PopupConfig(
-                                  title: String,
-                                  content: Seq[PopupContent],
-                                  width: Double = 600,
-                                  height: Double = 350,
-                                  backgroundColor: String = "rgba(240, 235, 220, 0.95)"
-                                )
+      title: String,
+      content: Seq[PopupContent],
+      width: Double = 600,
+      height: Double = 350,
+      backgroundColor: String = "rgba(240, 235, 220, 0.95)"
+  )
 
   private sealed trait PopupContent
   private case class TextContent(
-                                  text: String,
-                                  fontSize: Double = 14,
-                                  color: Color = Color.web("#1E1E1E"),
-                                  isBold: Boolean = false
-                                ) extends PopupContent
+      text: String,
+      fontSize: Double = 14,
+      color: Color = Color.web("#1E1E1E"),
+      isBold: Boolean = false
+  ) extends PopupContent
 
   private def showInfoPopup(config: PopupConfig): Unit =
     val popup = new Stage():
@@ -69,18 +69,19 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
       title = config.title
       resizable = false
 
-    val contentNodes = config.content.map { case TextContent(text, fontSize, color, isBold) =>
-      new Label(text):
-        font = Font.font(
-          iconsFont.getFamily,
-          if isBold then FontWeight.Bold else FontWeight.Normal,
-          fontSize
-        )
-        textFill = color
-        wrapText = true
-        textAlignment = TextAlignment.Center
-        maxWidth = config.width - 40
-        alignment = Pos.Center
+    val contentNodes = config.content.map {
+      case TextContent(text, fontSize, color, isBold) =>
+        new Label(text):
+          font = Font.font(
+            iconsFont.getFamily,
+            if isBold then FontWeight.Bold else FontWeight.Normal,
+            fontSize
+          )
+          textFill = color
+          wrapText = true
+          textAlignment = TextAlignment.Center
+          maxWidth = config.width - 40
+          alignment = Pos.Center
     }
 
     val closeButton = new Button("Close"):
@@ -130,15 +131,26 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
           PopupConfig(
             title = "Solution",
             content = Seq(
-              TextContent(mainMessage, fontSize = 48, color = messageColor, isBold = true),
-              TextContent(s"Culprit: ${currentCase.solution.culprit.name}", fontSize = 18, isBold = true),
+              TextContent(
+                mainMessage,
+                fontSize = 48,
+                color = messageColor,
+                isBold = true
+              ),
+              TextContent(
+                s"Culprit: ${currentCase.solution.culprit.name}",
+                fontSize = 18,
+                isBold = true
+              ),
               TextContent(s"Motive: ${currentCase.solution.motive}")
             )
           )
         )
 
       case None =>
-        println("Warning: No investigative case available to show the solution.")
+        println(
+          "Warning: No investigative case available to show the solution."
+        )
 
   private val notificationsPanel = NotificationsPanel(iconsFont)
 
