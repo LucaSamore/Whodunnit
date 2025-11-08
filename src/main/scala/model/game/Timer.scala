@@ -59,7 +59,9 @@ object TimerLogic:
 
 class Timer(
     val totalDuration: Duration,
-    val triggers: List[TriggerEvent] = List.empty
+    val triggers: List[TriggerEvent] = List.empty,
+    var onTimeUpdate: String => Unit = _ => (),
+    var onTimeExpired: () => Unit = () => ()
 ):
 
   private var _state: TimerState = TimerState.Ready
@@ -88,27 +90,25 @@ class Timer(
           println(s"\n ${trigger.message}")
         }
 
-        displayCurrentTime()
+        val formattedTime = TimerLogic.formatDuration(currentTimeRemaining)
+        onTimeUpdate(formattedTime)
 
         if _state == TimerState.Finished then
-          println("\n Time over!")
+          println("[Model] Time over!")
+          onTimeExpired()
           stopTicker()
 
       case _ => ()
 
-  private def displayCurrentTime(): Unit =
-    val remaining = TimerLogic.getRemainingTime(_state) match
-      case Some(remaining) =>
-        val formatted = TimerLogic.formatDuration(remaining)
-        println(s"️$formatted")
-      case None => None
-
   private def startTicker(): Unit =
-    val thread = new Thread(() => {
-      while _state != TimerState.Finished do
-        onTick()
-        Thread.sleep(1000)
-    })
+    val thread = new Thread(() =>
+      try
+        while _state != TimerState.Finished do
+          onTick()
+          Thread.sleep(1000)
+      catch
+        case _: InterruptedException => ()
+    )
     thread.setDaemon(true)
     thread.start()
     tickerThread = Some(thread)

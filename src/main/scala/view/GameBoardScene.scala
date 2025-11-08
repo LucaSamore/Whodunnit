@@ -1,8 +1,8 @@
 package view
 
-import controller.ControllerModule.Controller
 import model.game.CaseKnowledgeGraph
 import scalafx.Includes.eventClosureWrapperWithZeroParam
+import scalafx.application.Platform
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.control.{Button, ContentDisplay, Label}
@@ -11,10 +11,12 @@ import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight, TextAlignment}
 import scalafx.stage.{Modality, Stage}
+import scalafx.scene.shape.Circle
+import controller.GameBoardController
 
 abstract class GameBoardScene[S] extends Scene(1280, 720):
 
-  protected def controller: Controller[S]
+  protected def controller: GameBoardController[S]
   protected def navigateTo(page: ScenePage): Unit
 
   import Config.*
@@ -24,35 +26,63 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
     viewDimensions = (sceneWidth, sceneHeight)
   )
 
-  private def showPlotPopup(): Unit =
+  private val timerLabel = new Label("--:--"):
+    font = Font.font(
+      iconsFont.getFamily,
+      FontWeight.Bold,
+      28
+    )
+    textFill = Color.web("#FFFFFF")
+    alignment = Pos.Center
+
+  controller.currentGameState.timer.foreach { timer =>
+    timer.onTimeUpdate = timeString =>
+      Platform.runLater {
+        timerLabel.text = timeString
+      }
+
+    timer.onTimeExpired = () =>
+      Platform.runLater {
+        showGameEndPopup(hasWon = false)
+      }
+  }
+
+  private case class PopupConfig(
+      title: String,
+      content: Seq[PopupContent],
+      width: Double = 600,
+      height: Double = 350,
+      backgroundColor: String = "rgba(240, 235, 220, 0.95)"
+  )
+
+  private sealed trait PopupContent
+  private case class TextContent(
+      text: String,
+      fontSize: Double = 14,
+      color: Color = Color.web("#1E1E1E"),
+      isBold: Boolean = false
+  ) extends PopupContent
+
+  private def showInfoPopup(config: PopupConfig): Unit =
     val popup = new Stage():
       initModality(Modality.ApplicationModal)
-      title = "Case Plot"
+      title = config.title
       resizable = false
 
-    val (plotTitle, plotContent) =
-      controller.currentGameState.investigativeCase match
-        case Some(currentCase) =>
-          (currentCase.plot.title, currentCase.plot.content)
-        case None =>
-          ("No Case Available", "No plot information available.")
-
-    val titleLabel = new Label(plotTitle):
-      font = iconsFont
-      textFill = Color.web("#1E1E1E")
-      wrapText = true
-      textAlignment = TextAlignment.Center
-      maxWidth = 560
-      alignment = Pos.Center
-
-    val contentArea = new Label(plotContent):
-      text = plotContent
-      textFill = Color.web("#1E1E1E")
-      wrapText = true
-      textAlignment = TextAlignment.Center
-      maxWidth = 560
-      alignment = Pos.Center
-      alignment = Pos.Center
+    val contentNodes = config.content.map {
+      case TextContent(text, fontSize, color, isBold) =>
+        new Label(text):
+          font = Font.font(
+            iconsFont.getFamily,
+            if isBold then FontWeight.Bold else FontWeight.Normal,
+            fontSize
+          )
+          textFill = color
+          wrapText = true
+          textAlignment = TextAlignment.Center
+          maxWidth = config.width - 40
+          alignment = Pos.Center
+    }
 
     val closeButton = new Button("Close"):
       font = iconsFont
@@ -61,26 +91,83 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
 
     val popupContent = new VBox(15):
       padding = Insets(20)
-      alignment = Pos.TopCenter
-      children = Seq(
-        titleLabel,
-        contentArea,
-        new HBox():
-          alignment = Pos.Center
-          children = Seq(closeButton)
-      )
+      alignment = Pos.Center
+      children = contentNodes :+ closeButton
 
     val popupLayout = new BorderPane():
       center = popupContent
-      style =
-        """
-          -fx-background-color: rgba(240, 235, 220, 0.95);
-        """
+      style = s"-fx-background-color: ${config.backgroundColor};"
 
-    popup.scene = new Scene(600, 350):
+    popup.scene = new Scene(config.width, config.height):
       root = popupLayout
 
     popup.showAndWait()
+
+  private def showPlotPopup(): Unit =
+    val (plotTitle, plotContent) =
+      controller.currentGameState.investigativeCase match
+        case Some(currentCase) =>
+          (currentCase.plot.title, currentCase.plot.content)
+        case None =>
+          ("No Case Available", "No plot information available.")
+
+    showInfoPopup(
+      PopupConfig(
+        title = "Plot",
+        content = Seq(
+          TextContent(plotTitle, fontSize = 18, isBold = true),
+          TextContent(plotContent)
+        )
+      )
+    )
+
+  private def showGameEndPopup(hasWon: Boolean): Unit =
+    controller.currentGameState.investigativeCase match
+      case Some(currentCase) =>
+        val mainMessage = if hasWon then "YOU WON!" else "YOU LOSE!"
+        val messageColor = if hasWon then Color.Green else Color.Red
+
+        showInfoPopup(
+          PopupConfig(
+            title = "Solution",
+            content = Seq(
+              TextContent(
+                mainMessage,
+                fontSize = 48,
+                color = messageColor,
+                isBold = true
+              ),
+              TextContent(
+                s"Culprit: ${currentCase.solution.culprit.name}",
+                fontSize = 18,
+                isBold = true
+              ),
+              TextContent(s"Motive: ${currentCase.solution.motive}")
+            )
+          )
+        )
+
+      case None =>
+        println(
+          "Warning: No investigative case available to show the solution."
+        )
+
+  private val notificationsPanel = NotificationsPanel(iconsFont)
+
+  private val notificationBadge = new StackPane:
+    prefWidth = 22
+    prefHeight = 22
+    translateX = 25
+    translateY = -30
+    mouseTransparent = true
+    visible = true
+    private val circle = new Circle:
+      radius = 8
+      fill = Color.Red
+      stroke = Color.White
+      strokeWidth = 2
+
+    children = Seq(circle)
 
   private def createIconButton(
       description: String,
@@ -116,10 +203,15 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
     60,
     60,
     () => {
-      println("Notifications button clicked")
-      // Handle notifications action here
+      notificationsPanel.toggleVisibility()
+      notificationBadge.visible = false
     }
   )
+
+  private val notificationsButtonContainer = new StackPane:
+    alignment = Pos.TopCenter
+    children = Seq(notificationsButton, notificationBadge)
+
   private val plotButton = createIconButton(
     "Plot",
     parchmentImage,
@@ -157,7 +249,7 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
     60,
     () => {
       println("Accuse button clicked")
-      navigateTo(ScenePage.Accuse)
+      showGameEndPopup(hasWon = true)
     }
   )
   private val undoButton = createIconButton(
@@ -211,13 +303,13 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
         minHeight = topBarHeight
         alignment = Pos.CenterLeft
         padding = Insets(topPadding, 10, 0, 70)
-        children = Seq(notificationsButton)
+        children = Seq(notificationsButtonContainer)
       center = new HBox:
         minWidth = boxWidth
         minHeight = topBarHeight
         alignment = Pos.Center
         padding = Insets(topPadding, 0, 0, 0)
-        children = Seq( /* TODO: Timer */ )
+        children = Seq(timerLabel)
       right = new HBox:
         minWidth = boxWidth
         minHeight = topBarHeight
@@ -232,6 +324,12 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
           prefWidth = sceneWidth
           prefHeight = sceneHeight
           children = Seq(graphView)
+        ,
+        new StackPane:
+          alignment = Pos.TopLeft
+          padding = Insets(topBarHeight - 190, 0, 0, 70)
+          pickOnBounds = false
+          children = Seq(notificationsPanel)
       )
 
     bottom = new BorderPane:
