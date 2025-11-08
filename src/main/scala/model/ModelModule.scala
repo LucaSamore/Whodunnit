@@ -1,20 +1,13 @@
 package model
 
 import model.generation.*
-import cats.effect.IO
 import model.game.{Case, GameState}
 
 object ModelModule:
 
   trait Model[S]:
     val producer: Producer[Case]
-    def gameState: GameState
-
-    def generateNewCase(
-        theme: Option[String],
-        difficulty: Constraint.Difficulty,
-        customConstraints: Seq[Constraint] = Seq.empty
-    ): IO[Either[ProductionError, Case]]
+    var gameState: GameState
 
   trait Provider[S]:
     val model: Model[S]
@@ -24,23 +17,7 @@ object ModelModule:
     class ModelImpl extends Model[S]:
       import Producers.given
       val producer: Producer[Case] = summon[Producer[Case]]
-
-      override val gameState: GameState = GameState.empty()
-
-      private def generateCase(constraints: Seq[Constraint])
-          : IO[Either[ProductionError, Case]] =
-        IO(producer.produce(constraints*))
-
-      def generateNewCase(
-          theme: Option[String],
-          difficulty: Constraint.Difficulty,
-          customConstraints: Seq[Constraint] = Seq.empty
-      ): IO[Either[ProductionError, Case]] =
-        val baseConstraints = Seq(difficulty) ++ customConstraints
-        val allConstraints = theme match
-          case Some(t) => baseConstraints :+ Constraint.Theme(t)
-          case None    => baseConstraints
-        generateCase(allConstraints)
+      var gameState: GameState = GameState.empty()
 
   trait Interface[S] extends Provider[S] with Component[S]:
     def Model(): Model[S] = new ModelImpl()

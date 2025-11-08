@@ -1,7 +1,6 @@
 package model.game
 
 import model.game.TimerState.*
-import model.game.{Timer, TimerLogic, TimerState, TriggerEvent}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

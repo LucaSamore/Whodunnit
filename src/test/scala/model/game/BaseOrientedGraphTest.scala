@@ -1,6 +1,5 @@
 package model.game
 
-import model.game.BaseOrientedGraph
 import model.hint.Metric.density
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
