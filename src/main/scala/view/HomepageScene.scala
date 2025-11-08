@@ -5,7 +5,16 @@ import scalafx.scene.Scene
 import scalafx.scene.control.Button
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.layout.{Background, BackgroundImage, BackgroundPosition, BackgroundRepeat, BackgroundSize, BorderPane, HBox, VBox}
+import scalafx.scene.layout.{
+  Background,
+  BackgroundImage,
+  BackgroundPosition,
+  BackgroundRepeat,
+  BackgroundSize,
+  BorderPane,
+  HBox,
+  VBox
+}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight, Text, TextAlignment}
 import controller.HomePageController
