@@ -101,14 +101,14 @@ class Timer(
       case _ => ()
 
   private def startTicker(): Unit =
-    val thread = new Thread(() => {
+    val thread = new Thread(() =>
       try
         while _state != TimerState.Finished do
           onTick()
           Thread.sleep(1000)
       catch
         case _: InterruptedException => ()
-    })
+    )
     thread.setDaemon(true)
     thread.start()
     tickerThread = Some(thread)

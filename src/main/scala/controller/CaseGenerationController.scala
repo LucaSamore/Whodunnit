@@ -6,6 +6,8 @@ import model.generation.*
 import model.game.*
 import model.generation.Producers.given
 
+import scala.concurrent.duration.DurationInt
+
 trait CaseGenerationController[S]
     extends ControllerModule.Controller[S]:
 
@@ -64,12 +66,15 @@ object CaseGenerationController:
               println(
                 s"[Controller] Case generated successfully: ${generatedCase.plot.title}"
               )
+              //TODO Can we use model.gameState.initialize(...) -> add 'model' parameter?
+              gameState.timer = Some(Timer(30.seconds, List.empty))
               gameState.investigativeCase = Some(generatedCase)
               gameState.graph = Some(
                 new CaseKnowledgeGraph().withNodes(
                   generatedCase.characters.toSeq: _*
                 )
               )
+              gameState.timer.foreach(_.start())
               onSuccess()
             case Left(error) =>
               println(s"[Controller] Error during generation: $error")

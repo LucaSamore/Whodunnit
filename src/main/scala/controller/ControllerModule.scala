@@ -14,6 +14,7 @@ object ControllerModule:
   trait Provider[S]:
     def homePageController: HomePageController[S]
     def caseGenerationController: CaseGenerationController[S]
+    def gameBoardController: GameBoardController[S]
 
   type Requirements[S] =
     model.ModelModule.Provider[S] & view.ViewModule.Provider[S]
@@ -28,9 +29,15 @@ object ControllerModule:
         : CaseGenerationController[S] =
       CaseGenerationController[S](context.model.gameState)
 
+    protected def createGameBoardController()
+        : GameBoardController[S] =
+      GameBoardController[S](context.model.gameState)
+
   trait Interface[S] extends Provider[S] with Component[S]:
     self: Requirements[S] =>
     override lazy val homePageController: HomePageController[S] =
       createHomePageController()
     override lazy val caseGenerationController: CaseGenerationController[S] =
       createCaseGenerationController()
+    override lazy val gameBoardController: GameBoardController[S] =
+      createGameBoardController()

@@ -1,6 +1,6 @@
 package view
 
-import controller.{CaseGenerationController, ControllerModule, HomePageController}
+import controller.{CaseGenerationController, ControllerModule, GameBoardController, HomePageController}
 import scalafx.application.Platform
 import scalafx.scene.Scene
 
@@ -38,8 +38,8 @@ object ViewModule:
           onNavigate(page)
 
       private class GameBoardSceneImpl extends GameBoardScene[S]:
-        override protected def controller: ControllerModule.Controller[S] =
-          context.caseGenerationController
+        override protected def controller: GameBoardController[S] =
+          context.gameBoardController
         override protected def navigateTo(page: ScenePage): Unit =
           onNavigate(page)
 

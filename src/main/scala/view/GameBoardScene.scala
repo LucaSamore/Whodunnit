@@ -1,6 +1,5 @@
 package view
 
-import controller.ControllerModule.Controller
 import model.game.CaseKnowledgeGraph
 import scalafx.Includes.eventClosureWrapperWithZeroParam
 import scalafx.application.Platform
@@ -13,10 +12,11 @@ import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight, TextAlignment}
 import scalafx.stage.{Modality, Stage}
 import scalafx.scene.shape.Circle
+import controller.GameBoardController
 
 abstract class GameBoardScene[S] extends Scene(1280, 720):
 
-  protected def controller: Controller[S]
+  protected def controller: GameBoardController[S]
   protected def navigateTo(page: ScenePage): Unit
 
   import Config.*
@@ -132,7 +132,7 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
             content = Seq(
               TextContent(mainMessage, fontSize = 48, color = messageColor, isBold = true),
               TextContent(s"Culprit: ${currentCase.solution.culprit.name}", fontSize = 18, isBold = true),
-              TextContent(s"Motive: ${currentCase.solution.motive}", fontSize = 14)
+              TextContent(s"Motive: ${currentCase.solution.motive}")
             )
           )
         )
