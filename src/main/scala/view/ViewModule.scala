@@ -1,11 +1,6 @@
 package view
 
-import controller.{
-  CaseGenerationController,
-  ControllerModule,
-  GameBoardController,
-  HomePageController
-}
+import controller.{CaseGenerationController, CluesManagementController, ControllerModule, GameBoardController, HomePageController}
 import scalafx.application.Platform
 import scalafx.scene.Scene
 
@@ -49,8 +44,8 @@ object ViewModule:
           onNavigate(page)
 
       private class CluesManagementSceneImpl extends CluesManagementScene[S]:
-        override protected def controller: ControllerModule.Controller[S] =
-          context.caseGenerationController
+        override protected def controller: CluesManagementController[S] =
+          context.cluesManagementController
         override protected def navigateTo(page: ScenePage): Unit =
           onNavigate(page)
 

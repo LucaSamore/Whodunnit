@@ -15,6 +15,7 @@ object ControllerModule:
     def homePageController: HomePageController[S]
     def caseGenerationController: CaseGenerationController[S]
     def gameBoardController: GameBoardController[S]
+    def cluesManagementController: CluesManagementController[S]
 
   type Requirements[S] =
     model.ModelModule.Provider[S] & view.ViewModule.Provider[S]
@@ -33,6 +34,10 @@ object ControllerModule:
         : GameBoardController[S] =
       GameBoardController[S](context.model.gameState)
 
+    protected def createCluesManagementController()
+        : CluesManagementController[S] =
+      CluesManagementController[S](context.model.gameState)
+
   trait Interface[S] extends Provider[S] with Component[S]:
     self: Requirements[S] =>
     override lazy val homePageController: HomePageController[S] =
@@ -41,3 +46,5 @@ object ControllerModule:
       createCaseGenerationController()
     override lazy val gameBoardController: GameBoardController[S] =
       createGameBoardController()
+    override lazy val cluesManagementController: CluesManagementController[S] =
+      createCluesManagementController()
