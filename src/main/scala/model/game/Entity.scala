@@ -4,10 +4,7 @@ import java.time.LocalDateTime
 
 sealed trait Entity
 
-final case class Character(
-    name: String,
-    role: CaseRole
-) extends Entity
+final case class Character(name: String, role: CaseRole) extends Entity
 
 final case class CaseFile(
     title: String,
@@ -18,10 +15,7 @@ final case class CaseFile(
     date: Option[LocalDateTime]
 ) extends Entity
 
-final case class CustomEntity(
-    entityType: String,
-    content: Option[String]
-) extends Entity
+final case class CustomEntity(entityType: String, content: Option[String]) extends Entity
 
 enum CaseRole:
   case Suspect

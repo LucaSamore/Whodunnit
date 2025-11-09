@@ -2,21 +2,26 @@ package model.generation
 
 sealed trait Constraint
 
+enum Difficulty extends Constraint:
+  case Easy
+  case Medium
+  case Hard
+
+enum HintKind extends Constraint:
+  case Helpful
+  case Misleading
+
+case class Theme(value: String) extends Constraint
+
+case class CharactersRange(min: Int, max: Int) extends Constraint
+
+case class CaseFilesRange(min: Int, max: Int) extends Constraint
+
+case class PrerequisitesRange(min: Int, max: Int) extends Constraint
+
+case class Context(content: String) extends Constraint
+
 object Constraint:
-  enum Difficulty extends Constraint:
-    case Easy, Medium, Hard
-
-  enum HintKind extends Constraint:
-    case Helpful
-    case Misleading
-
-  case class Context(content: String) extends Constraint
-
-  case class Theme(value: String) extends Constraint
-  case class CharactersRange(min: Int, max: Int) extends Constraint
-  case class CaseFilesRange(min: Int, max: Int) extends Constraint
-  case class PrerequisitesRange(min: Int, max: Int) extends Constraint
-
   extension (c: Constraint)
     def toPromptDescription: String = c match
       case Theme(value)                 => s"Theme: $value"
@@ -33,7 +38,6 @@ object Constraint:
       case _: Difficulty => true
       case _             => false
     }
-
     val expandedFromDifficulty = difficulties.headOption match
       case Some(Difficulty.Easy) =>
         DifficultyPresets.easy()
@@ -43,7 +47,6 @@ object Constraint:
         DifficultyPresets.hard()
       case _ =>
         Set.empty[Constraint]
-
     val explicitConstraints = others.toSet
     val uniqueDerivedConstraints = expandedFromDifficulty.filterNot { dc =>
       explicitConstraints.exists(_.getClass == dc.getClass)
@@ -51,7 +54,6 @@ object Constraint:
     (explicitConstraints ++ uniqueDerivedConstraints).toSeq
 
 object DifficultyPresets:
-  import Constraint.*
 
   def easy(): Set[Constraint] =
     Set(

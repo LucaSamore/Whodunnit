@@ -9,4 +9,4 @@ object Hint:
   def apply(constraints: Constraint*)(using producer: Producer[Hint]): Either[ProductionError, Hint] =
     producer.produce(constraints*)
 
-final case class HintImpl(override val description: String) extends Hint
+private[model] final case class HintImpl(override val description: String) extends Hint

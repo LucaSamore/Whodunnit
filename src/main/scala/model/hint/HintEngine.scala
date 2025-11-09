@@ -1,8 +1,8 @@
 package model.hint
 
 import model.game.BaseOrientedGraph
-import model.generation.Constraint.HintKind
-import model.generation.Constraint.HintKind.{Helpful, Misleading}
+import model.generation.HintKind
+import model.generation.HintKind.{Helpful, Misleading}
 import model.hint.Metric.{coverageAgainst, density}
 import model.hint.Trend.{Increasing, Stable, Worsening}
 

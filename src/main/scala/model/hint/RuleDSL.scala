@@ -1,7 +1,7 @@
 package model.hint
 
 import model.hint.Metric.MetricValue
-import model.generation.Constraint.HintKind
+import model.generation.HintKind
 
 /** A composable condition that evaluates a predicate over a list of objects.
   *
