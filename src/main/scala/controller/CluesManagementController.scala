@@ -1,14 +1,16 @@
 package controller
 
-import model.game.*
+import model.ModelModule
 
-trait CluesManagementController[S]
-  extends ControllerModule.Controller[S]
+trait CluesManagementController
+  extends ControllerModule.Controller
 
 object CluesManagementController:
-  def apply[S](gameState: GameState): CluesManagementController[S] =
-    new CluesManagementControllerImpl[S](gameState)
+  def apply(model: ModelModule.Model): CluesManagementController =
+    new CluesManagementControllerImpl(model)
 
-  private class CluesManagementControllerImpl[S](gameState: GameState)
-    extends ControllerModule.AbstractController[S](gameState)
-      with CluesManagementController[S]
+  private class CluesManagementControllerImpl(
+                                               model: ModelModule.Model
+                                             )
+    extends ControllerModule.AbstractController(model)
+      with CluesManagementController

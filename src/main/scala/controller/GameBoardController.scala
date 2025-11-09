@@ -1,14 +1,14 @@
 package controller
 
-import model.game.*
+import model.ModelModule
 
-trait GameBoardController[S]
-    extends ControllerModule.Controller[S]
+trait GameBoardController extends ControllerModule.Controller
 
 object GameBoardController:
-  def apply[S](gameState: GameState): GameBoardController[S] =
-    new GameBoardControllerImpl[S](gameState)
+  def apply(model: ModelModule.Model): GameBoardController =
+    new GameBoardControllerImpl(model)
 
-  private class GameBoardControllerImpl[S](gameState: GameState)
-      extends ControllerModule.AbstractController[S](gameState)
-      with GameBoardController[S]
+  private class GameBoardControllerImpl(
+      model: ModelModule.Model
+  ) extends ControllerModule.AbstractController(model)
+      with GameBoardController

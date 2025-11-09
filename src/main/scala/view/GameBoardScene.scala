@@ -14,9 +14,9 @@ import scalafx.stage.{Modality, Stage}
 import scalafx.scene.shape.Circle
 import controller.GameBoardController
 
-abstract class GameBoardScene[S] extends Scene(1280, 720):
+abstract class GameBoardScene extends Scene(1280, 720):
 
-  protected def controller: GameBoardController[S]
+  protected def controller: GameBoardController
   protected def navigateTo(page: ScenePage): Unit
 
   import Config.*
