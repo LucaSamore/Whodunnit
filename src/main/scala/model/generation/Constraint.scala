@@ -10,6 +10,8 @@ object Constraint:
     case Helpful
     case Misleading
 
+  case class Context(content: String) extends Constraint
+
   case class Theme(value: String) extends Constraint
   case class CharactersRange(min: Int, max: Int) extends Constraint
   case class CaseFilesRange(min: Int, max: Int) extends Constraint
@@ -17,15 +19,14 @@ object Constraint:
 
   extension (c: Constraint)
     def toPromptDescription: String = c match
-      case Theme(value) =>
-        s"Theme: $value"
-      case CharactersRange(min, max) =>
-        s"Number of characters: between $min and $max"
-      case CaseFilesRange(min, max) =>
-        s"Number of case files: between $min and $max"
-      case PrerequisitesRange(min, max) =>
-        s"Solution prerequisites: between $min and $max"
-      case _: Difficulty => ""
+      case Theme(value)                 => s"Theme: $value"
+      case CharactersRange(min, max)    => s"Number of characters: between $min and $max"
+      case CaseFilesRange(min, max)     => s"Number of case files: between $min and $max"
+      case PrerequisitesRange(min, max) => s"Solution prerequisites: between $min and $max"
+      case HintKind.Helpful             => s"The hint to be generated must be ${HintKind.Helpful.toString}"
+      case HintKind.Misleading          => s"The hint to be generated must be ${HintKind.Misleading.toString}"
+      case Context(content)             => s"Additional context:\n\n $content"
+      case _: Difficulty                => ""
 
   def expandConstraints(constraints: Seq[Constraint]): Seq[Constraint] =
     val (difficulties, others) = constraints.partition {
