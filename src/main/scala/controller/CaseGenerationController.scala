@@ -5,6 +5,8 @@ import cats.effect.unsafe.implicits.global
 import model.ModelModule
 import model.generation.*
 import model.game.*
+import model.hint.HintEngine
+import model.hint.Rules.stableDensity
 import model.generation.Producers.given
 import scala.concurrent.duration.*
 
@@ -80,7 +82,15 @@ object CaseGenerationController:
                     TriggerEvent(
                       20.seconds,
                       () => {
-                        println("Hello! Trigger 1 has been fired")
+                        val history = model.state.history.get.states.toList
+
+                        // TODO: may be empty -> check required
+                        val hintOpt = HintEngine.evaluate(history)(using stableDensity)
+
+                        // We assume hintOpt is not empty, just for test purposes
+                        println(s"Generated Hint: ${hintOpt.get.description}")
+
+                        model.addHint(hintOpt.get)
                       }
                     ),
                     TriggerEvent(

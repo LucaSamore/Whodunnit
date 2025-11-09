@@ -17,6 +17,8 @@ object Rules:
   import model.hint.TrendAnalyzers.simpleTrendAnalyzer
   import model.generation.Producers.given
 
+  given stableDensity: Rule[BaseOrientedGraph] = when(density) == Stable hence Hint(Helpful).toOption.get
+
   def increasingCoverage(solution: BaseOrientedGraph): Rule[BaseOrientedGraph] =
     given rule: Rule[BaseOrientedGraph] =
       when(coverageAgainst(solution)) == Increasing hence Hint(Misleading).toOption.get

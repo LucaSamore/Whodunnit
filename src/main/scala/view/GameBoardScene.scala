@@ -220,7 +220,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
     undoButton.opacity = if controller.canUndo then 1.0 else 0.5
     redoButton.opacity = if controller.canRedo then 1.0 else 0.5
 
-  private val notificationsPanel = NotificationsPanel(iconsFont)
+  private val notificationsPanel = NotificationsPanel(iconsFont, controller.currentGameState.hints)
 
   private val notificationBadge = new StackPane:
     prefWidth = 22
