@@ -10,6 +10,7 @@ import model.game.{
   CaseSolution,
   Character,
   Hint,
+  HintImpl,
   KGPrerequisite,
   Plot,
   Solution
@@ -27,14 +28,24 @@ object ResponseParser:
   import CaseDTO.given
 
   given ResponseParser[Hint] with
-    override def parse(jsonString: String): Either[ProductionError, Hint] = ???
+    override def parse(jsonString: String): Either[ProductionError, Hint] =
+      val cleanedJson = cleanJson(jsonString)
+      print(cleanedJson)
+      try
+        val hintDTO = read[HintDTO](cleanedJson)
+        Right(convertDTOToHint(hintDTO))
+      catch
+        case e: Exception =>
+          Left(ProductionError.ParseError(
+            s"Unexpected error during parsing: ${e.getMessage}\n${e.getStackTrace.mkString("\n")}"
+          ))
+
+    private def convertDTOToHint(dto: HintDTO): Hint = HintImpl(description = dto.description)
 
   given ResponseParser[Case] with
     override def parse(jsonString: String): Either[ProductionError, Case] =
       val cleanedJson = cleanJson(jsonString)
-
       println(cleanedJson)
-
       try
         val caseDTO = read[CaseDTO](cleanedJson)
         convertDTOToCase(caseDTO)
@@ -43,9 +54,6 @@ object ResponseParser:
           Left(ProductionError.ParseError(
             s"Unexpected error during parsing: ${e.getMessage}\n${e.getStackTrace.mkString("\n")}"
           ))
-
-    private def cleanJson(input: String): String =
-      input.replaceAll("```json", "").replaceAll("```", "").trim
 
     private def convertDTOToCase(dto: CaseDTO): Either[ProductionError, Case] =
       val result =
@@ -184,3 +192,6 @@ object ResponseParser:
           Left(ProductionError.ParseError(
             s"Invalid date format: $dateStr - ${e.getMessage}"
           ))
+
+  private def cleanJson(input: String): String =
+    input.replaceAll("```json", "").replaceAll("```", "").trim

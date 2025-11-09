@@ -30,6 +30,8 @@ case class PrerequisiteDTO(
     semantic: String
 )
 
+case class HintDTO(description: String)
+
 object CaseDTO {
   given ReadWriter[PlotDTO] = macroRW
   given ReadWriter[CharacterDTO] = macroRW
@@ -37,4 +39,5 @@ object CaseDTO {
   given ReadWriter[PrerequisiteDTO] = macroRW
   given ReadWriter[SolutionDTO] = macroRW
   given ReadWriter[CaseDTO] = macroRW
+  given ReadWriter[HintDTO] = macroRW
 }
