@@ -8,6 +8,9 @@ import model.game.*
 import model.generation.Producers.given
 import scala.concurrent.duration.*
 
+// TODO: Change name to something like "GamaInitializationController",
+//  as this controller is not only responsible for the case generation,
+//  but also for the initialization of other game objects
 trait CaseGenerationController extends ControllerModule.Controller:
 
   def onPlayClicked(
@@ -71,7 +74,23 @@ object CaseGenerationController:
                   new CaseKnowledgeGraph().withNodes(
                     generatedCase.characters.toSeq: _*
                   )
-                val timer = Timer(30.seconds, List.empty)
+                val timer = Timer(
+                  totalDuration = 30.seconds,
+                  triggers = List(
+                    TriggerEvent(
+                      20.seconds,
+                      () => {
+                        println("Hello! Trigger 1 has been fired")
+                      }
+                    ),
+                    TriggerEvent(
+                      10.seconds,
+                      () => {
+                        println("Hello! Trigger 2 has been fired")
+                      }
+                    )
+                  )
+                )
                 model.updateState(_ =>
                   GameState.initialize(
                     generatedCase,

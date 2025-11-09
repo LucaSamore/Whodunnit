@@ -2,7 +2,7 @@ package model.game
 
 import scala.concurrent.duration.{Duration, DurationLong}
 
-case class TriggerEvent(triggerAtRemaining: Duration, message: String)
+case class TriggerEvent(triggerAtRemaining: Duration, event: () => Unit)
 
 enum TimerState:
   case Ready
@@ -87,7 +87,7 @@ class Timer(
           triggers
         )
         activatedTriggers.foreach { trigger =>
-          println(s"\n ${trigger.message}")
+          trigger.event()
         }
 
         val formattedTime = TimerLogic.formatDuration(currentTimeRemaining)
