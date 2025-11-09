@@ -5,7 +5,7 @@ import scalafx.Includes.eventClosureWrapperWithZeroParam
 import scalafx.application.Platform
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
-import scalafx.scene.control.{Button, ContentDisplay, Label}
+import scalafx.scene.control.{Button, ContentDisplay, Label, ScrollPane}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
@@ -94,12 +94,25 @@ abstract class GameBoardScene extends Scene(1280, 720):
       alignment = Pos.Center
       children = contentNodes :+ closeButton
 
+    val scrollPane = new ScrollPane:
+      content = popupContent
+      fitToWidth = true
+
     val popupLayout = new BorderPane():
-      center = popupContent
-      style = s"-fx-background-color: ${config.backgroundColor};"
+      center = scrollPane
+      background = Background(Array(BackgroundFill(
+        Color.web(config.backgroundColor),
+        CornerRadii.Empty,
+        Insets.Empty
+      )))
 
     popup.scene = new Scene(config.width, config.height):
       root = popupLayout
+
+    // To ensure the scroll is at the top when shown (after rendering)
+    Platform.runLater {
+      scrollPane.vvalue = 0.0
+    }
 
     popup.showAndWait()
 
