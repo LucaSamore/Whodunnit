@@ -24,8 +24,19 @@ object PromptBuilder:
       }
 
   given PromptBuilder[Hint] with
-    override val systemPrompt: String = "TODO :)"
-    override def build(constraints: Constraint*): Either[ProductionError, String] = ???
+    override val systemPrompt: String =
+      "You are a hint generator for an investigative game. Hints can be helpful or misleading"
+
+    // TODO: refactor duplicate code
+    override def build(constraints: Constraint*): Either[ProductionError, String] =
+      loadTemplate("/prompts/hintGenerationPrompt.txt").map { template =>
+        val expandedConstraints = Constraint.expandConstraints(constraints)
+        val constraintsText = expandedConstraints
+          .map(_.toPromptDescription)
+          .mkString("\n- ", "\n- ", "")
+        template.replace("{{CONSTRAINTS}}", constraintsText)
+
+      }
 
   private def loadTemplate(path: String): Either[ProductionError, String] =
     Try:
