@@ -19,6 +19,24 @@ object ModelModule:
     def addGraphToHistory(graph: game.CaseKnowledgeGraph): GameState =
       updateState(_.addGraphToHistory(graph))
 
+    def undo(): Option[game.CaseKnowledgeGraph] =
+      state.history.flatMap { history =>
+        val (newHistory, previousGraph) = history.undo()
+        previousGraph.map { graph =>
+          updateState(_.withHistory(newHistory))
+          graph
+        }
+      }
+
+    def redo(): Option[game.CaseKnowledgeGraph] =
+      state.history.flatMap { history =>
+        val (newHistory, nextGraph) = history.redo()
+        nextGraph.map { graph =>
+          updateState(_.withHistory(newHistory))
+          graph
+        }
+      }
+
   trait Provider:
     def model: Model
 
