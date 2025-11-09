@@ -37,6 +37,8 @@ case class GameHistory(
   override def deepCopy(): History =
     val newBuffer = RingNavigableBuffer[CaseKnowledgeGraph](timeline.capacity)
     timeline.elements.foreach(kg => newBuffer.push(kg.deepCopy()))
+    // Restore cursor position
+    (0 until timeline.currentPosition).foreach(_ => newBuffer.moveBackward())
     GameHistory(historySize, newBuffer)
 
   override def states: Seq[CaseKnowledgeGraph] = timeline.elements
