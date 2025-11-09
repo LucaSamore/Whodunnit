@@ -69,19 +69,23 @@ class HistoryTest extends AnyWordSpec with Matchers:
 
     "redo operation is called" should:
       val maxSize = 3
-      val originalHistory = GameHistory(maxSize)
       case class MockCaseKnowledgeGraph(id: Int)
           extends game.CaseKnowledgeGraph:
         override def deepCopy(): CaseKnowledgeGraph = MockCaseKnowledgeGraph(id)
+
+      val kg1 = MockCaseKnowledgeGraph(1)
       val kg2 = MockCaseKnowledgeGraph(2)
-      originalHistory.addState(MockCaseKnowledgeGraph(1))
-      originalHistory.addState(kg2)
-      originalHistory.addState(MockCaseKnowledgeGraph(3))
+      val kg3 = MockCaseKnowledgeGraph(3)
+      val history = GameHistory(maxSize)
+        .addState(kg1)
+        .addState(kg2)
+        .addState(kg3)
 
       "reload to the subsequent state" in:
-        originalHistory.undo()
-        originalHistory.undo()
-        originalHistory.redo() shouldBe Some(kg2)
+        val (h1, _) = history.undo()
+        val (h2, _) = h1.undo()
+        val (h3, state) = h2.redo()
+        state shouldBe Some(kg2)
 
     /*
     "combination of undo and redo are called" should:
