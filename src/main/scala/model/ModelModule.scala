@@ -37,6 +37,30 @@ object ModelModule:
         }
       }
 
+    def saveSnapshot(): Unit =
+      state.history.foreach { history =>
+        state.timeMachine.foreach { tm =>
+          tm.save(history)
+        }
+      }
+
+    def restoreSnapshot(): Option[game.CaseKnowledgeGraph] =
+      state.timeMachine.flatMap { tm =>
+        tm.restore().map { restoredHistory =>
+          updateState(_.withHistory(restoredHistory))
+          tm.clear()
+          restoredHistory.currentState.getOrElse(
+            new game.CaseKnowledgeGraph()
+          )
+        }
+      }
+
+    def hasSnapshot: Boolean =
+      state.timeMachine.exists(_.hasSnapshot)
+
+    def clearSnapshot(): Unit =
+      state.timeMachine.foreach(_.clear())
+
   trait Provider:
     def model: Model
 

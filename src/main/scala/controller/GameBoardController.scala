@@ -8,6 +8,10 @@ trait GameBoardController extends ControllerModule.Controller:
   def redo(): Option[CaseKnowledgeGraph]
   def canUndo: Boolean
   def canRedo: Boolean
+  def saveSnapshot(): Unit
+  def restoreSnapshot(): Option[CaseKnowledgeGraph]
+  def hasSnapshot: Boolean
+  def clearSnapshot(): Unit
 
 object GameBoardController:
   def apply(model: ModelModule.Model): GameBoardController =
@@ -29,3 +33,15 @@ object GameBoardController:
 
     override def canRedo: Boolean =
       model.state.history.exists(_.canRedo)
+
+    override def saveSnapshot(): Unit =
+      model.saveSnapshot()
+
+    override def restoreSnapshot(): Option[CaseKnowledgeGraph] =
+      model.restoreSnapshot()
+
+    override def hasSnapshot: Boolean =
+      model.hasSnapshot
+
+    override def clearSnapshot(): Unit =
+      model.clearSnapshot()
