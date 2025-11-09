@@ -300,16 +300,46 @@ abstract class GameBoardScene extends Scene(1280, 720):
       navigateTo(ScenePage.CluesManagement)
     }
   )
-  private val snapshotButton = createIconButton(
-    "Snapshots",
-    cameraIconImage,
-    80,
-    60,
-    () => {
-      println("Snapshots button clicked")
-      // Handle snapshots action here
+
+  private val snapshotIconView = new ImageView:
+    image =
+      if controller.hasSnapshot then postcardIconImage else cameraIconImage
+    fitWidth = 80
+    fitHeight = 60
+    preserveRatio = true
+
+  private val snapshotButton = new Button:
+    text = "Snapshots"
+    font = Font.font(
+      iconsFont.getFamily,
+      FontWeight.Normal,
+      iconsFont.getSize
+    )
+    textFill = Color.White
+    graphic = snapshotIconView
+    contentDisplay = ContentDisplay.Top
+    alignment = Pos.Center
+    background = Background.fill(Color.Transparent)
+    onAction = () => {
+      if controller.hasSnapshot then
+        // Restore snapshot and clear it
+        println("Restoring snapshot...")
+        controller.restoreSnapshot() match
+          case Some(restoredGraph) =>
+            graphView.updateGraph(restoredGraph)
+            snapshotIconView.image = cameraIconImage
+            updateUndoRedoButtons()
+            println("Snapshot restored successfully")
+          case None =>
+            println("Failed to restore snapshot")
+      else
+        // Save snapshot
+        println("Saving snapshot...")
+        controller.saveSnapshot()
+        snapshotIconView.image = postcardIconImage
+        println("Snapshot saved successfully")
     }
-  )
+
   private val accuseButton = createIconButton(
     "Accuse",
     handcuffsIconImage,
@@ -425,6 +455,9 @@ abstract class GameBoardScene extends Scene(1280, 720):
     )
     val cameraIconImage: Image = new Image(getClass.getResourceAsStream(
       gameboardImagesPath + "icons/camera-icon.png"
+    ))
+    val postcardIconImage: Image = new Image(getClass.getResourceAsStream(
+      gameboardImagesPath + "icons/postcard-icon.png"
     ))
     val documentsIconImage: Image = new Image(getClass.getResourceAsStream(
       gameboardImagesPath + "icons/documents-icon.png"
