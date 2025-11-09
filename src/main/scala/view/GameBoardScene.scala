@@ -22,7 +22,9 @@ abstract class GameBoardScene extends Scene(1280, 720):
   import Config.*
 
   private val graphView = KnowledgeGraphView(
-    controller.currentGameState.graph.getOrElse(new CaseKnowledgeGraph()),
+    controller.currentGameState.currentGraph.getOrElse(
+      new CaseKnowledgeGraph()
+    ),
     viewDimensions = (sceneWidth, sceneHeight)
   )
 
