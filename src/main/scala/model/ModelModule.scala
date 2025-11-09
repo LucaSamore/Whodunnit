@@ -13,12 +13,11 @@ object ModelModule:
     def addHint(hint: game.Hint): GameState =
       updateState(_.addHint(hint))
 
-    def updateGraph(f: game.CaseKnowledgeGraph => game.CaseKnowledgeGraph)
-        : GameState =
-      updateState(_.updateGraph(f))
-
     def updateHistory(f: game.History => game.History): GameState =
       updateState(_.updateHistory(f))
+
+    def addGraphToHistory(graph: game.CaseKnowledgeGraph): GameState =
+      updateState(_.addGraphToHistory(graph))
 
   trait Provider:
     def model: Model

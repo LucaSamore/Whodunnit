@@ -77,8 +77,8 @@ class TimeMachineTest extends AnyWordSpec with Matchers:
             extends game.CaseKnowledgeGraph:
           override def deepCopy(): CaseKnowledgeGraph =
             MockCaseKnowledgeGraph(id)
-        modifiedHistory.addState(MockCaseKnowledgeGraph(1))
-        modifiedHistory should not equal gameHistory
+        val updatedHistory = modifiedHistory.addState(MockCaseKnowledgeGraph(1))
+        updatedHistory should not equal gameHistory
         val restoredAfterModification = timeMachine.restore()
         restoredAfterModification shouldBe Some(gameHistory)
 
