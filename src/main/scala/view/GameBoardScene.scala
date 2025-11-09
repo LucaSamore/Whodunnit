@@ -186,6 +186,40 @@ abstract class GameBoardScene extends Scene(1280, 720):
           "Warning: No investigative case available to show the solution."
         )
 
+  private def handleUndo(): Unit =
+    // More protection for race conditions, the undo button should be disabled if undo is not possible
+    if !controller.canUndo then
+      println("Undo not available - already at the oldest state")
+      return
+
+    controller.undo() match
+      case Some(previousGraph) =>
+        graphView.updateGraph(previousGraph)
+        updateUndoRedoButtons()
+        println(s"Undo executed - restored previous graph state")
+      case None =>
+        println("Undo failed unexpectedly")
+
+  private def handleRedo(): Unit =
+    // More protection for race conditions, the redo button should be disabled if undo is not possible
+    if !controller.canRedo then
+      println("Redo not available - no states to redo")
+      return
+
+    controller.redo() match
+      case Some(nextGraph) =>
+        graphView.updateGraph(nextGraph)
+        updateUndoRedoButtons()
+        println(s"Redo executed - restored next graph state")
+      case None =>
+        println("Redo failed unexpectedly")
+
+  private def updateUndoRedoButtons(): Unit =
+    undoButton.disable = !controller.canUndo
+    redoButton.disable = !controller.canRedo
+    undoButton.opacity = if controller.canUndo then 1.0 else 0.5
+    redoButton.opacity = if controller.canRedo then 1.0 else 0.5
+
   private val notificationsPanel = NotificationsPanel(iconsFont)
 
   private val notificationBadge = new StackPane:
@@ -266,16 +300,46 @@ abstract class GameBoardScene extends Scene(1280, 720):
       navigateTo(ScenePage.CluesManagement)
     }
   )
-  private val snapshotButton = createIconButton(
-    "Snapshots",
-    cameraIconImage,
-    80,
-    60,
-    () => {
-      println("Snapshots button clicked")
-      // Handle snapshots action here
+
+  private val snapshotIconView = new ImageView:
+    image =
+      if controller.hasSnapshot then postcardIconImage else cameraIconImage
+    fitWidth = 80
+    fitHeight = 60
+    preserveRatio = true
+
+  private val snapshotButton = new Button:
+    text = "Snapshots"
+    font = Font.font(
+      iconsFont.getFamily,
+      FontWeight.Normal,
+      iconsFont.getSize
+    )
+    textFill = Color.White
+    graphic = snapshotIconView
+    contentDisplay = ContentDisplay.Top
+    alignment = Pos.Center
+    background = Background.fill(Color.Transparent)
+    onAction = () => {
+      if controller.hasSnapshot then
+        // Restore snapshot and clear it
+        println("Restoring snapshot...")
+        controller.restoreSnapshot() match
+          case Some(restoredGraph) =>
+            graphView.updateGraph(restoredGraph)
+            snapshotIconView.image = cameraIconImage
+            updateUndoRedoButtons()
+            println("Snapshot restored successfully")
+          case None =>
+            println("Failed to restore snapshot")
+      else
+        // Save snapshot
+        println("Saving snapshot...")
+        controller.saveSnapshot()
+        snapshotIconView.image = postcardIconImage
+        println("Snapshot saved successfully")
     }
-  )
+
   private val accuseButton = createIconButton(
     "Accuse",
     handcuffsIconImage,
@@ -293,7 +357,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
     80,
     () => {
       println("Undo button clicked")
-      // Handle undo action here
+      handleUndo()
     }
   )
   private val redoButton = createIconButton(
@@ -303,7 +367,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
     80,
     () => {
       println("Redo button clicked")
-      // Handle redo action here
+      handleRedo()
     }
   )
 
@@ -376,6 +440,9 @@ abstract class GameBoardScene extends Scene(1280, 720):
         padding = Insets(0, 0, 45, 0)
         children = Seq(undoButton, timerLabel, redoButton)
 
+  // Initialize undo/redo button states
+  updateUndoRedoButtons()
+
   private object Config:
     val sceneWidth = 1280
     val sceneHeight = 720
@@ -388,6 +455,9 @@ abstract class GameBoardScene extends Scene(1280, 720):
     )
     val cameraIconImage: Image = new Image(getClass.getResourceAsStream(
       gameboardImagesPath + "icons/camera-icon.png"
+    ))
+    val postcardIconImage: Image = new Image(getClass.getResourceAsStream(
+      gameboardImagesPath + "icons/postcard-icon.png"
     ))
     val documentsIconImage: Image = new Image(getClass.getResourceAsStream(
       gameboardImagesPath + "icons/documents-icon.png"

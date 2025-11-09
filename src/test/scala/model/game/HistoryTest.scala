@@ -135,6 +135,8 @@ class HistoryTest extends AnyWordSpec with Matchers:
         .addState(kg3)
 
       "work correctly" in:
+        history.canRedo shouldBe false
+        history.canUndo shouldBe true
         val (h1, s1) = history.redo()
         s1 shouldBe None
         h1.currentState shouldBe Some(kg3)
@@ -146,6 +148,8 @@ class HistoryTest extends AnyWordSpec with Matchers:
         s3 shouldBe Some(kg3)
         h3.currentState shouldBe Some(kg3)
 
+        h3.canUndo shouldBe true
+        h3.canRedo shouldBe false
         val (h4, s4) = h3.redo()
         s4 shouldBe None
         h4.currentState shouldBe Some(kg3)
@@ -158,11 +162,15 @@ class HistoryTest extends AnyWordSpec with Matchers:
         val kg4 = MockCaseKnowledgeGraph(4)
         val h3 = h2.addState(kg4)
         h3.currentState shouldBe Some(kg4)
+        h3.canUndo shouldBe true
+        h3.canRedo shouldBe false
         val (h4, s1) = h3.redo()
-        s1 shouldBe None // redo should not be possible after adding new state when undo is called previously
+        s1 shouldBe None // redo should not be possible after adding new state when undo is called previouslyFs
         h4.currentState shouldBe Some(kg4)
         val (h5, s2) = h3.undo()
         s2 shouldBe Some(kg1)
         h5.currentState shouldBe Some(kg1)
+        h5.canUndo shouldBe false
+        h5.canRedo shouldBe true
         val (h6, s3) = h5.undo()
         s3 shouldBe None

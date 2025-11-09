@@ -9,6 +9,8 @@ trait History:
   def currentState: Option[CaseKnowledgeGraph]
   def deepCopy(): History
   def states: Seq[CaseKnowledgeGraph]
+  def canUndo: Boolean
+  def canRedo: Boolean
 
 case class GameHistory(
     private val historySize: Int,
@@ -42,6 +44,12 @@ case class GameHistory(
     GameHistory(historySize, newBuffer)
 
   override def states: Seq[CaseKnowledgeGraph] = timeline.elements
+
+  override def canUndo: Boolean =
+    timeline.size > 1 && timeline.currentPosition < timeline.size - 1
+
+  override def canRedo: Boolean =
+    timeline.currentPosition > 0
 
   override def equals(obj: Any): Boolean = obj match
     case that: GameHistory =>
