@@ -1,23 +1,44 @@
 package controller
 
+import model.ModelModule
+import model.game.GameState
+
 object ControllerModule:
 
-  trait Controller[S]:
-    def onPlayNowClicked(): Unit
+  trait Controller:
+    def state: GameState
+    def currentGameState: GameState = state
 
-  trait Provider[S]:
-    val controller: Controller[S]
+  abstract class AbstractController(
+      protected val model: ModelModule.Model
+  ) extends Controller:
+    override def state: GameState = model.state
 
-  type Requirements[S] =
-    view.ViewModule.Provider[S] with model.ModelModule.Provider[S]
+  trait Provider:
+    def homePageController: HomePageController
+    def caseGenerationController: CaseGenerationController
+    def gameBoardController: GameBoardController
 
-  trait Component[S]:
-    context: Requirements[S] =>
+  type Requirements = model.ModelModule.Provider & view.ViewModule.Provider
 
-    class ControllerImpl extends Controller[S]:
-      def onPlayNowClicked(): Unit =
-        println("Play Now button clicked!")
+  trait Component:
+    context: Requirements =>
 
-  trait Interface[S] extends Provider[S] with Component[S]:
-    self: Requirements[S] =>
-    def Controller(): Controller[S] = new ControllerImpl()
+    protected def createHomePageController(): HomePageController =
+      HomePageController(context.model)
+
+    protected def createCaseGenerationController(): CaseGenerationController =
+      CaseGenerationController(context.model)
+
+    protected def createGameBoardController(): GameBoardController =
+      GameBoardController(context.model)
+
+  trait Interface extends Provider with Component:
+    self: Requirements =>
+
+    override lazy val homePageController: HomePageController =
+      createHomePageController()
+    override lazy val caseGenerationController: CaseGenerationController =
+      createCaseGenerationController()
+    override lazy val gameBoardController: GameBoardController =
+      createGameBoardController()

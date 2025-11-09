@@ -1,55 +1,205 @@
 package view
 
-import model.casegeneration.*
-import model.knowledgegraph.{CaseKnowledgeGraph, Link}
+import model.game.CaseKnowledgeGraph
 import scalafx.Includes.eventClosureWrapperWithZeroParam
+import scalafx.application.Platform
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
-import scalafx.scene.control.{Button, ContentDisplay}
+import scalafx.scene.control.{Button, ContentDisplay, Label, ScrollPane}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
-import scalafx.scene.text.{Font, FontWeight}
+import scalafx.scene.text.{Font, FontWeight, TextAlignment}
+import scalafx.stage.{Modality, Stage}
+import scalafx.scene.shape.Circle
+import controller.GameBoardController
 
-//class GameBoardScene(knowledgeGraph: CaseKnowledgeGraph) extends Scene(1280, 720):
-class GameBoardScene extends Scene(1280, 720):
+abstract class GameBoardScene extends Scene(1280, 720):
+
+  protected def controller: GameBoardController
+  protected def navigateTo(page: ScenePage): Unit
 
   import Config.*
 
-  /* Mock data for testing purposes */
-  private object MockData:
-    val mike: Character = Character("Mike", CaseRole.Suspect)
-    val frank: Character = Character("Frank", CaseRole.Victim)
-    val chatMikeFrank: CaseFile = CaseFile(
-      title = "Chat: Mike-Frank",
-      content = "...",
-      kind = CaseFileType.Message,
-      sender = Some(mike),
-      receiver = None,
-      date = None
-    )
-    val mockCase: Case = Case(
-      plot = Plot("Mock case", "Content test"),
-      characters = Set(mike, frank),
-      caseFiles = Set(chatMikeFrank),
-      solution = CaseSolution(Set.empty, culprit = mike, motive = "Test.")
-    )
-
-  private val mockKnowledgeGraph = CaseKnowledgeGraph()
-  mockInitializeKnowledgeGraph()
-  private def mockInitializeKnowledgeGraph(): Unit =
-    val mike = MockData.mockCase.characters.find(_.name == "Mike").get
-    val frank = MockData.mockCase.characters.find(_.name == "Frank").get
-    mockKnowledgeGraph.addNode(mike)
-    mockKnowledgeGraph.addNode(frank)
-    mockKnowledgeGraph.addEdge(mike, Link("informed"), frank)
-
-  /* End of mock data */
-
   private val graphView = KnowledgeGraphView(
-    mockKnowledgeGraph,
+    controller.currentGameState.graph.getOrElse(new CaseKnowledgeGraph()),
     viewDimensions = (sceneWidth, sceneHeight)
   )
+
+  private val timerLabel = new Label("--:--"):
+    font = Font.font(
+      iconsFont.getFamily,
+      FontWeight.Bold,
+      28
+    )
+    textFill = Color.web("#FFFFFF")
+    alignment = Pos.Center
+    padding = Insets(7, 15, 7, 15)
+    minWidth = 125
+    prefWidth = 125
+    maxWidth = 125
+    border = new Border(
+      new BorderStroke(
+        Color.White,
+        BorderStrokeStyle.Solid,
+        new CornerRadii(5),
+        new BorderWidths(2)
+      )
+    )
+    background = new Background(
+      Array(new BackgroundFill(
+        Color.Transparent,
+        new CornerRadii(5),
+        Insets.Empty
+      ))
+    )
+
+  controller.currentGameState.timer.foreach { timer =>
+    timer.onTimeUpdate = timeString =>
+      Platform.runLater {
+        timerLabel.text = timeString
+      }
+
+    timer.onTimeExpired = () =>
+      Platform.runLater {
+        showGameEndPopup(hasWon = false)
+      }
+  }
+
+  private case class PopupConfig(
+      title: String,
+      content: Seq[PopupContent],
+      width: Double = 600,
+      height: Double = 350,
+      backgroundColor: String = "rgba(240, 235, 220, 0.95)"
+  )
+
+  private sealed trait PopupContent
+  private case class TextContent(
+      text: String,
+      fontSize: Double = 14,
+      color: Color = Color.web("#1E1E1E"),
+      isBold: Boolean = false
+  ) extends PopupContent
+
+  private def showInfoPopup(config: PopupConfig): Unit =
+    val popup = new Stage():
+      initModality(Modality.ApplicationModal)
+      title = config.title
+      resizable = false
+
+    val contentNodes = config.content.map {
+      case TextContent(text, fontSize, color, isBold) =>
+        new Label(text):
+          font = Font.font(
+            iconsFont.getFamily,
+            if isBold then FontWeight.Bold else FontWeight.Normal,
+            fontSize
+          )
+          textFill = color
+          wrapText = true
+          textAlignment = TextAlignment.Center
+          maxWidth = config.width - 40
+          alignment = Pos.Center
+    }
+
+    val closeButton = new Button("Close"):
+      font = iconsFont
+      prefWidth = 100
+      onAction = _ => popup.close()
+
+    val popupContent = new VBox(15):
+      padding = Insets(20)
+      alignment = Pos.Center
+      children = contentNodes :+ closeButton
+
+    val scrollPane = new ScrollPane:
+      content = popupContent
+      fitToWidth = true
+
+    val popupLayout = new BorderPane():
+      center = scrollPane
+      background = Background(Array(BackgroundFill(
+        Color.web(config.backgroundColor),
+        CornerRadii.Empty,
+        Insets.Empty
+      )))
+
+    popup.scene = new Scene(config.width, config.height):
+      root = popupLayout
+
+    // To ensure the scroll is at the top when shown (after rendering)
+    Platform.runLater {
+      scrollPane.vvalue = 0.0
+    }
+
+    popup.showAndWait()
+
+  private def showPlotPopup(): Unit =
+    val (plotTitle, plotContent) =
+      controller.currentGameState.investigativeCase match
+        case Some(currentCase) =>
+          (currentCase.plot.title, currentCase.plot.content)
+        case None =>
+          ("No Case Available", "No plot information available.")
+
+    showInfoPopup(
+      PopupConfig(
+        title = "Plot",
+        content = Seq(
+          TextContent(plotTitle, fontSize = 18, isBold = true),
+          TextContent(plotContent)
+        )
+      )
+    )
+
+  private def showGameEndPopup(hasWon: Boolean): Unit =
+    controller.currentGameState.investigativeCase match
+      case Some(currentCase) =>
+        val mainMessage = if hasWon then "YOU WON!" else "YOU LOSE!"
+        val messageColor = if hasWon then Color.Green else Color.Red
+
+        showInfoPopup(
+          PopupConfig(
+            title = "Solution",
+            content = Seq(
+              TextContent(
+                mainMessage,
+                fontSize = 48,
+                color = messageColor,
+                isBold = true
+              ),
+              TextContent(
+                s"Culprit: ${currentCase.solution.culprit.name}",
+                fontSize = 18,
+                isBold = true
+              ),
+              TextContent(s"Motive: ${currentCase.solution.motive}")
+            )
+          )
+        )
+
+      case None =>
+        println(
+          "Warning: No investigative case available to show the solution."
+        )
+
+  private val notificationsPanel = NotificationsPanel(iconsFont)
+
+  private val notificationBadge = new StackPane:
+    prefWidth = 22
+    prefHeight = 22
+    translateX = 25
+    translateY = -30
+    mouseTransparent = true
+    visible = true
+    private val circle = new Circle:
+      radius = 8
+      fill = Color.Red
+      stroke = Color.White
+      strokeWidth = 2
+
+    children = Seq(circle)
 
   private def createIconButton(
       description: String,
@@ -85,8 +235,23 @@ class GameBoardScene extends Scene(1280, 720):
     60,
     60,
     () => {
-      println("Notifications button clicked")
-      // Handle notifications action here
+      notificationsPanel.toggleVisibility()
+      notificationBadge.visible = false
+    }
+  )
+
+  private val notificationsButtonContainer = new StackPane:
+    alignment = Pos.TopCenter
+    children = Seq(notificationsButton, notificationBadge)
+
+  private val plotButton = createIconButton(
+    "Plot",
+    parchmentImage,
+    60,
+    60,
+    () => {
+      println("Plot button clicked")
+      showPlotPopup()
     }
   )
   private val cluesButton = createIconButton(
@@ -96,7 +261,7 @@ class GameBoardScene extends Scene(1280, 720):
     60,
     () => {
       println("Clues button clicked")
-      // WhodunnitApp.changeScene(new CluesManagementScene)
+      navigateTo(ScenePage.CluesManagement)
     }
   )
   private val snapshotButton = createIconButton(
@@ -116,7 +281,7 @@ class GameBoardScene extends Scene(1280, 720):
     60,
     () => {
       println("Accuse button clicked")
-      // WhodunnitApp.changeScene(new AccuseScene())
+      showGameEndPopup(hasWon = true)
     }
   )
   private val undoButton = createIconButton(
@@ -170,20 +335,19 @@ class GameBoardScene extends Scene(1280, 720):
         minHeight = topBarHeight
         alignment = Pos.CenterLeft
         padding = Insets(topPadding, 10, 0, 70)
-        children = Seq(notificationsButton)
+        children = Seq(notificationsButtonContainer)
       center = new HBox:
         minWidth = boxWidth
         minHeight = topBarHeight
         alignment = Pos.Center
         padding = Insets(topPadding, 0, 0, 0)
-        children = Seq( /* TODO: Timer */ )
       right = new HBox:
         minWidth = boxWidth
         minHeight = topBarHeight
         alignment = Pos.CenterRight
         spacing = 50
         padding = Insets(topPadding, 70, 0, 10)
-        children = Seq(cluesButton, snapshotButton, accuseButton)
+        children = Seq(plotButton, cluesButton, snapshotButton, accuseButton)
 
     center = new StackPane:
       children = Seq(
@@ -191,6 +355,12 @@ class GameBoardScene extends Scene(1280, 720):
           prefWidth = sceneWidth
           prefHeight = sceneHeight
           children = Seq(graphView)
+        ,
+        new StackPane:
+          alignment = Pos.TopLeft
+          padding = Insets(topBarHeight - 190, 0, 0, 70)
+          pickOnBounds = false
+          children = Seq(notificationsPanel)
       )
 
     bottom = new BorderPane:
@@ -202,7 +372,7 @@ class GameBoardScene extends Scene(1280, 720):
         alignment = Pos.Center
         spacing = 50
         padding = Insets(0, 0, 45, 0)
-        children = Seq(undoButton, redoButton)
+        children = Seq(undoButton, timerLabel, redoButton)
 
   private object Config:
     val sceneWidth = 1280
@@ -229,11 +399,12 @@ class GameBoardScene extends Scene(1280, 720):
     val redoIconImage: Image = new Image(
       getClass.getResourceAsStream(gameboardImagesPath + "icons/redo-icon.png")
     )
+    val parchmentImage: Image = new Image(
+      getClass.getResourceAsStream(
+        gameboardImagesPath + "icons/parchment-icon.png"
+      )
+    )
     val iconsFont: Font = Font.loadFont(
       getClass.getResourceAsStream("/fonts/GloriaHallelujah-Regular.ttf"),
       18
     )
-
-object GameBoardScene:
-  // def apply(knowledgeGraph: CaseKnowledgeGraph) = new GameBoardScene(knowledgeGraph)
-  def apply() = new GameBoardScene()

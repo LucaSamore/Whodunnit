@@ -1,5 +1,7 @@
 package model.versioning
 
+import model.game.History
+
 import java.time.LocalDateTime
 
 trait Snapshot[+A]:

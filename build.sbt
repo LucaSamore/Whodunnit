@@ -1,7 +1,7 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / scalaVersion := "3.3.6"
 
-coverageExcludedPackages := ".*view.*"
+coverageExcludedPackages := ".*view.*;.*controller.*"
 
 inThisBuild(
   List(
@@ -25,9 +25,10 @@ lazy val root = (project in file("."))
       "io.circe" %% "circe-generic" % "0.14.15",
       "io.circe" %% "circe-parser" % "0.14.15",
       "io.github.cdimascio" % "dotenv-java" % "3.2.0",
-      "org.typelevel" %% "cats-core" % "2.13.0"
+      "org.typelevel" %% "cats-core" % "2.13.0",
+      "org.typelevel" %% "cats-effect" % "3.6.3"
     ),
-    mainClass := Some("Launcher"),
+    mainClass := Some("view.WhodunnitApp"),
     assembly / assemblyOutputPath := target.value / "scala-3" / "whodunnit.jar",
     assembly / assemblyMergeStrategy := {
       case PathList("META-INF", _*) => MergeStrategy.discard

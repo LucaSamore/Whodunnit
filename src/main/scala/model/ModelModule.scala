@@ -1,28 +1,52 @@
 package model
 
-import model.casegeneration.*
-import model.knowledgegraph.CaseKnowledgeGraph
+import model.game.GameState
 
 object ModelModule:
 
-  // Placeholder State class
-  // TODO: Replace with actual state properties
-  case class State(
-      currentCase: Option[Case] = None,
-      knowledgeGraph: Option[CaseKnowledgeGraph] = None,
-      isLoading: Boolean = false,
-      error: Option[String] = None
-  )
+  trait Model:
+    def state: GameState
+    def updateState(updater: GameState => GameState): GameState
+    def startTimer(): Unit
+    def resetState(): GameState
 
-  trait Model[S]:
-    def createNothing(): Unit
+    def addHint(hint: game.Hint): GameState =
+      updateState(_.addHint(hint))
 
-  trait Provider[S]:
-    val model: Model[S]
+    def updateGraph(f: game.CaseKnowledgeGraph => game.CaseKnowledgeGraph)
+        : GameState =
+      updateState(_.updateGraph(f))
 
-  trait Component[S]:
-    class ModelImpl extends Model[S]:
-      override def createNothing(): Unit = println("Creating nothing...")
+    def updateHistory(f: game.History => game.History): GameState =
+      updateState(_.updateHistory(f))
 
-  trait Interface[S] extends Provider[S] with Component[S]:
-    def Model(): Model[S] = new ModelImpl()
+  trait Provider:
+    def model: Model
+
+  trait Component:
+
+    class ModelImpl extends Model:
+
+      @volatile private var currentState: GameState = GameState.empty()
+
+      override def state: GameState = currentState
+
+      override def updateState(updater: GameState => GameState): GameState =
+        synchronized {
+          currentState = updater(currentState)
+          currentState
+        }
+
+      override def resetState(): GameState =
+        synchronized {
+          currentState = GameState.empty()
+          currentState
+        }
+
+      override def startTimer(): Unit =
+        synchronized {
+          currentState.timer.foreach(_.start())
+        }
+
+  trait Interface extends Provider with Component:
+    override lazy val model: Model = new ModelImpl()

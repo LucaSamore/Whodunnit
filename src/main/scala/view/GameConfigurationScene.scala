@@ -1,5 +1,7 @@
 package view
 
+import controller.CaseGenerationController
+import scalafx.application.Platform
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
@@ -9,7 +11,10 @@ import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, Text, TextAlignment}
 
-object GameConfigurationScene extends Scene(1280, 720):
+abstract class GameConfigurationScene extends Scene(1280, 720):
+
+  protected def controller: CaseGenerationController
+  protected def navigateTo(page: ScenePage): Unit
 
   private object Theme:
     val primaryColor: Color = Color.rgb(30, 30, 30, 0.75)
@@ -67,7 +72,12 @@ object GameConfigurationScene extends Scene(1280, 720):
     prefHeight = 48
     minHeight = 48
     promptText = "Choose a theme"
-    items = ObservableBuffer("Option 1", "Option 2", "Option 3")
+    items = ObservableBuffer(
+      "Murder",
+      "Theft",
+      "Hacking",
+      "Fantasy"
+    )
     style =
       Styles.borderedBox() + s"-fx-font-family: '${Typography.sectionFont.getName}';"
   }
@@ -80,6 +90,46 @@ object GameConfigurationScene extends Scene(1280, 720):
     createCustomRadioButton(difficultyToggleGroup)
   private val hardRadio: RadioButton =
     createCustomRadioButton(difficultyToggleGroup)
+
+  private val loadingOverlay: StackPane = new StackPane:
+    visible = false
+    managed = false
+    background = new Background(Array(
+      new BackgroundFill(
+        Color.rgb(0, 0, 0, 0.7),
+        CornerRadii.Empty,
+        Insets.Empty
+      )
+    ))
+    children = Seq(
+      new VBox:
+        alignment = Pos.Center
+        spacing = 20
+        children = Seq(
+          new Text("Generating case..."):
+            font = Typography.sectionFont
+            fill = Color.White
+            textAlignment =
+              TextAlignment.Center
+          ,
+          new Text("Please wait while creating your mystery case"):
+            font = Typography.subsectionFont
+            fill = Color.White
+            textAlignment = TextAlignment.Center
+        )
+    )
+
+  private def showLoadingState(): Unit =
+    loadingOverlay.visible = true
+    loadingOverlay.managed = true
+
+  private def hideLoadingState(): Unit =
+    loadingOverlay.visible = false
+    loadingOverlay.managed = false
+
+  private def showErrorMessage(message: String): Unit =
+    // TODO: Improve error display (e.g., Alert dialog)
+    println(s"[View] Showing error to user: $message")
 
   private def createBackground(): Background =
     val image = BackgroundImage(
@@ -215,7 +265,7 @@ object GameConfigurationScene extends Scene(1280, 720):
 
   private def handleCancel(): Unit =
     println("Cancel button clicked")
-    WhodunnitApp.changeScene(new HomepageScene)
+    navigateTo(ScenePage.Homepage)
 
   private def handlePlay(): Unit =
     val selectedTheme = Option(themeComboBox.value.value).getOrElse("None")
@@ -226,10 +276,31 @@ object GameConfigurationScene extends Scene(1280, 720):
         else if toggle == mediumRadio.delegate then Some("Medium")
         else if toggle == hardRadio.delegate then Some("Hard")
         else None
-      }.getOrElse("None")
+      }.getOrElse("Easy")
 
-    println(s"Selected Theme: $selectedTheme")
-    println(s"Selected Difficulty: $selectedDifficulty")
+    println(s"[View] Selected Theme: $selectedTheme")
+    println(s"[View] Selected Difficulty: $selectedDifficulty")
+
+    showLoadingState()
+
+    controller.onPlayClicked(
+      selectedDifficulty,
+      selectedTheme,
+      onSuccess = () => {
+        Platform.runLater {
+          println(s"[View] Case generation successful, switching to Game Board")
+          hideLoadingState()
+          navigateTo(ScenePage.GameBoard)
+        }
+      },
+      onError = (errorMessage: String) => {
+        Platform.runLater {
+          println(s"[View] Error in generation: $errorMessage")
+          hideLoadingState()
+          showErrorMessage(errorMessage)
+        }
+      }
+    )
 
   private def createActionButton(label: String, onClick: => Unit): Button =
     new Button(label) {
@@ -269,6 +340,7 @@ object GameConfigurationScene extends Scene(1280, 720):
           createHorizontalDivider(),
           createFooter()
         )
-      }
+      },
+      loadingOverlay
     )
   }

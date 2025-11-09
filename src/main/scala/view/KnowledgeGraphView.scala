@@ -1,7 +1,15 @@
 package view
 
-import model.casegeneration.{CaseFile, Character, CustomEntity, Entity}
-import model.knowledgegraph.{CaseKnowledgeGraph, Link}
+import model.game
+import model.game.{
+  CaseFile,
+  CaseFileType,
+  CaseKnowledgeGraph,
+  Character,
+  CustomEntity,
+  Entity,
+  Link
+}
 import scalafx.Includes.*
 import scalafx.geometry.{Insets, Point2D, Pos}
 import scalafx.scene.image.{Image, ImageView}
@@ -48,7 +56,6 @@ class GraphNode(
     text = labelText
     fill = Color.White
     textAlignment = TextAlignment.Center
-    wrappingWidth = nodeSize + 40
     font = nodeFont
 
   children = Seq(
@@ -183,9 +190,9 @@ class KnowledgeGraphView(
   private def selectNodeImage(entity: Entity): Image = entity match
     case _: Character       => images("character")
     case caseFile: CaseFile => caseFile.kind match
-        case model.casegeneration.CaseFileType.Email   => images("email")
-        case model.casegeneration.CaseFileType.Message => images("sms")
-        case _                                         => images("document")
+        case CaseFileType.Email        => images("email")
+        case game.CaseFileType.Message => images("sms")
+        case _                         => images("document")
     case _ => images("default")
 
   private def generateRandomPositions(entities: Seq[Entity])

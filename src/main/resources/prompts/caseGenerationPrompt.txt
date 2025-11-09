@@ -3,16 +3,13 @@ Ho bisogno che tu funga come motore di generazione di storie sempre diverse per 
 Il mio gioco avrà i seguenti elementi:
 
 - una trama (campo "plot")
-
-- un insieme di sospettati (campo "suspects")
-
-- un insieme di indizi documentali (campo "clues")
-
+- un insieme di sospettati (campo "characters")
+- un insieme di indizi documentali (campo "caseFiles")
 - una soluzione (campo "solution").
 
 La trama deve essere intrigante, sempre diversa e non deve essere più lunga di 400 token. Al termine della trama deve essere chiaro qual è il mistero da risolvere.
 
-I documenti devono fornire indizi più o meno utili, ma non devono MAI fornire confessioni o testi che rivelino la soluzione in modo esplicito. Inoltre, i documenti possono essere di 3 tipi: email, documenti, chat.
+I documenti devono fornire indizi più o meno utili, ma non devono MAI fornire confessioni o testi che rivelino la soluzione in modo esplicito.
 
 Nel caso di email e documenti il contenuto è singolo, mentre per il caso delle chat che sono sempre tra 2 soggetti, (non per forza 2 sospettati, possono essere anche tra persone non sospettate ma coinvolte nella trama), sono scambi di messaggi di al massimo 6 messaggi totali di cui ogni messaggio di al massimo 100 token.
 
@@ -27,7 +24,7 @@ La trama, i sospettati, gli indizi, e di conseguenza la soluzione devono essere 
 - Nessun sospettato deve essere dimenticato, la trama deve citare brevemente tutti i sospettati e ognuno dei sospettati deve essere coinvolto in almeno un documento (receiver, sender o contenuto nel content).
 - La soluzione deve essere perfettamente coerente oltre che con il mistero proposto nella trama ma soprattutto con gli inizi forniti
 
-Constraints:
+Vincoli da rispettare:
 {{CONSTRAINTS}}
 
 Genera gli elementi del mio gioco seguendo la seguente struttura e in formato json (valido):
@@ -45,7 +42,7 @@ Genera gli elementi del mio gioco seguendo la seguente struttura e in formato js
     },
     ...
   ],
-  "files": [
+  "caseFiles": [
     {
       "title": "String",
       "kind": "String (email | document)",
