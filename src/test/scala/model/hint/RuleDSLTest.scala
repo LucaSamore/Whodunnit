@@ -4,7 +4,7 @@ import model.game.{BaseOrientedGraph, Hint}
 import model.generation.Constraint.HintKind
 import model.generation.Constraint.HintKind.Misleading
 import model.generation.{Constraint, Producer, ProductionError}
-import model.hint.Metric.{coverageFor, density}
+import model.hint.Metric.{coverageAgainst, density}
 import model.hint.Trend.{Increasing, Stable, Worsening}
 import model.hint.TrendAnalyzers.simpleTrendAnalyzer
 import org.scalatest.GivenWhenThen
@@ -58,7 +58,7 @@ final class RuleDSLTest extends AnyFlatSpec with Matchers with GivenWhenThen:
       graph.withNodes(1, 2),
       graph.withNodes(1, 2, 3)
     )
-    val coverage = coverageFor(reference)
+    val coverage = coverageAgainst(reference)
 
     When("checking both conditions with 'and'")
     val check = when(coverage) == Increasing and when(density) == Worsening
@@ -74,7 +74,7 @@ final class RuleDSLTest extends AnyFlatSpec with Matchers with GivenWhenThen:
       graph.withNodes(1, 2),
       graph.withNodes(1, 2, 3)
     )
-    val coverage = coverageFor(reference)
+    val coverage = coverageAgainst(reference)
 
     When("checking with 'or' where one condition is true")
     val check = when(coverage) == Increasing or when(density) == Worsening
@@ -101,7 +101,7 @@ final class RuleDSLTest extends AnyFlatSpec with Matchers with GivenWhenThen:
       graph.withNodes(1, 2),
       graph.withNodes(1, 2, 3)
     )
-    val coverage = coverageFor(reference)
+    val coverage = coverageAgainst(reference)
 
     val rule = when(coverage) == Increasing hence Hint(Misleading).toOption.get
 
@@ -119,7 +119,7 @@ final class RuleDSLTest extends AnyFlatSpec with Matchers with GivenWhenThen:
       graph.withNodes(1, 2),
       graph.withNodes(1, 2, 3)
     )
-    val coverage = coverageFor(reference)
+    val coverage = coverageAgainst(reference)
 
     val rule = when(coverage) == Increasing hence Hint(Misleading).toOption.get
 
@@ -137,7 +137,7 @@ final class RuleDSLTest extends AnyFlatSpec with Matchers with GivenWhenThen:
       graph.withNodes(1, 2),
       graph.withNodes(1, 2, 3)
     )
-    val coverage = coverageFor(reference)
+    val coverage = coverageAgainst(reference)
 
     val rule = when(coverage) == Increasing and
       when(density) == Stable hence Hint(Misleading).toOption.get
