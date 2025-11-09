@@ -5,7 +5,7 @@ import model.versioning.RingNavigableBuffer
 trait History:
   def addState(kg: CaseKnowledgeGraph): History
   def undo(): (History, Option[CaseKnowledgeGraph])
-  def redo(): Option[CaseKnowledgeGraph]
+  def redo(): (History, Option[CaseKnowledgeGraph])
   def currentState: Option[CaseKnowledgeGraph]
   def deepCopy(): History
   def states: Seq[CaseKnowledgeGraph]
@@ -25,8 +25,11 @@ case class GameHistory(
     val state = if moved then newBuffer.currentElement else None
     (GameHistory(historySize, newBuffer), state)
 
-  override def redo(): Option[CaseKnowledgeGraph] =
-    Option.when(timeline.moveForward())(timeline.currentElement).flatten
+  override def redo(): (History, Option[CaseKnowledgeGraph]) =
+    val newBuffer = cloneBuffer()
+    val moved = newBuffer.moveForward()
+    val state = if moved then newBuffer.currentElement else None
+    (GameHistory(historySize, newBuffer), state)
 
   override def currentState: Option[CaseKnowledgeGraph] =
     timeline.currentElement
