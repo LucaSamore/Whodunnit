@@ -3,7 +3,7 @@ package model.game
 import model.versioning.RingNavigableBuffer
 
 trait History:
-  def addState(kg: CaseKnowledgeGraph): Unit
+  def addState(kg: CaseKnowledgeGraph): History
   def undo(): Option[CaseKnowledgeGraph]
   def redo(): Option[CaseKnowledgeGraph]
   def currentState: Option[CaseKnowledgeGraph]
@@ -14,8 +14,10 @@ case class GameHistory(
     private val historySize: Int,
     private val timeline: RingNavigableBuffer[CaseKnowledgeGraph]
 ) extends History:
-  override def addState(kg: CaseKnowledgeGraph): Unit =
-    timeline.push(kg)
+  override def addState(kg: CaseKnowledgeGraph): History =
+    val newBuffer = cloneBuffer()
+    newBuffer.push(kg)
+    GameHistory(historySize, newBuffer)
 
   override def undo(): Option[CaseKnowledgeGraph] =
     Option.when(timeline.moveBackward())(timeline.currentElement).flatten
@@ -39,6 +41,13 @@ case class GameHistory(
       this.timeline.elements == that.timeline.elements &&
       this.timeline.currentPosition == that.timeline.currentPosition
     case _ => false
+
+  private def cloneBuffer(): RingNavigableBuffer[CaseKnowledgeGraph] =
+    val newBuffer = RingNavigableBuffer[CaseKnowledgeGraph](timeline.capacity)
+    timeline.elements.foreach(newBuffer.push)
+    // Restore cursor position
+    (0 until timeline.currentPosition).foreach(_ => newBuffer.moveBackward())
+    newBuffer
 
 object GameHistory:
   def apply(historySize: Int): History =
