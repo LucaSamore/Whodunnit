@@ -25,15 +25,27 @@ class HistoryTest extends AnyWordSpec with Matchers:
 
     "elements are added" should:
       val maxSize = 3
-      val originalHistory = GameHistory(maxSize)
       case class MockCaseKnowledgeGraph(id: Int) extends CaseKnowledgeGraph:
         override def deepCopy(): CaseKnowledgeGraph = MockCaseKnowledgeGraph(id)
+      val kg1 = MockCaseKnowledgeGraph(1)
       val kg2 = MockCaseKnowledgeGraph(2)
-      originalHistory.addState(MockCaseKnowledgeGraph(1))
-      originalHistory.addState(kg2)
+
+      val history1 = GameHistory(maxSize)
+      val history2 = history1.addState(kg1)
+      val history3 = history2.addState(kg2)
 
       "maintain the correct current state" in:
-        originalHistory.currentState shouldBe Some(kg2)
+        history3.currentState shouldBe Some(kg2)
+
+      "not modify the original history" in:
+        history1.currentState shouldBe None
+        history2.currentState shouldBe Some(kg1)
+        history3.currentState shouldBe Some(kg2)
+
+      "have the right size" in:
+        history1.states.size shouldBe 0
+        history2.states.size shouldBe 1
+        history3.states.size shouldBe 2
 
     "undo operation is called" should:
       val maxSize = 3
