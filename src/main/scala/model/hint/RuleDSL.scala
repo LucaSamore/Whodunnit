@@ -5,8 +5,8 @@ import model.game.Hint
 
 /** A composable condition that evaluates a predicate over a list of objects.
   *
-  * MetricCheck forms the core of the hint DSL, allowing conditions to be
-  * combined with logical operators and converted into rules.
+  * MetricCheck forms the core of the hint DSL, allowing conditions to be combined with logical operators and converted
+  * into rules.
   *
   * @tparam T
   *   the type of objects in the list being evaluated
@@ -50,8 +50,7 @@ final case class MetricCheck[T](eval: List[T] => Boolean):
 
 /** A rule that produces a hint when its condition is satisfied.
   *
-  * Rules are the output of the DSL and can be evaluated against a history to
-  * determine if they apply.
+  * Rules are the output of the DSL and can be evaluated against a history to determine if they apply.
   *
   * @tparam T
   *   the type of objects in the history
@@ -64,13 +63,12 @@ final case class MetricCheck[T](eval: List[T] => Boolean):
   *   val rule = when(coverage) == Increasing hence Hint("Coverage is improving")
   *   }}}
   */
-final case class Rule[T](condition: MetricCheck[T], hint: Hint)
+case class Rule[T](condition: MetricCheck[T], hint: Hint)
 
 /** An expression representing a metric that can be checked against a trend.
   *
-  * MetricExpr is an intermediate type in the DSL that bridges metrics and
-  * trends. It is created by the `when` function and converted to a MetricCheck
-  * via the `==` operator.
+  * MetricExpr is an intermediate type in the DSL that bridges metrics and trends. It is created by the `when` function
+  * and converted to a MetricCheck via the `==` operator.
   *
   * @tparam T
   *   the type of objects the metric operates on
@@ -85,9 +83,8 @@ final case class Rule[T](condition: MetricCheck[T], hint: Hint)
 final case class MetricExpr[T](compute: T => MetricValue):
   /** Creates a check that evaluates whether the metric follows the given trend.
     *
-    * The metric is computed for each object in the history, and the resulting
-    * values are analyzed by the TrendAnalyzer to determine if they match the
-    * trend.
+    * The metric is computed for each object in the history, and the resulting values are analyzed by the TrendAnalyzer
+    * to determine if they match the trend.
     *
     * @param trend
     *   the expected trend (Increasing, Stable, or Worsening)
@@ -104,8 +101,8 @@ final case class MetricExpr[T](compute: T => MetricValue):
 
 /** DSL entry point that creates a metric expression from a metric function.
   *
-  * This is the starting point for building metric checks in the DSL. It allows
-  * writing natural expressions like `when(coverage) == Increasing`.
+  * This is the starting point for building metric checks in the DSL. It allows writing natural expressions like
+  * `when(coverage) == Increasing`.
   *
   * @tparam T
   *   the type of objects the metric operates on
