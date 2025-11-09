@@ -15,7 +15,7 @@ object PromptBuilder:
       "You are a mystery game master. Generate cases in JSON format."
 
     override def build(constraints: Constraint*): Either[ProductionError, String] =
-      loadTemplate("/prompts/caseGenerationPrompt.txt").map { template =>
+      loadTemplate("/prompts/case-generation.md").map { template =>
         val expandedConstraints = Constraint.expandConstraints(constraints)
         val constraintsText = expandedConstraints
           .map(_.toPromptDescription)

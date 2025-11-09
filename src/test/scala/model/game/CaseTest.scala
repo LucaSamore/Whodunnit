@@ -21,7 +21,7 @@ class CaseTest extends AnyWordSpec with Matchers with EitherValues
     val character = Character("Suspect", CaseRole.Suspect)
     val caseFile =
       CaseFile("Evidence", "Content", CaseFileType.Email, None, None, None)
-    val solution = CaseSolution(Set.empty, character, "Test motive")
+    val solution = Solution(Set.empty, character, "Test motive")
     CaseImpl(plot, Set(caseFile), Set(character), solution)
 
   "Case.apply" when:

@@ -1,15 +1,6 @@
 package model.generation
 
-import model.game.{
-  Case,
-  CaseFile,
-  CaseFileType,
-  CaseImpl,
-  CaseRole,
-  CaseSolution,
-  Character,
-  Plot
-}
+import model.game.{Case, CaseFile, CaseFileType, CaseImpl, CaseRole, Character, Plot, Solution}
 import org.scalatest.{EitherValues, OptionValues}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -47,7 +38,7 @@ class GroqLLMProducerTest extends AnyWordSpec with Matchers with EitherValues
     val character = Character("TestSuspect", CaseRole.Suspect)
     val caseFile =
       CaseFile("Evidence", "Content", CaseFileType.Email, None, None, None)
-    val solution = CaseSolution(Set.empty, character, "Motive")
+    val solution = Solution(Set.empty, character, "Motive")
     CaseImpl(plot, Set(caseFile), Set(character), solution)
 
   "GroqLLMProducer" should:

@@ -168,20 +168,24 @@ The JSON must be valid and parseable. Test it mentally before returning.
   },
   "characters": [
     {
+      "$type": "model.game.Character",
       "name": "string",
       "role": "Suspect|Victim|Witness|Investigator|Accomplice|Informant"
     }
   ],
   "caseFiles": [
     {
+      "$type": "model.game.CaseFile",
       "title": "string",
       "content": "string",
       "kind": "Message|Email|Interview|Diary|TextDocument|Notes",
       "sender": {
+        "$type": "model.game.Character",
         "name": "string",
         "role": "Suspect|Victim|Witness|Investigator|Accomplice|Informant"
       },
       "receiver": {
+        "$type": "model.game.Character",
         "name": "string",
         "role": "Suspect|Victim|Witness|Investigator|Accomplice|Informant"
       },
@@ -202,12 +206,14 @@ The JSON must be valid and parseable. Test it mentally before returning.
           "content": "string",
           "kind": "Message|Email|Interview|Diary|TextDocument|Notes",
           "sender": {
+            "$type": "model.game.Character",
             "name": "string",
-            "role": "string"
+            "role": "Suspect|Victim|Witness|Investigator|Accomplice|Informant"
           },
           "receiver": {
+            "$type": "model.game.Character",
             "name": "string",
-            "role": "string"
+            "role": "Suspect|Victim|Witness|Investigator|Accomplice|Informant"
           },
           "date": "string|null"
         },
@@ -222,7 +228,7 @@ The JSON must be valid and parseable. Test it mentally before returning.
           {
             "$type": "model.game.Character",
             "name": "string",
-            "role": "string"
+            "role": "Suspect|Victim|Witness|Investigator|Accomplice|Informant"
           },
           {
             "semantic": "string"
@@ -240,6 +246,7 @@ The JSON must be valid and parseable. Test it mentally before returning.
       ]
     },
     "culprit": {
+      "$type": "model.game.Character",
       "name": "string",
       "role": "Suspect|Accomplice"
     },

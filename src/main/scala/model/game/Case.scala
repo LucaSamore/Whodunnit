@@ -1,6 +1,7 @@
 package model.game
 
 import model.generation.{Constraint, Producer, ProductionError}
+import upickle.default._
 
 trait Case:
   def plot: Plot
@@ -12,27 +13,17 @@ object Case:
   def apply(constraints: Constraint*)(using producer: Producer[Case]): Either[ProductionError, Case] =
     producer.produce(constraints*)
 
-private[model] final case class Plot(title: String, content: String)
+private[model] final case class Plot(title: String, content: String) derives ReadWriter
 
 private[model] final case class CaseImpl(
     plot: Plot,
-    caseFiles: Set[CaseFile],
     characters: Set[Character],
+    caseFiles: Set[CaseFile],
     solution: Solution
-) extends Case
+) extends Case derives ReadWriter
 
-sealed trait Solution:
-  def culprit: Character
-  def motive: String
-
-private[model] final case class CaseSolution(
-    prerequisite: Set[KGPrerequisite],
+private[model] final case class Solution(
+    prerequisite: CaseKnowledgeGraph,
     culprit: Character,
     motive: String
-) extends Solution
-
-private[model] final case class KGPrerequisite(
-    firstEntity: Character | CaseFile,
-    secondEntity: Character | CaseFile,
-    semantic: String
-)
+) derives ReadWriter
