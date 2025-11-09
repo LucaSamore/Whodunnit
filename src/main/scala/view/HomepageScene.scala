@@ -19,10 +19,9 @@ import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight, Text, TextAlignment}
 import controller.HomePageController
 
-abstract class HomepageScene[S] extends Scene(1280, 720):
+abstract class HomepageScene extends Scene(1280, 720):
 
-  // Dependencies are provided by the Component
-  protected def controller: HomePageController[S]
+  protected def controller: HomePageController
   protected def navigateTo(page: ScenePage): Unit
 
   import Config._

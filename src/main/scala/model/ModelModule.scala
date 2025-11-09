@@ -1,23 +1,52 @@
 package model
 
-import model.generation.*
-import model.game.{Case, GameState}
+import model.game.GameState
 
 object ModelModule:
 
-  trait Model[S]:
-    val producer: Producer[Case]
-    var gameState: GameState
+  trait Model:
+    def state: GameState
+    def updateState(updater: GameState => GameState): GameState
+    def startTimer(): Unit
+    def resetState(): GameState
 
-  trait Provider[S]:
-    val model: Model[S]
+    def addHint(hint: game.Hint): GameState =
+      updateState(_.addHint(hint))
 
-  trait Component[S]:
+    def updateGraph(f: game.CaseKnowledgeGraph => game.CaseKnowledgeGraph)
+        : GameState =
+      updateState(_.updateGraph(f))
 
-    class ModelImpl extends Model[S]:
-      import Producers.given
-      val producer: Producer[Case] = summon[Producer[Case]]
-      var gameState: GameState = GameState.empty()
+    def updateHistory(f: game.History => game.History): GameState =
+      updateState(_.updateHistory(f))
 
-  trait Interface[S] extends Provider[S] with Component[S]:
-    def Model(): Model[S] = new ModelImpl()
+  trait Provider:
+    def model: Model
+
+  trait Component:
+
+    class ModelImpl extends Model:
+
+      @volatile private var currentState: GameState = GameState.empty()
+
+      override def state: GameState = currentState
+
+      override def updateState(updater: GameState => GameState): GameState =
+        synchronized {
+          currentState = updater(currentState)
+          currentState
+        }
+
+      override def resetState(): GameState =
+        synchronized {
+          currentState = GameState.empty()
+          currentState
+        }
+
+      override def startTimer(): Unit =
+        synchronized {
+          currentState.timer.foreach(_.start())
+        }
+
+  trait Interface extends Provider with Component:
+    override lazy val model: Model = new ModelImpl()
