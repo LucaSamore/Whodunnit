@@ -5,9 +5,11 @@ import cats.effect.unsafe.implicits.global
 import model.ModelModule
 import model.generation.*
 import model.game.*
+import model.generation.Constraint.Context
 import model.hint.HintEngine
 import model.hint.Rules.stableDensity
 import model.generation.Producers.given
+
 import scala.concurrent.duration.*
 
 // TODO: Change name to something like "GamaInitializationController",
@@ -88,9 +90,14 @@ object CaseGenerationController:
                         val hintOpt = HintEngine.evaluate(history)(using stableDensity)
 
                         // We assume hintOpt is not empty, just for test purposes
-                        println(s"Generated Hint: ${hintOpt.get.description}")
+                        println(s"Generated Hint of kind: ${hintOpt.get.toString}")
 
-                        model.addHint(hintOpt.get)
+                        val hint = Hint(
+                          hintOpt.get,
+                          Context(model.state.investigativeCase.get.plot.content)
+                        ).toOption.get
+
+                        model.addHint(hint)
                       }
                     ),
                     TriggerEvent(

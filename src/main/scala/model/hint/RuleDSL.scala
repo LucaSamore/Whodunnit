@@ -1,7 +1,7 @@
 package model.hint
 
 import model.hint.Metric.MetricValue
-import model.game.Hint
+import model.generation.Constraint.HintKind
 
 /** A composable condition that evaluates a predicate over a list of objects.
   *
@@ -39,16 +39,16 @@ final case class MetricCheck[T](eval: List[T] => Boolean):
   infix def or(other: MetricCheck[T]): MetricCheck[T] =
     MetricCheck(obj => eval(obj) || other.eval(obj))
 
-  /** Creates a rule by associating this condition with a hint.
+  /** Creates a rule by associating this condition with a hint kind.
     *
     * @param hint
-    *   the hint to produce when this condition is satisfied
+    *   the hint kind to produce when this condition is satisfied
     * @return
-    *   a rule pairing this condition with the given hint
+    *   a rule pairing this condition with the given hint kind
     */
-  infix def hence(hint: Hint): Rule[T] = Rule[T](this, hint)
+  infix def hence(hint: HintKind): Rule[T] = Rule[T](this, hint)
 
-/** A rule that produces a hint when its condition is satisfied.
+/** A rule that produces a hint kind when its condition is satisfied.
   *
   * Rules are the output of the DSL and can be evaluated against a history to determine if they apply.
   *
@@ -57,13 +57,13 @@ final case class MetricCheck[T](eval: List[T] => Boolean):
   * @param condition
   *   the condition that must be met
   * @param hint
-  *   the hint to produce when the condition is satisfied
+  *   the hint kind to produce when the condition is satisfied
   * @example
   *   {{{
-  *   val rule = when(coverage) == Increasing hence Hint("Coverage is improving")
+  *   val rule = when(coverage) == Increasing hence Misleading
   *   }}}
   */
-case class Rule[T](condition: MetricCheck[T], hint: Hint)
+case class Rule[T](condition: MetricCheck[T], hint: HintKind)
 
 /** An expression representing a metric that can be checked against a trend.
   *
@@ -119,7 +119,7 @@ final case class MetricExpr[T](compute: T => MetricValue):
   *   val rule =
   *     when(coverage) == Increasing and
   *     when(density) == Stable hence
-  *     Hint("Good progress with stable density")
+  *     Misleading
   *   }}}
   */
 def when[T](metric: T => MetricValue): MetricExpr[T] = MetricExpr[T](metric)
