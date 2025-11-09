@@ -2,10 +2,6 @@ package model.hint
 
 import model.game.Hint
 
-enum HintKind:
-  case Helpful
-  case Misleading
-
 trait HintEngine:
   def evaluate[T](t: List[T])(using Rule[T]): Option[Hint]
 

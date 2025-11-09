@@ -1,7 +1,9 @@
 package model.hint
 
 import model.game.{BaseOrientedGraph, Hint}
-import model.hint.HintKind.Misleading
+import model.generation.Constraint.HintKind
+import model.generation.Constraint.HintKind.Misleading
+import model.generation.{Constraint, Producer, ProductionError}
 import model.hint.Metric.{coverageFor, density}
 import model.hint.Trend.{Increasing, Stable, Worsening}
 import model.hint.TrendAnalyzers.simpleTrendAnalyzer
@@ -17,6 +19,12 @@ final class RuleDSLTest extends AnyFlatSpec with Matchers with GivenWhenThen:
     new BaseOrientedGraph:
       override type Node = Int
       override type Edge = String
+
+  private case class MockHint(override val description: String) extends Hint
+
+  private given Producer[Hint] with
+    override def produce(constraints: Constraint*): Either[ProductionError, Hint] =
+      Right(MockHint("Test Hint"))
 
   "MetricCheck" should "evaluate to true when condition matches" in:
     Given("a history of graphs with incrementing density")
@@ -79,10 +87,10 @@ final class RuleDSLTest extends AnyFlatSpec with Matchers with GivenWhenThen:
     val check = when(density) == Increasing
 
     When("creating a rule with 'hence'")
-    val rule = check hence Hint(Misleading)
+    val rule = check hence Hint(Misleading).toOption.get
 
     Then("the rule should have the correct hint")
-    rule.hint shouldBe Hint(Misleading)
+    rule.hint shouldBe MockHint("Test Hint")
     rule.condition shouldBe check
 
   "HintEngine.evaluate" should "return Some(hint) when condition matches" in:
@@ -95,13 +103,13 @@ final class RuleDSLTest extends AnyFlatSpec with Matchers with GivenWhenThen:
     )
     val coverage = coverageFor(reference)
 
-    val rule = when(coverage) == Increasing hence Hint(Misleading)
+    val rule = when(coverage) == Increasing hence Hint(Misleading).toOption.get
 
     When("evaluating the rule")
     val result = HintEngine.evaluate(history)(using rule)
 
     Then("it should return the hint")
-    result shouldBe Some(Hint(Misleading))
+    result shouldBe Some(MockHint("Test Hint"))
 
   it should "return None when condition does not match" in:
     Given("a rule and non-matching history")
@@ -113,7 +121,7 @@ final class RuleDSLTest extends AnyFlatSpec with Matchers with GivenWhenThen:
     )
     val coverage = coverageFor(reference)
 
-    val rule = when(coverage) == Increasing hence Hint(Misleading)
+    val rule = when(coverage) == Increasing hence Hint(Misleading).toOption.get
 
     When("evaluating the rule")
     val result = HintEngine.evaluate(history)(using rule)
@@ -132,10 +140,10 @@ final class RuleDSLTest extends AnyFlatSpec with Matchers with GivenWhenThen:
     val coverage = coverageFor(reference)
 
     val rule = when(coverage) == Increasing and
-      when(density) == Stable hence Hint(Misleading)
+      when(density) == Stable hence Hint(Misleading).toOption.get
 
     When("evaluating the complex rule")
     val result = HintEngine.evaluate(history)(using rule)
 
     Then("it should match correctly")
-    result shouldBe Some(Hint(Misleading))
+    result shouldBe Some(MockHint("Test Hint"))

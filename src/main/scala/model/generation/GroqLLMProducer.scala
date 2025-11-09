@@ -1,15 +1,13 @@
 package model.generation
 
-class GroqLLMProducer[T](
-    apiKey: String
-)(using parser: ResponseParser[T], promptBuilder: PromptBuilder[T])
+class GroqLLMProducer[T](apiKey: String)(using parser: ResponseParser[T], promptBuilder: PromptBuilder[T])
     extends BaseLLMClient(apiKey)
     with GroqProvider
     with Producer[T]:
 
   import GroqProvider.model
 
-  def produce(constraints: Constraint*): Either[ProductionError, T] =
+  override def produce(constraints: Constraint*): Either[ProductionError, T] =
     for
       userPrompt <- promptBuilder.build(constraints*)
       request = GroqRequest(

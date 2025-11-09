@@ -9,6 +9,7 @@ import model.game.{
   CaseRole,
   CaseSolution,
   Character,
+  Hint,
   KGPrerequisite,
   Plot,
   Solution
@@ -25,9 +26,15 @@ object ResponseParser:
 
   import CaseDTO.given
 
+  given ResponseParser[Hint] with
+    override def parse(jsonString: String): Either[ProductionError, Hint] = ???
+
   given ResponseParser[Case] with
-    def parse(jsonString: String): Either[ProductionError, Case] =
+    override def parse(jsonString: String): Either[ProductionError, Case] =
       val cleanedJson = cleanJson(jsonString)
+
+      println(cleanedJson)
+
       try
         val caseDTO = read[CaseDTO](cleanedJson)
         convertDTOToCase(caseDTO)

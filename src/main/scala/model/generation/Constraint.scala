@@ -6,6 +6,10 @@ object Constraint:
   enum Difficulty extends Constraint:
     case Easy, Medium, Hard
 
+  enum HintKind extends Constraint:
+    case Helpful
+    case Misleading
+
   case class Theme(value: String) extends Constraint
   case class CharactersRange(min: Int, max: Int) extends Constraint
   case class CaseFilesRange(min: Int, max: Int) extends Constraint
