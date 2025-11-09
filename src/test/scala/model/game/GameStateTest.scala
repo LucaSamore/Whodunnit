@@ -14,7 +14,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
   val initializedGameState: GameState = GameState.initialize(
     mockCase,
     timer = mockTimer,
-    graph = mockGraph
+    initialGraph = mockGraph
   )
 
   "A GameState" when:
@@ -36,22 +36,23 @@ class GameStateTest extends AnyWordSpec with Matchers:
         initial.investigativeCase shouldBe None
         updated.investigativeCase shouldBe Some(mockCase)
 
-      "preserve immutability with withGraph" in:
-        val initial = GameState.empty()
-        val updated = initial.withGraph(mockGraph)
+      "preserve immutability with addGraphToHistory" in:
+        val initial = GameState.empty().withHistory(GameHistory(5))
+        val updated = initial.addGraphToHistory(mockGraph)
 
-        initial.graph shouldBe None
-        updated.graph shouldBe Some(mockGraph)
+        initial.currentGraph shouldBe None
+        updated.currentGraph shouldBe Some(mockGraph)
 
       "chain updates functionally" in:
         val state = GameState.empty()
           .withCase(mockCase)
           .withTimer(mockTimer)
-          .withGraph(mockGraph)
+          .withHistory(GameHistory(5))
+          .addGraphToHistory(mockGraph)
 
         state.investigativeCase shouldBe Some(mockCase)
         state.timer shouldBe Some(mockTimer)
-        state.graph shouldBe Some(mockGraph)
+        state.currentGraph shouldBe Some(mockGraph)
 
       "add hints immutably" in:
         import model.hint.HintKind
@@ -66,7 +67,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
         withHint1.hints shouldBe Some(Seq(hint1))
         withHint2.hints shouldBe Some(Seq(hint1, hint2))
 
-      "replace graph instance with updateGraph" in:
+      "add multiple graphs to history" in:
         val graph1 = new CaseKnowledgeGraph()
         val entity1 = Character("Char1", CaseRole.Suspect)
         graph1.addNode(entity1)
@@ -75,9 +76,10 @@ class GameStateTest extends AnyWordSpec with Matchers:
         val entity2 = Character("Char2", CaseRole.Victim)
         graph2.addNode(entity2)
 
-        val initial = GameState.empty().withGraph(graph1)
-        val updated = initial.updateGraph(_ => graph2)
+        val initial = GameState.empty().withHistory(GameHistory(5))
+        val withGraph1 = initial.addGraphToHistory(graph1)
+        val withGraph2 = withGraph1.addGraphToHistory(graph2)
 
-        initial.graph shouldBe Some(graph1)
-        updated.graph shouldBe Some(graph2)
-        initial.graph should not be updated.graph
+        initial.currentGraph shouldBe None
+        withGraph1.currentGraph.map(_.nodes) shouldBe Some(Set(entity1))
+        withGraph2.currentGraph.map(_.nodes) shouldBe Some(Set(entity2))
