@@ -56,7 +56,6 @@ class GraphNode(
     text = labelText
     fill = Color.White
     textAlignment = TextAlignment.Center
-    wrappingWidth = nodeSize + 40
     font = nodeFont
 
   children = Seq(
