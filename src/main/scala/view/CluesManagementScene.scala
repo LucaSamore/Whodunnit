@@ -1,6 +1,6 @@
 package view
 
-import controller.ControllerModule.Controller
+import controller.CluesManagementController
 import scalafx.scene.Scene
 import scalafx.scene.image.Image
 import scalafx.scene.layout.*
@@ -14,7 +14,7 @@ abstract class CluesManagementScene extends Scene(1280, 720):
 
   import Config._
 
-  protected def controller: Controller
+  protected def controller: CluesManagementController
   protected def navigateTo(page: ScenePage): Unit
 
   private val notesTextArea = new TextArea():

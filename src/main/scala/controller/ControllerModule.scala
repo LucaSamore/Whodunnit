@@ -18,6 +18,7 @@ object ControllerModule:
     def homePageController: HomePageController
     def caseGenerationController: CaseGenerationController
     def gameBoardController: GameBoardController
+    def cluesManagementController: CluesManagementController
 
   type Requirements = model.ModelModule.Provider & view.ViewModule.Provider
 
@@ -33,12 +34,17 @@ object ControllerModule:
     protected def createGameBoardController(): GameBoardController =
       GameBoardController(context.model)
 
+    protected def createCluesManagementController()
+        : CluesManagementController =
+      CluesManagementController(context.model)
+
   trait Interface extends Provider with Component:
     self: Requirements =>
-
     override lazy val homePageController: HomePageController =
       createHomePageController()
     override lazy val caseGenerationController: CaseGenerationController =
       createCaseGenerationController()
     override lazy val gameBoardController: GameBoardController =
       createGameBoardController()
+    override lazy val cluesManagementController: CluesManagementController =
+      createCluesManagementController()
