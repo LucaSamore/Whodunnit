@@ -11,17 +11,17 @@ import scalafx.scene.Scene
 
 object ViewModule:
 
-  trait View[S]:
+  trait View:
     def showPage(page: ScenePage): Unit
     def showScene(scene: Scene): Unit
 
-  trait Provider[S]:
-    def view: View[S]
+  trait Provider:
+    def view: View
 
-  type Requirements[S] = controller.ControllerModule.Provider[S]
+  type Requirements = controller.ControllerModule.Provider
 
-  trait Component[S]:
-    context: Requirements[S] =>
+  trait Component:
+    context: Requirements =>
 
     private trait SceneComposer:
       def create(page: ScenePage): Scene
@@ -29,27 +29,27 @@ object ViewModule:
     private class SceneComposerImpl(onNavigate: ScenePage => Unit)
         extends SceneComposer:
 
-      private class HomepageSceneImpl extends HomepageScene[S]:
-        override protected def controller: HomePageController[S] =
+      private class HomepageSceneImpl extends HomepageScene:
+        override protected def controller: HomePageController =
           context.homePageController
         override protected def navigateTo(page: ScenePage): Unit =
           onNavigate(page)
 
       private class GameConfigurationSceneImpl
-          extends GameConfigurationScene[S]:
-        override protected def controller: CaseGenerationController[S] =
+          extends GameConfigurationScene:
+        override protected def controller: CaseGenerationController =
           context.caseGenerationController
         override protected def navigateTo(page: ScenePage): Unit =
           onNavigate(page)
 
-      private class GameBoardSceneImpl extends GameBoardScene[S]:
-        override protected def controller: GameBoardController[S] =
+      private class GameBoardSceneImpl extends GameBoardScene:
+        override protected def controller: GameBoardController =
           context.gameBoardController
         override protected def navigateTo(page: ScenePage): Unit =
           onNavigate(page)
 
-      private class CluesManagementSceneImpl extends CluesManagementScene[S]:
-        override protected def controller: ControllerModule.Controller[S] =
+      private class CluesManagementSceneImpl extends CluesManagementScene:
+        override protected def controller: ControllerModule.Controller =
           context.caseGenerationController
         override protected def navigateTo(page: ScenePage): Unit =
           onNavigate(page)
@@ -63,9 +63,9 @@ object ViewModule:
           case ScenePage.Accuse            =>
             throw new NotImplementedError("Accuse scene is not implemented yet")
 
-    protected def createView(): View[S] = new ViewImpl
+    protected def createView(): View = new ViewImpl
 
-    private class ViewImpl extends View[S]:
+    private class ViewImpl extends View:
       private lazy val sceneComposer: SceneComposer =
         new SceneComposerImpl(showPage)
 
@@ -77,6 +77,6 @@ object ViewModule:
           WhodunnitApp.changeScene(scene)
         }
 
-  trait Interface[S] extends Provider[S] with Component[S]:
-    self: Requirements[S] =>
-    override lazy val view: View[S] = createView()
+  trait Interface extends Provider with Component:
+    self: Requirements =>
+    override lazy val view: View = createView()

@@ -1,43 +1,44 @@
 package controller
 
+import model.ModelModule
 import model.game.GameState
 
 object ControllerModule:
 
-  trait Controller[S]:
-    def currentGameState: GameState
+  trait Controller:
+    def state: GameState
+    def currentGameState: GameState = state
 
-  abstract class AbstractController[S](protected val gameState: GameState)
-      extends Controller[S]:
-    override def currentGameState: GameState = gameState
+  abstract class AbstractController(
+      protected val model: ModelModule.Model
+  ) extends Controller:
+    override def state: GameState = model.state
 
-  trait Provider[S]:
-    def homePageController: HomePageController[S]
-    def caseGenerationController: CaseGenerationController[S]
-    def gameBoardController: GameBoardController[S]
+  trait Provider:
+    def homePageController: HomePageController
+    def caseGenerationController: CaseGenerationController
+    def gameBoardController: GameBoardController
 
-  type Requirements[S] =
-    model.ModelModule.Provider[S] & view.ViewModule.Provider[S]
+  type Requirements = model.ModelModule.Provider & view.ViewModule.Provider
 
-  trait Component[S]:
-    context: Requirements[S] =>
+  trait Component:
+    context: Requirements =>
 
-    protected def createHomePageController(): HomePageController[S] =
-      HomePageController[S](context.model.gameState)
+    protected def createHomePageController(): HomePageController =
+      HomePageController(context.model)
 
-    protected def createCaseGenerationController()
-        : CaseGenerationController[S] =
-      CaseGenerationController[S](context.model.gameState)
+    protected def createCaseGenerationController(): CaseGenerationController =
+      CaseGenerationController(context.model)
 
-    protected def createGameBoardController()
-        : GameBoardController[S] =
-      GameBoardController[S](context.model.gameState)
+    protected def createGameBoardController(): GameBoardController =
+      GameBoardController(context.model)
 
-  trait Interface[S] extends Provider[S] with Component[S]:
-    self: Requirements[S] =>
-    override lazy val homePageController: HomePageController[S] =
+  trait Interface extends Provider with Component:
+    self: Requirements =>
+
+    override lazy val homePageController: HomePageController =
       createHomePageController()
-    override lazy val caseGenerationController: CaseGenerationController[S] =
+    override lazy val caseGenerationController: CaseGenerationController =
       createCaseGenerationController()
-    override lazy val gameBoardController: GameBoardController[S] =
+    override lazy val gameBoardController: GameBoardController =
       createGameBoardController()

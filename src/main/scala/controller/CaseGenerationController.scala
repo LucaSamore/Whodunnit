@@ -2,14 +2,13 @@ package controller
 
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
+import model.ModelModule
 import model.generation.*
 import model.game.*
 import model.generation.Producers.given
+import scala.concurrent.duration.*
 
-import scala.concurrent.duration.DurationInt
-
-trait CaseGenerationController[S]
-    extends ControllerModule.Controller[S]:
+trait CaseGenerationController extends ControllerModule.Controller:
 
   def onPlayClicked(
       difficulty: String,
@@ -19,12 +18,13 @@ trait CaseGenerationController[S]
   ): Unit
 
 object CaseGenerationController:
-  def apply[S](gameState: GameState): CaseGenerationController[S] =
-    new CaseGenerationControllerImpl[S](gameState)
+  def apply(model: ModelModule.Model): CaseGenerationController =
+    new CaseGenerationControllerImpl(model)
 
-  private class CaseGenerationControllerImpl[S](gameState: GameState)
-      extends ControllerModule.AbstractController[S](gameState)
-      with CaseGenerationController[S]:
+  private class CaseGenerationControllerImpl(
+      model: ModelModule.Model
+  ) extends ControllerModule.AbstractController(model)
+      with CaseGenerationController:
 
     private val caseProducer: Producer[Case] = summon[Producer[Case]]
 
@@ -59,27 +59,32 @@ object CaseGenerationController:
       generateCase(
         themeOption,
         difficultyConstraint
-      ).unsafeRunAsync {
-        case Right(result) =>
-          result match
-            case Right(generatedCase) =>
-              println(
-                s"[Controller] Case generated successfully: ${generatedCase.plot.title}"
-              )
-              // TODO Can we use model.gameState.initialize(...) -> add 'model' parameter?
-              gameState.timer = Some(Timer(30.seconds, List.empty))
-              gameState.investigativeCase = Some(generatedCase)
-              gameState.graph = Some(
-                new CaseKnowledgeGraph().withNodes(
-                  generatedCase.characters.toSeq: _*
+      )
+        .unsafeRunAsync {
+          case Right(result) =>
+            result match
+              case Right(generatedCase) =>
+                println(
+                  s"[Controller] Case generated successfully: ${generatedCase.plot.title}"
                 )
-              )
-              gameState.timer.foreach(_.start())
-              onSuccess()
-            case Left(error) =>
-              println(s"[Controller] Error during generation: $error")
-              onError(error.message)
-        case Left(exception) =>
-          println(s"[Controller] Exception: ${exception.getMessage}")
-          onError(s"Exception: ${exception.getMessage}")
-      }
+                val graph =
+                  new CaseKnowledgeGraph().withNodes(
+                    generatedCase.characters.toSeq: _*
+                  )
+                val timer = Timer(30.seconds, List.empty)
+                model.updateState(_ =>
+                  GameState.initialize(
+                    generatedCase,
+                    timer,
+                    graph
+                  )
+                )
+                model.startTimer()
+                onSuccess()
+              case Left(error) =>
+                println(s"[Controller] Error during generation: $error")
+                onError(error.message)
+          case Left(exception) =>
+            println(s"[Controller] Exception: ${exception.getMessage}")
+            onError(s"Exception: ${exception.getMessage}")
+        }

@@ -1,19 +1,19 @@
 package controller
 
-import model.game.*
+import model.ModelModule
 
-trait HomePageController[S]
-    extends ControllerModule.Controller[S]:
+trait HomePageController extends ControllerModule.Controller:
 
   def onPlayNowClicked(): Unit
 
 object HomePageController:
-  def apply[S](gameState: GameState): HomePageController[S] =
-    new HomePageControllerImpl[S](gameState)
+  def apply(model: ModelModule.Model): HomePageController =
+    new HomePageControllerImpl(model)
 
-  private class HomePageControllerImpl[S](gameState: GameState)
-      extends ControllerModule.AbstractController[S](gameState)
-      with HomePageController[S]:
+  private class HomePageControllerImpl(
+      model: ModelModule.Model
+  ) extends ControllerModule.AbstractController(model)
+      with HomePageController:
 
     override def onPlayNowClicked(): Unit =
       println("[Controller] Play Now button clicked!")

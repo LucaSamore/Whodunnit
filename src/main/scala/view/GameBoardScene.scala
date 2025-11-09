@@ -5,7 +5,7 @@ import scalafx.Includes.eventClosureWrapperWithZeroParam
 import scalafx.application.Platform
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
-import scalafx.scene.control.{Button, ContentDisplay, Label}
+import scalafx.scene.control.{Button, ContentDisplay, Label, ScrollPane}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
@@ -14,15 +14,17 @@ import scalafx.stage.{Modality, Stage}
 import scalafx.scene.shape.Circle
 import controller.GameBoardController
 
-abstract class GameBoardScene[S] extends Scene(1280, 720):
+abstract class GameBoardScene extends Scene(1280, 720):
 
-  protected def controller: GameBoardController[S]
+  protected def controller: GameBoardController
   protected def navigateTo(page: ScenePage): Unit
 
   import Config.*
 
   private val graphView = KnowledgeGraphView(
-    controller.currentGameState.graph.getOrElse(new CaseKnowledgeGraph()),
+    controller.currentGameState.currentGraph.getOrElse(
+      new CaseKnowledgeGraph()
+    ),
     viewDimensions = (sceneWidth, sceneHeight)
   )
 
@@ -34,6 +36,25 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
     )
     textFill = Color.web("#FFFFFF")
     alignment = Pos.Center
+    padding = Insets(7, 15, 7, 15)
+    minWidth = 125
+    prefWidth = 125
+    maxWidth = 125
+    border = new Border(
+      new BorderStroke(
+        Color.White,
+        BorderStrokeStyle.Solid,
+        new CornerRadii(5),
+        new BorderWidths(2)
+      )
+    )
+    background = new Background(
+      Array(new BackgroundFill(
+        Color.Transparent,
+        new CornerRadii(5),
+        Insets.Empty
+      ))
+    )
 
   controller.currentGameState.timer.foreach { timer =>
     timer.onTimeUpdate = timeString =>
@@ -94,12 +115,25 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
       alignment = Pos.Center
       children = contentNodes :+ closeButton
 
+    val scrollPane = new ScrollPane:
+      content = popupContent
+      fitToWidth = true
+
     val popupLayout = new BorderPane():
-      center = popupContent
-      style = s"-fx-background-color: ${config.backgroundColor};"
+      center = scrollPane
+      background = Background(Array(BackgroundFill(
+        Color.web(config.backgroundColor),
+        CornerRadii.Empty,
+        Insets.Empty
+      )))
 
     popup.scene = new Scene(config.width, config.height):
       root = popupLayout
+
+    // To ensure the scroll is at the top when shown (after rendering)
+    Platform.runLater {
+      scrollPane.vvalue = 0.0
+    }
 
     popup.showAndWait()
 
@@ -309,7 +343,6 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
         minHeight = topBarHeight
         alignment = Pos.Center
         padding = Insets(topPadding, 0, 0, 0)
-        children = Seq(timerLabel)
       right = new HBox:
         minWidth = boxWidth
         minHeight = topBarHeight
@@ -341,7 +374,7 @@ abstract class GameBoardScene[S] extends Scene(1280, 720):
         alignment = Pos.Center
         spacing = 50
         padding = Insets(0, 0, 45, 0)
-        children = Seq(undoButton, redoButton)
+        children = Seq(undoButton, timerLabel, redoButton)
 
   private object Config:
     val sceneWidth = 1280

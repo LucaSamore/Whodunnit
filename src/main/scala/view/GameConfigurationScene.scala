@@ -11,9 +11,9 @@ import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, Text, TextAlignment}
 
-abstract class GameConfigurationScene[S] extends Scene(1280, 720):
+abstract class GameConfigurationScene extends Scene(1280, 720):
 
-  protected def controller: CaseGenerationController[S]
+  protected def controller: CaseGenerationController
   protected def navigateTo(page: ScenePage): Unit
 
   private object Theme:
