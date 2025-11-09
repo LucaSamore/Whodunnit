@@ -286,6 +286,11 @@ class KnowledgeGraphView(
       graphNodes(sourceEntity).addPositionListener(() => edge.updateEdge())
       graphNodes(targetEntity).addPositionListener(() => edge.updateEdge())
 
+  def updateGraph(newGraph: CaseKnowledgeGraph): Unit =
+    val newView = new KnowledgeGraphView(newGraph, (viewWidth, viewHeight))
+    newView.renderGraph()
+    children.setAll(newView.children.toArray: _*)
+
 object KnowledgeGraphView:
   def apply(
       knowledgeGraph: CaseKnowledgeGraph,
