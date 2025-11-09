@@ -95,9 +95,9 @@ class TimerTest extends AnyWordSpec with Matchers:
         TimerLogic.getRemainingTime(state) shouldBe Some(5.seconds)
 
     "checking triggers" should:
-      val trigger6 = TriggerEvent(6.seconds, "6 seconds remaining!")
-      val trigger5 = TriggerEvent(5.seconds, "5 seconds remaining!")
-      val trigger3 = TriggerEvent(3.seconds, "3 seconds!")
+      val trigger6 = TriggerEvent(6.seconds, () => println("6 seconds remaining!"))
+      val trigger5 = TriggerEvent(5.seconds, () => println("5 seconds remaining!"))
+      val trigger3 = TriggerEvent(3.seconds, () => println("3 seconds remaining!"))
       val triggers = List(trigger6, trigger3)
 
       "return empty list when no triggers are defined" in:
