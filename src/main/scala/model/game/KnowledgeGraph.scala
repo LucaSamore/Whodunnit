@@ -75,7 +75,7 @@ trait CaseNodesAndEdges:
 
 final case class Link(semantic: String) derives ReadWriter
 
-final class CaseKnowledgeGraph extends BaseOrientedGraph with KnowledgeGraph with CaseNodesAndEdges:
+class CaseKnowledgeGraph extends BaseOrientedGraph with KnowledgeGraph with CaseNodesAndEdges:
   def deepCopy(): CaseKnowledgeGraph =
     val newGraph = new CaseKnowledgeGraph
     nodes.foreach(newGraph.addNode)

@@ -13,7 +13,9 @@ object Case:
   def apply(constraints: Constraint*)(using producer: Producer[Case]): Either[ProductionError, Case] =
     producer.produce(constraints*)
 
-private[model] final case class Plot(title: String, content: String) derives ReadWriter
+final case class Plot(title: String, content: String) derives ReadWriter
+
+final case class Solution(prerequisite: CaseKnowledgeGraph, culprit: Character, motive: String) derives ReadWriter
 
 private[model] final case class CaseImpl(
     plot: Plot,
@@ -21,9 +23,3 @@ private[model] final case class CaseImpl(
     caseFiles: Set[CaseFile],
     solution: Solution
 ) extends Case derives ReadWriter
-
-private[model] final case class Solution(
-    prerequisite: CaseKnowledgeGraph,
-    culprit: Character,
-    motive: String
-) derives ReadWriter

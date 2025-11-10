@@ -1,6 +1,6 @@
 package model.generation
 
-import model.game.{Case, CaseFile, CaseFileType, CaseImpl, CaseRole, Character, Plot, Solution}
+import model.game.{Case, CaseFile, CaseFileType, CaseImpl, CaseKnowledgeGraph, CaseRole, Character, Plot, Solution}
 import org.scalatest.{EitherValues, OptionValues}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -36,10 +36,14 @@ class GroqLLMProducerTest extends AnyWordSpec with Matchers with EitherValues
   private def createValidCase(): Case =
     val plot = Plot("Test Mystery", "Test content")
     val character = Character("TestSuspect", CaseRole.Suspect)
-    val caseFile =
-      CaseFile("Evidence", "Content", CaseFileType.Email, None, None, None)
-    val solution = Solution(Set.empty, character, "Motive")
-    CaseImpl(plot, Set(caseFile), Set(character), solution)
+    val caseFile = CaseFile("Evidence", "Content", CaseFileType.Email, None, None, None)
+    val solution = Solution(new CaseKnowledgeGraph(), character, "Motive")
+    CaseImpl(
+      plot = plot,
+      characters = Set(character),
+      caseFiles = Set(caseFile),
+      solution = solution
+    )
 
   "GroqLLMProducer" should:
     "successfully produce case when all components work" in:
@@ -48,7 +52,7 @@ class GroqLLMProducerTest extends AnyWordSpec with Matchers with EitherValues
         mockResponse = Right("valid response")
       )
 
-      val result = producer.produce(Constraint.Theme("noir"))
+      val result = producer.produce(Theme("noir"))
 
       result shouldBe a[Right[_, _]]
       result.value.plot.title shouldBe "Test Mystery"
@@ -59,7 +63,7 @@ class GroqLLMProducerTest extends AnyWordSpec with Matchers with EitherValues
         mockResponse = Right("valid response")
       )
 
-      producer.produce(Constraint.Theme("test"))
+      producer.produce(Theme("test"))
 
       producer.lastRequest shouldBe defined
       val messages = producer.lastRequest.value.messages
@@ -83,7 +87,7 @@ class GroqLLMProducerTest extends AnyWordSpec with Matchers with EitherValues
       )(using testParser, capturingBuilder)
 
       val inputConstraints =
-        Seq(Constraint.Theme("noir"), Constraint.Difficulty.Easy)
+        Seq(Theme("noir"), Difficulty.Easy)
       producer.produce(
         inputConstraints*
       ) // use capturingBuilder and populate receivedConstraints

@@ -23,8 +23,8 @@ class PromptBuilderTest extends AnyWordSpec with Matchers with EitherValues
 
       "replace constraints placeholder with formatted constraint descriptions" in:
         val result = PromptBuilder.given_PromptBuilder_Case.build(
-          Constraint.Theme("test"),
-          Constraint.CharactersRange(2, 4)
+          Theme("test"),
+          CharactersRange(2, 4)
         )
 
         result shouldBe a[Right[_, _]]
@@ -34,7 +34,7 @@ class PromptBuilderTest extends AnyWordSpec with Matchers with EitherValues
 
       "preserve template structure after substitution" in:
         val result =
-          PromptBuilder.given_PromptBuilder_Case.build(Constraint.Theme("test"))
+          PromptBuilder.given_PromptBuilder_Case.build(Theme("test"))
 
         result shouldBe a[Right[_, _]]
         val prompt = result.value

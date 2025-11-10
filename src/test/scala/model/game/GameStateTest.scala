@@ -15,7 +15,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
     override def produce(constraints: Constraint*): Either[ProductionError, Hint] =
       Right(MockHint("Test Hint"))
 
-  val emptyGameState = GameState()
+  val emptyGameState: GameState = GameState()
   val mockTimer = new Timer(3600.seconds, List.empty)
   val mockGraph = new CaseKnowledgeGraph()
   val initializedGameState: GameState = GameState.initialize(
@@ -62,7 +62,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
         state.currentGraph shouldBe Some(mockGraph)
 
       "add hints immutably" in:
-        import model.generation.Constraint.HintKind
+        import model.generation.HintKind
         val hint1 = Hint(HintKind.Helpful).toOption.get
         val hint2 = Hint(HintKind.Misleading).toOption.get
 

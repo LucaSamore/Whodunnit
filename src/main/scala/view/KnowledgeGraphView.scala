@@ -1,15 +1,7 @@
 package view
 
 import model.game
-import model.game.{
-  CaseFile,
-  CaseFileType,
-  CaseKnowledgeGraph,
-  Character,
-  CustomEntity,
-  Entity,
-  Link
-}
+import model.game.{CaseFile, CaseFileType, CaseKnowledgeGraph, Character, CustomEntity, Entity, Link}
 import scalafx.Includes.*
 import scalafx.geometry.{Insets, Point2D, Pos}
 import scalafx.scene.image.{Image, ImageView}
