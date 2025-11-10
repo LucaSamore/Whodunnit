@@ -90,5 +90,7 @@ object CluesManagementController:
       case CaseFile(title, _, _, _, _, _) => title
       case CustomEntity(entityType, _)    => entityType
 
-    private def saveGraph(graph: CaseKnowledgeGraph): Unit =
+    private def saveGraph(graph: CaseKnowledgeGraph): Unit = {
       model.updateState(_.addGraphToHistory(graph.deepCopy()))
+      println(model.state.history.toString)
+    }

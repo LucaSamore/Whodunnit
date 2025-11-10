@@ -195,6 +195,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
     controller.undo() match
       case Some(previousGraph) =>
         graphView.updateGraph(previousGraph)
+        println(controller.state.history.toString)
         updateUndoRedoButtons()
         println(s"Undo executed - restored previous graph state")
       case None =>

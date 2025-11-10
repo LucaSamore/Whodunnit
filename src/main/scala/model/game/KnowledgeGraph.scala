@@ -90,6 +90,9 @@ class CaseKnowledgeGraph extends BaseOrientedGraph with KnowledgeGraph with Case
       .foreach { case (n1, e, n2) => newGraph.addEdge(n1, e, n2) }
     newGraph
 
+  override def toString: String =
+    write(SerializableGraph(nodes, edges))
+
 final case class SerializableGraph(nodes: Set[Entity], edges: Set[(Entity, Link, Entity)]) derives ReadWriter
 
 given ReadWriter[CaseKnowledgeGraph] = readwriter[ujson.Value].bimap[CaseKnowledgeGraph](
