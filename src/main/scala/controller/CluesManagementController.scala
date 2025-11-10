@@ -1,7 +1,7 @@
 package controller
 
 import model.ModelModule
-import model.game.*
+import model.game.{CaseFile, CaseKnowledgeGraph, Character, CustomEntity, Entity, Link}
 
 trait CluesManagementController extends ControllerModule.Controller:
   def getEntities: Seq[Entity]
@@ -25,35 +25,39 @@ object CluesManagementController:
       extends ControllerModule.AbstractController(model)
       with CluesManagementController:
 
-    private lazy val knowledgeGraph: CaseKnowledgeGraph =
-      model.state.graph.getOrElse:
+    private def knowledgeGraph: CaseKnowledgeGraph =
+      model.state.currentGraph.getOrElse(
         throw new IllegalStateException("Knowledge graph not initialized")
+      )
 
     override def getEntities: Seq[Entity] =
       val graphEntities = knowledgeGraph.nodes.toSeq
-      val caseEntities = model.state.investigativeCase.fold(Seq.empty[Entity]):
-        c =>
-          c.characters ++ c.caseFiles
+      val caseEntities = model.state.investigativeCase.fold(Seq.empty[Entity]): c =>
+        c.characters ++ c.caseFiles
       (graphEntities ++ caseEntities).distinct
 
     override def getRelationships: Seq[(Entity, Link, Entity)] =
       knowledgeGraph.edges.toSeq
 
     override def addRelationship(from: Entity, link: Link, to: Entity): Unit =
-      if !knowledgeGraph.nodes.contains(from) then createEntity(from)
-      if !knowledgeGraph.nodes.contains(to) then createEntity(to)
-      knowledgeGraph.addEdge(from, link, to)
+      val graph = knowledgeGraph
+      if !graph.nodes.contains(from) then createEntity(from)
+      if !graph.nodes.contains(to) then createEntity(to)
+      graph.addEdge(from, link, to)
+      saveGraph(graph)
 
     override def removeRelationship(
         from: Entity,
         link: Link,
         to: Entity
     ): Unit =
-      knowledgeGraph.removeEdge(from, link, to)
+      val graph = knowledgeGraph
+      graph.removeEdge(from, link, to)
       cleanOrphanEntities()
 
     override def createEntity(entity: Entity): Unit =
-      knowledgeGraph.addNode(entity)
+      val graph = knowledgeGraph
+      graph.addNode(entity)
 
     override def findOrCreateEntity(name: String): Entity =
       getEntities.find(e => getEntityDisplayName(e) == name) match
@@ -71,18 +75,20 @@ object CluesManagementController:
       addRelationship(newRel._1, newRel._2, newRel._3)
 
     override def cleanOrphanEntities(): Unit =
-      val usedEntities =
-        knowledgeGraph.edges.flatMap((from, _, to) => Set(from, to))
-      val caseEntities = model.state.investigativeCase.fold(Set.empty[Entity])(
-        c => c.characters ++ c.caseFiles
-      )
-      knowledgeGraph.nodes
+      val graph = knowledgeGraph
+      val usedEntities = graph.edges.flatMap((from, _, to) => Set(from, to))
+      val caseEntities = model.state.investigativeCase.fold(Set.empty[Entity])(c => c.characters ++ c.caseFiles)
+      graph.nodes
         .collect:
           case ce: CustomEntity => ce
         .filterNot(e => usedEntities(e) || caseEntities(e))
-        .foreach(knowledgeGraph.removeNode)
+        .foreach(graph.removeNode)
+      saveGraph(graph)
 
     override def getEntityDisplayName(entity: Entity): String = entity match
       case Character(name, _)             => name
       case CaseFile(title, _, _, _, _, _) => title
       case CustomEntity(entityType, _)    => entityType
+
+    private def saveGraph(graph: CaseKnowledgeGraph): Unit =
+      model.updateState(_.addGraphToHistory(graph.deepCopy()))
