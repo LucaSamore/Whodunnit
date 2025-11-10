@@ -10,6 +10,9 @@ case class GameState(
     timer: Option[Timer] = None
 ):
 
+  def currentGraph: Option[CaseKnowledgeGraph] =
+    history.flatMap(_.currentState)
+
   def withCase(c: Case): GameState =
     copy(investigativeCase = Some(c))
 
@@ -46,9 +49,6 @@ case class GameState(
       case None =>
         val newHistory = GameHistory(5)
         copy(history = Some(newHistory.addState(graph)))
-
-  def currentGraph: Option[CaseKnowledgeGraph] =
-    history.flatMap(_.currentState)
 
 object GameState:
   def empty(): GameState =

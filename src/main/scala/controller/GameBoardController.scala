@@ -23,10 +23,22 @@ object GameBoardController:
       with GameBoardController:
 
     override def undo(): Option[CaseKnowledgeGraph] =
-      model.undo()
+      model.state.history.flatMap { history =>
+        val (newHistory, previousGraph) = history.undo()
+        previousGraph.map { graph =>
+          model.updateState(_.withHistory(newHistory))
+          graph
+        }
+      }
 
     override def redo(): Option[CaseKnowledgeGraph] =
-      model.redo()
+      model.state.history.flatMap { history =>
+        val (newHistory, nextGraph) = history.redo()
+        nextGraph.map { graph =>
+          model.updateState(_.withHistory(newHistory))
+          graph
+        }
+      }
 
     override def canUndo: Boolean =
       model.state.history.exists(_.canUndo)
@@ -34,14 +46,26 @@ object GameBoardController:
     override def canRedo: Boolean =
       model.state.history.exists(_.canRedo)
 
-    override def saveSnapshot(): Unit =
-      model.saveSnapshot()
+    def saveSnapshot(): Unit =
+      model.state.history.foreach { history =>
+        model.state.timeMachine.foreach { tm =>
+          tm.save(history)
+        }
+      }
 
-    override def restoreSnapshot(): Option[CaseKnowledgeGraph] =
-      model.restoreSnapshot()
+    def restoreSnapshot(): Option[CaseKnowledgeGraph] =
+      model.state.timeMachine.flatMap { tm =>
+        tm.restore().map { restoredHistory =>
+          model.updateState(_.withHistory(restoredHistory))
+          tm.clear()
+          restoredHistory.currentState.getOrElse(
+            new CaseKnowledgeGraph()
+          )
+        }
+      }
 
-    override def hasSnapshot: Boolean =
-      model.hasSnapshot
+    def hasSnapshot: Boolean =
+      model.state.timeMachine.exists(_.hasSnapshot)
 
-    override def clearSnapshot(): Unit =
-      model.clearSnapshot()
+    def clearSnapshot(): Unit =
+      model.state.timeMachine.foreach(_.clear())

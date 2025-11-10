@@ -70,7 +70,7 @@ object CaseGenerationController:
                         Context(model.state.investigativeCase.get.plot.content)
                       ).toOption.get
 
-                      model.addHint(hint)
+                      model.updateState(_.addHint(hint))
                     }
                   ),
                   TriggerEvent(
