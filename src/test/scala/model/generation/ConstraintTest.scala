@@ -1,6 +1,5 @@
 package model.generation
 
-import Constraint.{CaseFilesRange, CharactersRange, PrerequisitesRange, Theme}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -9,27 +8,27 @@ class ConstraintTest extends AnyWordSpec with Matchers:
   "Constraint.Theme" when:
     "created with valid value theme" should:
       "store the theme" in:
-        val theme = Constraint.Theme("Murder Mystery")
+        val theme = Theme("Murder Mystery")
         theme.value shouldBe "Murder Mystery"
 
   "Constraint.CharactersRange" when:
     "created with valid range" should:
       "store min and max" in:
-        val range = Constraint.CharactersRange(2, 5)
+        val range = CharactersRange(2, 5)
         range.min shouldBe 2
         range.max shouldBe 5
 
   "Constraint.CaseFilesRange" when:
     "created with valid range" should:
       "store min and max" in:
-        val range = Constraint.CaseFilesRange(3, 8)
+        val range = CaseFilesRange(3, 8)
         range.min shouldBe 3
         range.max shouldBe 8
 
   "Constraint.PrerequisitesRange" when:
     "created with valid range" should:
       "store min and max" in:
-        val range = Constraint.PrerequisitesRange(1, 4)
+        val range = PrerequisitesRange(1, 4)
         range.min shouldBe 1
         range.max shouldBe 4
 
@@ -80,7 +79,7 @@ class ConstraintTest extends AnyWordSpec with Matchers:
 
   "Constraint.expandConstraints" should:
     "expand Easy difficulty to easy preset constraints without theme" in:
-      import Constraint.Difficulty.Easy
+      import Difficulty.Easy
 
       val result = Constraint.expandConstraints(Seq(Theme("Murder"), Easy))
 
@@ -91,7 +90,7 @@ class ConstraintTest extends AnyWordSpec with Matchers:
       result should have size 4
 
     "expand Medium difficulty to medium preset constraints" in:
-      import Constraint.Difficulty.Medium
+      import Difficulty.Medium
 
       val result = Constraint.expandConstraints(Seq(Medium))
 
@@ -101,7 +100,7 @@ class ConstraintTest extends AnyWordSpec with Matchers:
       result should have size 3
 
     "expand Hard difficulty to hard preset constraints" in:
-      import Constraint.Difficulty.Hard
+      import Difficulty.Hard
 
       val result = Constraint.expandConstraints(Seq(Hard))
 

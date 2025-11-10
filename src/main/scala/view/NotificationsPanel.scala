@@ -1,15 +1,17 @@
 package view
 
+import model.game.Hint
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.{Label, ScrollPane}
 import scalafx.scene.layout.{Priority, Region, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight}
 import scalafx.beans.property.BooleanProperty
+
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class NotificationsPanel(customFont: Font) extends VBox:
+class NotificationsPanel(customFont: Font, hints: Option[Seq[Hint]] = None) extends VBox:
 
   private val isVisible = BooleanProperty(false)
 
@@ -111,17 +113,9 @@ class NotificationsPanel(customFont: Font) extends VBox:
 
       children = Seq(messageLabel, timestampLabel)
 
-  private def addMockNotifications(): Unit =
-    addNotification(
-      "New clue discovered: Mike's alibi is suspicious and other long texts"
-    )
-    addNotification("Frank was last seen at the warehouse")
-    addNotification("A new witness has come forward")
-    addNotification("Evidence found at the crime scene")
-    addNotification("Witness statement recorded")
-    addNotification("DNA results are pending")
-    addNotification("Security footage reviewed")
-    addNotification("Fingerprint analysis complete")
+  private def addMockNotifications(): Unit = hints match
+    case Some(hints) => hints map (_.description) foreach (addNotification)
+    case _           =>
 
 object NotificationsPanel:
-  def apply(customFont: Font) = new NotificationsPanel(customFont)
+  def apply(customFont: Font, hints: Option[Seq[Hint]] = None) = new NotificationsPanel(customFont, hints)

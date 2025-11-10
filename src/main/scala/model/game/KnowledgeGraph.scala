@@ -1,6 +1,7 @@
 package model.game
 
 import model.*
+import upickle.default._
 
 import scala.collection.mutable
 
@@ -72,11 +73,9 @@ trait CaseNodesAndEdges:
   type Node = Entity
   type Edge = Link
 
-case class Link(semantic: String)
+final case class Link(semantic: String) derives ReadWriter
 
-class CaseKnowledgeGraph extends BaseOrientedGraph
-    with KnowledgeGraph
-    with CaseNodesAndEdges:
+class CaseKnowledgeGraph extends BaseOrientedGraph with KnowledgeGraph with CaseNodesAndEdges:
   def deepCopy(): CaseKnowledgeGraph =
     val newGraph = new CaseKnowledgeGraph
     nodes.foreach(newGraph.addNode)
@@ -90,3 +89,16 @@ class CaseKnowledgeGraph extends BaseOrientedGraph
       )
       .foreach { case (n1, e, n2) => newGraph.addEdge(n1, e, n2) }
     newGraph
+
+final case class SerializableGraph(nodes: Set[Entity], edges: Set[(Entity, Link, Entity)]) derives ReadWriter
+
+given ReadWriter[CaseKnowledgeGraph] = readwriter[ujson.Value].bimap[CaseKnowledgeGraph](
+  graph => writeJs(SerializableGraph(graph.nodes, graph.edges)),
+  json => {
+    val sg = read[SerializableGraph](json)
+    val graph = new CaseKnowledgeGraph
+    sg.nodes.foreach(graph.addNode)
+    sg.edges.foreach { case (n1, e, n2) => graph.addEdge(n1, e, n2) }
+    graph
+  }
+)

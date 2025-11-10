@@ -1,6 +1,6 @@
 package model.game
 
-import model.generation.{Constraint, Producer, ProductionError}
+import model.generation.{CaseFilesRange, CharactersRange, Constraint, Difficulty, Producer, ProductionError, Theme}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{EitherValues, OptionValues}
@@ -19,10 +19,14 @@ class CaseTest extends AnyWordSpec with Matchers with EitherValues
   private def createTestCase(): Case =
     val plot = Plot("Test Mystery", "Test content")
     val character = Character("Suspect", CaseRole.Suspect)
-    val caseFile =
-      CaseFile("Evidence", "Content", CaseFileType.Email, None, None, None)
-    val solution = CaseSolution(Set.empty, character, "Test motive")
-    CaseImpl(plot, Set(caseFile), Set(character), solution)
+    val caseFile = CaseFile("Evidence", "Content", CaseFileType.Email, None, None, None)
+    val solution = Solution(new CaseKnowledgeGraph(), character, "Test motive")
+    CaseImpl(
+      plot = plot,
+      characters = Set(character),
+      caseFiles = Set(caseFile),
+      solution = solution
+    )
 
   "Case.apply" when:
 
@@ -32,7 +36,7 @@ class CaseTest extends AnyWordSpec with Matchers with EitherValues
         given testProducer: Producer[Case] =
           new MockProducer(Right(expectedCase))
 
-        val result = Case.apply(Constraint.Theme("noir"))
+        val result = Case.apply(Theme("noir"))
 
         result shouldBe a[Right[_, _]]
         result.value shouldBe expectedCase
@@ -42,9 +46,9 @@ class CaseTest extends AnyWordSpec with Matchers with EitherValues
         given Producer[Case] = mockProducer
 
         val constraints = Seq(
-          Constraint.Theme("detective"),
-          Constraint.CharactersRange(2, 4),
-          Constraint.Difficulty.Medium
+          Theme("detective"),
+          CharactersRange(2, 4),
+          Difficulty.Medium
         )
 
         Case.apply(constraints*)
@@ -56,9 +60,9 @@ class CaseTest extends AnyWordSpec with Matchers with EitherValues
         given Producer[Case] = mockProducer
 
         Case.apply(
-          Constraint.Theme("noir"),
-          Constraint.CharactersRange(3, 5),
-          Constraint.CaseFilesRange(4, 8)
+          Theme("noir"),
+          CharactersRange(3, 5),
+          CaseFilesRange(4, 8)
         )
 
         mockProducer.capturedConstraints shouldBe defined
@@ -69,7 +73,7 @@ class CaseTest extends AnyWordSpec with Matchers with EitherValues
         val error = ProductionError.LLMError("API failed")
         given testProducer: Producer[Case] = new MockProducer(Left(error))
 
-        val result = Case.apply(Constraint.Theme("test"))
+        val result = Case.apply(Theme("test"))
 
         result shouldBe a[Left[_, _]]
         result.left.value shouldBe a[ProductionError.LLMError]
@@ -89,7 +93,7 @@ class CaseTest extends AnyWordSpec with Matchers with EitherValues
         val error = ProductionError.ParseError("Invalid JSON")
         given testProducer: Producer[Case] = new MockProducer(Left(error))
 
-        val result = Case.apply(Constraint.Difficulty.Easy)
+        val result = Case.apply(Difficulty.Easy)
 
         result shouldBe a[Left[_, _]]
         result.left.value shouldBe a[ProductionError.ParseError]

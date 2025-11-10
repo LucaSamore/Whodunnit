@@ -1,6 +1,12 @@
 package view
 
-import controller.{CaseGenerationController, CluesManagementController, ControllerModule, GameBoardController, HomePageController}
+import controller.{
+  CaseGenerationController,
+  CluesManagementController,
+  ControllerModule,
+  GameBoardController,
+  HomePageController
+}
 import scalafx.application.Platform
 import scalafx.scene.Scene
 

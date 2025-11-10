@@ -1,15 +1,7 @@
 package view
 
 import model.game
-import model.game.{
-  CaseFile,
-  CaseFileType,
-  CaseKnowledgeGraph,
-  Character,
-  CustomEntity,
-  Entity,
-  Link
-}
+import model.game.{CaseFile, CaseFileType, CaseKnowledgeGraph, Character, CustomEntity, Entity, Link}
 import scalafx.Includes.*
 import scalafx.geometry.{Insets, Point2D, Pos}
 import scalafx.scene.image.{Image, ImageView}
@@ -56,7 +48,6 @@ class GraphNode(
     text = labelText
     fill = Color.White
     textAlignment = TextAlignment.Center
-    wrappingWidth = nodeSize + 40
     font = nodeFont
 
   children = Seq(
@@ -286,6 +277,11 @@ class KnowledgeGraphView(
       edge.updateEdge()
       graphNodes(sourceEntity).addPositionListener(() => edge.updateEdge())
       graphNodes(targetEntity).addPositionListener(() => edge.updateEdge())
+
+  def updateGraph(newGraph: CaseKnowledgeGraph): Unit =
+    val newView = new KnowledgeGraphView(newGraph, (viewWidth, viewHeight))
+    newView.renderGraph()
+    children.setAll(newView.children.toArray: _*)
 
 object KnowledgeGraphView:
   def apply(

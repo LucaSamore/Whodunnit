@@ -3,25 +3,35 @@ package model.game
 import model.versioning.RingNavigableBuffer
 
 trait History:
-  def addState(kg: CaseKnowledgeGraph): Unit
-  def undo(): Option[CaseKnowledgeGraph]
-  def redo(): Option[CaseKnowledgeGraph]
+  def addState(kg: CaseKnowledgeGraph): History
+  def undo(): (History, Option[CaseKnowledgeGraph])
+  def redo(): (History, Option[CaseKnowledgeGraph])
   def currentState: Option[CaseKnowledgeGraph]
   def deepCopy(): History
   def states: Seq[CaseKnowledgeGraph]
+  def canUndo: Boolean
+  def canRedo: Boolean
 
 case class GameHistory(
     private val historySize: Int,
     private val timeline: RingNavigableBuffer[CaseKnowledgeGraph]
 ) extends History:
-  override def addState(kg: CaseKnowledgeGraph): Unit =
-    timeline.push(kg)
+  override def addState(kg: CaseKnowledgeGraph): History =
+    val newBuffer = cloneBuffer()
+    newBuffer.push(kg)
+    GameHistory(historySize, newBuffer)
 
-  override def undo(): Option[CaseKnowledgeGraph] =
-    Option.when(timeline.moveBackward())(timeline.currentElement).flatten
+  override def undo(): (History, Option[CaseKnowledgeGraph]) =
+    val newBuffer = cloneBuffer()
+    val moved = newBuffer.moveBackward()
+    val state = if moved then newBuffer.currentElement else None
+    (GameHistory(historySize, newBuffer), state)
 
-  override def redo(): Option[CaseKnowledgeGraph] =
-    Option.when(timeline.moveForward())(timeline.currentElement).flatten
+  override def redo(): (History, Option[CaseKnowledgeGraph]) =
+    val newBuffer = cloneBuffer()
+    val moved = newBuffer.moveForward()
+    val state = if moved then newBuffer.currentElement else None
+    (GameHistory(historySize, newBuffer), state)
 
   override def currentState: Option[CaseKnowledgeGraph] =
     timeline.currentElement
@@ -29,9 +39,17 @@ case class GameHistory(
   override def deepCopy(): History =
     val newBuffer = RingNavigableBuffer[CaseKnowledgeGraph](timeline.capacity)
     timeline.elements.foreach(kg => newBuffer.push(kg.deepCopy()))
+    // Restore cursor position
+    (0 until timeline.currentPosition).foreach(_ => newBuffer.moveBackward())
     GameHistory(historySize, newBuffer)
 
   override def states: Seq[CaseKnowledgeGraph] = timeline.elements
+
+  override def canUndo: Boolean =
+    timeline.size > 1 && timeline.currentPosition < timeline.size - 1
+
+  override def canRedo: Boolean =
+    timeline.currentPosition > 0
 
   override def equals(obj: Any): Boolean = obj match
     case that: GameHistory =>
@@ -39,6 +57,13 @@ case class GameHistory(
       this.timeline.elements == that.timeline.elements &&
       this.timeline.currentPosition == that.timeline.currentPosition
     case _ => false
+
+  private def cloneBuffer(): RingNavigableBuffer[CaseKnowledgeGraph] =
+    val newBuffer = RingNavigableBuffer[CaseKnowledgeGraph](timeline.capacity)
+    timeline.elements.foreach(newBuffer.push)
+    // Restore cursor position
+    (0 until timeline.currentPosition).foreach(_ => newBuffer.moveBackward())
+    newBuffer
 
 object GameHistory:
   def apply(historySize: Int): History =

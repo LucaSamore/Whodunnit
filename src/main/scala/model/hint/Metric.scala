@@ -31,5 +31,5 @@ object Metric:
             graph.edges
           )) / 2.0
 
-  def coverageFor[G <: BaseOrientedGraph](refGraph: G): G => MetricValue =
+  def coverageAgainst[G <: BaseOrientedGraph](refGraph: G): G => MetricValue =
     (graph: G) => graph.coverage(refGraph)

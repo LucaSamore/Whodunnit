@@ -5,7 +5,7 @@ import scalafx.Includes.eventClosureWrapperWithZeroParam
 import scalafx.application.Platform
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
-import scalafx.scene.control.{Button, ContentDisplay, Label}
+import scalafx.scene.control.{Button, ContentDisplay, Label, ScrollPane}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
@@ -22,7 +22,9 @@ abstract class GameBoardScene extends Scene(1280, 720):
   import Config.*
 
   private val graphView = KnowledgeGraphView(
-    controller.currentGameState.graph.getOrElse(new CaseKnowledgeGraph()),
+    controller.currentGameState.currentGraph.getOrElse(
+      new CaseKnowledgeGraph()
+    ),
     viewDimensions = (sceneWidth, sceneHeight)
   )
 
@@ -34,6 +36,25 @@ abstract class GameBoardScene extends Scene(1280, 720):
     )
     textFill = Color.web("#FFFFFF")
     alignment = Pos.Center
+    padding = Insets(7, 15, 7, 15)
+    minWidth = 125
+    prefWidth = 125
+    maxWidth = 125
+    border = new Border(
+      new BorderStroke(
+        Color.White,
+        BorderStrokeStyle.Solid,
+        new CornerRadii(5),
+        new BorderWidths(2)
+      )
+    )
+    background = new Background(
+      Array(new BackgroundFill(
+        Color.Transparent,
+        new CornerRadii(5),
+        Insets.Empty
+      ))
+    )
 
   controller.currentGameState.timer.foreach { timer =>
     timer.onTimeUpdate = timeString =>
@@ -94,12 +115,25 @@ abstract class GameBoardScene extends Scene(1280, 720):
       alignment = Pos.Center
       children = contentNodes :+ closeButton
 
+    val scrollPane = new ScrollPane:
+      content = popupContent
+      fitToWidth = true
+
     val popupLayout = new BorderPane():
-      center = popupContent
-      style = s"-fx-background-color: ${config.backgroundColor};"
+      center = scrollPane
+      background = Background(Array(BackgroundFill(
+        Color.web(config.backgroundColor),
+        CornerRadii.Empty,
+        Insets.Empty
+      )))
 
     popup.scene = new Scene(config.width, config.height):
       root = popupLayout
+
+    // To ensure the scroll is at the top when shown (after rendering)
+    Platform.runLater {
+      scrollPane.vvalue = 0.0
+    }
 
     popup.showAndWait()
 
@@ -152,7 +186,41 @@ abstract class GameBoardScene extends Scene(1280, 720):
           "Warning: No investigative case available to show the solution."
         )
 
-  private val notificationsPanel = NotificationsPanel(iconsFont)
+  private def handleUndo(): Unit =
+    // More protection for race conditions, the undo button should be disabled if undo is not possible
+    if !controller.canUndo then
+      println("Undo not available - already at the oldest state")
+      return
+
+    controller.undo() match
+      case Some(previousGraph) =>
+        graphView.updateGraph(previousGraph)
+        updateUndoRedoButtons()
+        println(s"Undo executed - restored previous graph state")
+      case None =>
+        println("Undo failed unexpectedly")
+
+  private def handleRedo(): Unit =
+    // More protection for race conditions, the redo button should be disabled if undo is not possible
+    if !controller.canRedo then
+      println("Redo not available - no states to redo")
+      return
+
+    controller.redo() match
+      case Some(nextGraph) =>
+        graphView.updateGraph(nextGraph)
+        updateUndoRedoButtons()
+        println(s"Redo executed - restored next graph state")
+      case None =>
+        println("Redo failed unexpectedly")
+
+  private def updateUndoRedoButtons(): Unit =
+    undoButton.disable = !controller.canUndo
+    redoButton.disable = !controller.canRedo
+    undoButton.opacity = if controller.canUndo then 1.0 else 0.5
+    redoButton.opacity = if controller.canRedo then 1.0 else 0.5
+
+  private val notificationsPanel = NotificationsPanel(iconsFont, controller.currentGameState.hints)
 
   private val notificationBadge = new StackPane:
     prefWidth = 22
@@ -232,16 +300,46 @@ abstract class GameBoardScene extends Scene(1280, 720):
       navigateTo(ScenePage.CluesManagement)
     }
   )
-  private val snapshotButton = createIconButton(
-    "Snapshots",
-    cameraIconImage,
-    80,
-    60,
-    () => {
-      println("Snapshots button clicked")
-      // Handle snapshots action here
+
+  private val snapshotIconView = new ImageView:
+    image =
+      if controller.hasSnapshot then postcardIconImage else cameraIconImage
+    fitWidth = 80
+    fitHeight = 60
+    preserveRatio = true
+
+  private val snapshotButton = new Button:
+    text = "Snapshots"
+    font = Font.font(
+      iconsFont.getFamily,
+      FontWeight.Normal,
+      iconsFont.getSize
+    )
+    textFill = Color.White
+    graphic = snapshotIconView
+    contentDisplay = ContentDisplay.Top
+    alignment = Pos.Center
+    background = Background.fill(Color.Transparent)
+    onAction = () => {
+      if controller.hasSnapshot then
+        // Restore snapshot and clear it
+        println("Restoring snapshot...")
+        controller.restoreSnapshot() match
+          case Some(restoredGraph) =>
+            graphView.updateGraph(restoredGraph)
+            snapshotIconView.image = cameraIconImage
+            updateUndoRedoButtons()
+            println("Snapshot restored successfully")
+          case None =>
+            println("Failed to restore snapshot")
+      else
+        // Save snapshot
+        println("Saving snapshot...")
+        controller.saveSnapshot()
+        snapshotIconView.image = postcardIconImage
+        println("Snapshot saved successfully")
     }
-  )
+
   private val accuseButton = createIconButton(
     "Accuse",
     handcuffsIconImage,
@@ -259,7 +357,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
     80,
     () => {
       println("Undo button clicked")
-      // Handle undo action here
+      handleUndo()
     }
   )
   private val redoButton = createIconButton(
@@ -269,7 +367,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
     80,
     () => {
       println("Redo button clicked")
-      // Handle redo action here
+      handleRedo()
     }
   )
 
@@ -309,7 +407,6 @@ abstract class GameBoardScene extends Scene(1280, 720):
         minHeight = topBarHeight
         alignment = Pos.Center
         padding = Insets(topPadding, 0, 0, 0)
-        children = Seq(timerLabel)
       right = new HBox:
         minWidth = boxWidth
         minHeight = topBarHeight
@@ -341,7 +438,10 @@ abstract class GameBoardScene extends Scene(1280, 720):
         alignment = Pos.Center
         spacing = 50
         padding = Insets(0, 0, 45, 0)
-        children = Seq(undoButton, redoButton)
+        children = Seq(undoButton, timerLabel, redoButton)
+
+  // Initialize undo/redo button states
+  updateUndoRedoButtons()
 
   private object Config:
     val sceneWidth = 1280
@@ -355,6 +455,9 @@ abstract class GameBoardScene extends Scene(1280, 720):
     )
     val cameraIconImage: Image = new Image(getClass.getResourceAsStream(
       gameboardImagesPath + "icons/camera-icon.png"
+    ))
+    val postcardIconImage: Image = new Image(getClass.getResourceAsStream(
+      gameboardImagesPath + "icons/postcard-icon.png"
     ))
     val documentsIconImage: Image = new Image(getClass.getResourceAsStream(
       gameboardImagesPath + "icons/documents-icon.png"
