@@ -40,7 +40,7 @@ object CluesManagementController:
       knowledgeGraph.edges.toSeq
 
     override def addRelationship(from: Entity, link: Link, to: Entity): Unit =
-      val graph = knowledgeGraph
+      val graph = knowledgeGraph.deepCopy()
       if !graph.nodes.contains(from) then createEntity(from)
       if !graph.nodes.contains(to) then createEntity(to)
       graph.addEdge(from, link, to)
@@ -75,7 +75,7 @@ object CluesManagementController:
       addRelationship(newRel._1, newRel._2, newRel._3)
 
     override def cleanOrphanEntities(): Unit =
-      val graph = knowledgeGraph
+      val graph = knowledgeGraph.deepCopy()
       val usedEntities = graph.edges.flatMap((from, _, to) => Set(from, to))
       val caseEntities = model.state.investigativeCase.fold(Set.empty[Entity])(c => c.characters ++ c.caseFiles)
       graph.nodes
