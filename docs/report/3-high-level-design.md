@@ -1,6 +1,6 @@
-# 3. High-Level Design
+# High-Level Design
 
-## 3.1 Architectural Overview
+## Architectural Overview
 
 The Whodunnit project has been designed following the principles of **functional programming** and **modular component architecture**, using the **Cake Pattern** as a fundamental pillar for dependency management and module composition. The architecture follows the **Model-View-Controller (MVC)** pattern, with a clear separation of responsibilities among the three main layers.
 
@@ -73,19 +73,19 @@ classDiagram
     ViewComponent ..> ControllerProvider : depends on
 ```
 
-*Figure 3.1: Cake Pattern structure and dependencies between modules*
+*Figure 1: Cake Pattern structure and dependencies between modules*
 
-### 3.1.1 Architectural Principles
+### Architectural Principles
 
 The architecture adopts a rigorous **separation of responsibilities** among the three MVC layers, ensuring that each component has a well-defined domain of competence without overlaps. Dependency management is entirely entrusted to the **Cake Pattern**, a Scala architectural pattern that leverages self-types and trait mixins to achieve complete compile-time type-safety, eliminating the need for external dependency injection frameworks.
 
 The design is driven by **immutability** as a fundamental principle: the game state is represented through immutable data structures that are transformed via copy-with operations, making it natural to implement features such as versioning, undo/redo, and time-travel. This choice integrates with a **type-driven** approach that leverages Scala 3's type system to ensure correctness and express domain invariants directly in the code. Component composability emerges naturally from these choices, allowing the construction of complex functionality by composing simpler, reusable units.
 
-## 3.2 Cake Pattern: The Heart of the Architecture
+## Cake Pattern: The Heart of the Architecture
 
 The **Cake Pattern** is a Scala architectural pattern that allows managing dependencies in a type-safe manner without resorting to external dependency injection frameworks. In the Whodunnit project, this pattern has been implemented extensively and represents the backbone of the entire architecture.
 
-### 3.2.1 Cake Pattern Structure
+### Cake Pattern Structure
 
 Each application module (Model, View, Controller) is structured following a standard composition of traits:
 
@@ -97,7 +97,7 @@ Module
 └── Requirements (defines necessary dependencies via self-types)
 ```
 
-### 3.2.2 Implementation in Main Modules
+### Implementation in Main Modules
 
 #### Model Module
 
@@ -159,7 +159,7 @@ classDiagram
     note for GameState "Immutable structure transformed via copy-with pattern"
 ```
 
-*Figure 3.2: Model Module structure*
+*Figure 2: Model Module structure*
 
 The `Provider` trait exposes the module's public trait through a single `model` method (in line with the **Interface Segregation Principle**), while the `Component` trait contains the concrete implementation `ModelImpl` responsible for managing the game state. The `Interface` trait combines the two previous ones, providing lazy instantiation that guarantees a single model instance for the entire application. Thread-safety is ensured by declaring the state as `@volatile` and synchronizing critical operations that modify it.
 
@@ -239,7 +239,7 @@ classDiagram
     note for GameBoardController "Handles interactions with the knowledge graph and time-travel operations"
 ```
 
-*Figure 3.3: Controller hierarchy*
+*Figure 3: Controller hierarchy*
 
 The module defines its own dependencies through a `Requirements` type alias that uses intersection types (`&`) to require both Model and View. This constraint is then applied via self-type annotation (`context: Requirements =>`) in the `Component` trait, ensuring that the implementation can access the necessary dependencies (applying the **Dependency Inversion Principle**: the Controller depends on Provider abstractions, not on concrete implementations). Controllers are created through protected factory methods and lazily instantiated only when actually required, reducing the application's memory footprint and initialization time.
 
@@ -328,11 +328,11 @@ classDiagram
     note for ViewImpl "Manages the JavaFX application lifecycle"
 ```
 
-*Figure 3.4: View Module structure and composition pattern*
+*Figure 4: View Module structure and composition pattern*
 
 The module depends solely on `ControllerModule.Provider`, requiring access to controllers but not to their internal state (in accordance with the **Dependency Inversion Principle**). Scene composition is delegated to an internal `SceneComposer` component that separates creation logic from navigation management (**Single Responsibility Principle**). The latter is encapsulated through callbacks passed to the composer, allowing management of JavaFX Scene lifecycle without exposing ScalaFX implementation details to other modules.
 
-### 3.2.3 Final Composition: WhodunnitLauncher
+### Final Composition: WhodunnitLauncher
 
 The `WhodunnitLauncher` class represents the final assembly point of all modules through the Cake Pattern:
 
@@ -345,15 +345,15 @@ class WhodunnitLauncher
 
 Dependency resolution occurs automatically thanks to the self-types declared in the various modules: the compiler statically verifies that all required dependencies are actually provided, eliminating the possibility of runtime errors. The clear separation between Provider, Component, and Interface also ensures the **Single Responsibility Principle**, assigning each trait a well-defined and non-overlapping role.
 
-### 3.2.4 Advantages of Cake Pattern in Whodunnit
+### Advantages of Cake Pattern in Whodunnit
 
 The adoption of the Cake Pattern has enabled complete type-safety while keeping the code statically verifiable by the compiler. The resulting extreme modularity allows replacing entire module implementations without modifying dependent code (in accordance with the **Open/Closed Principle**: modules are open to extension through new implementations, but closed to modification thanks to stable Provider interfaces), facilitating system evolution. Self-types also serve as explicit and always up-to-date documentation of each component's dependencies, making the structure of relationships between modules immediately clear without needing to resort to external code analysis tools.
 
-## 3.3 Domain Architecture: GameState and Core Components
+## Domain Architecture: GameState and Core Components
 
 The heart of the Model layer is represented by the `GameState` case class, which encapsulates the entire game state in a single immutable data structure. This architectural choice reflects the functional principle of separating state and behavior: state is modeled as pure data, while transformations are functions that produce new states without modifying existing ones.
 
-### 3.3.1 GameState Structure
+### GameState Structure
 
 The `GameState` is composed of five optional components, each responsible for a specific aspect of the game state:
 
@@ -373,7 +373,7 @@ The `Case` represents the current investigative case, containing all narrative e
 
 The `Hint` accumulates hints dynamically generated by the rule system as the player explores the case, providing contextual feedback based on gameplay trend analysis. The `Timer` tracks the time elapsed from the start of the game, allowing calculation of performance metrics and providing timed feedback.
 
-### 3.3.2 Immutable Transformations
+### Immutable Transformations
 
 All operations on `GameState` follow the copy-with pattern, producing new instances instead of modifying the existing one:
 
@@ -389,7 +389,7 @@ This pattern ensures that each transformation produces a new state, leaving the 
 
 Transformations requiring more complex logic, such as `addGraphToHistory`, implement deep-copy patterns when necessary to ensure isolation between successive snapshots. This approach is made efficient by the structural sharing nature in Scala: only actually modified parts are duplicated, while unchanged parts continue to be shared between successive instances.
 
-### 3.3.3 Integration with the Model
+### Integration with the Model
 
 The `ModelImpl` maintains the current `GameState` as private mutable state, but exposes a functional interface through the `updateState` method:
 

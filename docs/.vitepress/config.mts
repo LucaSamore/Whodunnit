@@ -1,11 +1,12 @@
 import {defineConfig} from 'vitepress'
+import {withMermaid} from 'vitepress-plugin-mermaid'
 
 const reportPath = '/report'
 const implementationPath = `${reportPath}/implementation`
 const processPath = `${reportPath}/process`
 
 // https://vitepress.dev/reference/site-config
-export default defineConfig({
+export default withMermaid(defineConfig({
     base: '/PPS-24-whodunnit/',
     title: "Whodunnit",
     description: "A investigative game",
@@ -54,4 +55,4 @@ export default defineConfig({
             {icon: 'github', link: 'https://github.com/vuejs/vitepress'}
         ]
     }
-})
+}))
