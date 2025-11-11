@@ -233,7 +233,7 @@ class RelationshipsPanel(controller: CluesManagementController):
     new Button("Delete"):
       font = baseFont
       onAction = _ =>
-        controller.removeRelationship(from, link, to)
+        controller.removeAndSaveRelationship(from, link, to)
         refreshRelationshipPanel()
 
   private def showRelationshipDialog(relationshipToEdit: Option[(
@@ -254,7 +254,7 @@ class RelationshipsPanel(controller: CluesManagementController):
       relationshipToEdit match
         case Some(oldRelationship) =>
           controller.modifyRelationship(oldRelationship, (from, link, to))
-        case None => controller.addRelationship(from, link, to)
+        case None => controller.addAndSaveRelationship(from, link, to)
       refreshRelationshipPanel()
 
 class RelationshipDialog(

@@ -15,7 +15,7 @@ final case class CaseFile(
     date: Option[String]
 ) extends Entity
 
-final case class CustomEntity(entityType: String, content: Option[String]) extends Entity
+final case class CustomEntity(entityType: String) extends Entity
 
 enum CaseRole derives ReadWriter:
   case Suspect
