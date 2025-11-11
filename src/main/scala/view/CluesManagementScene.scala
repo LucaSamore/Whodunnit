@@ -50,6 +50,10 @@ abstract class CluesManagementScene extends Scene(1280, 720):
     children = Seq(
       titleLabel("Manage Clues"),
       cluesVisualization.metadataPanel,
+      new Region:
+        vgrow = Priority.Always
+        prefHeight = 100
+      ,
       relationshipsPanel.panel
     )
 
@@ -73,9 +77,6 @@ class CluesVisualization(controller: CluesManagementController):
       "-fx-font-size: 18px; -fx-control-inner-background: transparent; -fx-background-color: transparent;"
 
   private val documentMetadataDisplay = createDocumentMetadataDisplay()
-  private val notesArea = new TextArea():
-    promptText = "Notes"
-    prefRowCount = 6
 
   private val documentsBox = new VBox(8)
 
@@ -103,9 +104,6 @@ class CluesVisualization(controller: CluesManagementController):
       documentMetadataDisplay.senderLabel,
       documentMetadataDisplay.receiverLabel,
       documentMetadataDisplay.dateLabel,
-      baseLabel("Notes"),
-      notesArea,
-      createSaveButton()
     )
 
   init()
@@ -140,7 +138,6 @@ class CluesVisualization(controller: CluesManagementController):
       s"Receiver: ${doc.receiver.map(_.name).getOrElse("Not Available")}"
     documentMetadataDisplay.dateLabel.text =
       s"Date: ${doc.date.map(_.toString).getOrElse("Not Available")}"
-    notesArea.text = ""
     refreshDocumentsList()
 
   private def refreshDocumentsList(): Unit =
@@ -158,15 +155,6 @@ class CluesVisualization(controller: CluesManagementController):
       selectedDocument.onChange: (_, _, newDocument) =>
         disable = newDocument.contains(caseFile)
       disable = selectedDocument.value.contains(caseFile)
-
-  private def createSaveButton(): HBox = new HBox:
-    alignment = Pos.CenterRight
-    children = Seq(new Button("Save"):
-      font = baseFont
-      onAction = _ =>
-        selectedDocument.value.foreach(doc =>
-          println(s"Saving notes for ${doc.title}: ${notesArea.text.value}")
-        ))
 
 class RelationshipsPanel(controller: CluesManagementController):
   import CluesManagementSceneConfig.*
