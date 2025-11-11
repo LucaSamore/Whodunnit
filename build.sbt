@@ -16,7 +16,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "PPS-24-whodunnit",
     libraryDependencies ++= Seq(
-      "org.scalafx" %% "scalafx" % "23.0.1-R34",
+      "org.scalafx" %% "scalafx" % "24.0.2-R36",
       "org.scalatest" %% "scalatest" % "3.2.19" % "test",
       "com.lihaoyi" %% "upickle" % "4.4.0",
       "org.scalamock" %% "scalamock" % "7.5.0" % Test,

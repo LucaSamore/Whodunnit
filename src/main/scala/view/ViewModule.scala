@@ -1,7 +1,7 @@
 package view
 
 import controller.{
-  CaseGenerationController,
+  GameInitializationController,
   CluesManagementController,
   ControllerModule,
   GameBoardController,
@@ -38,8 +38,8 @@ object ViewModule:
 
       private class GameConfigurationSceneImpl
           extends GameConfigurationScene:
-        override protected def controller: CaseGenerationController =
-          context.caseGenerationController
+        override protected def controller: GameInitializationController =
+          context.gameInitializationController
         override protected def navigateTo(page: ScenePage): Unit =
           onNavigate(page)
 

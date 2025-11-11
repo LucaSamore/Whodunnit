@@ -2,10 +2,10 @@ package model.generation
 
 sealed trait Constraint
 
-enum Difficulty extends Constraint:
-  case Easy
-  case Medium
-  case Hard
+enum Difficulty(val difficulty: String) extends Constraint:
+  case Easy extends Difficulty("Easy")
+  case Medium extends Difficulty("Medium")
+  case Hard extends Difficulty("Hard")
 
 enum HintKind extends Constraint:
   case Helpful
