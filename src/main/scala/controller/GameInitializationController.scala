@@ -3,14 +3,14 @@ package controller
 import model.ModelModule
 import model.generation.*
 import model.game.*
-import model.hint.HintEngine
-import model.hint.Rules.stableDensity
+import model.hint.{HintEngine, Rule}
+import model.hint.Rules.{increasingCoverage, stableDensity}
 import model.generation.Producers.given
-
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.*
+import scala.util.{Failure, Success}
 
 trait GameInitializationController extends ControllerModule.Controller:
-
   def initGame(theme: Theme, difficulty: Difficulty)(onSuccess: () => Unit, onError: String => Unit): Unit
 
 object GameInitializationController:
@@ -19,17 +19,20 @@ object GameInitializationController:
   private final class CaseGenerationControllerImpl(model: ModelModule.Model)
       extends ControllerModule.AbstractController(model) with GameInitializationController:
 
+    private given ExecutionContext = ExecutionContext.global
+
     override def initGame(theme: Theme, difficulty: Difficulty)(onSuccess: () => Unit, onError: String => Unit): Unit =
       println(s"[Controller] Play clicked with difficulty: $difficulty and theme: $theme")
       summon[Producer[Case]]
-        .produce(theme, difficulty)
-        .fold(
-          error => onError(error.message),
-          generatedCase =>
+        .produceAsync(theme, difficulty)
+        .onComplete:
+          case Success(Right(generatedCase)) =>
             println(s"[Controller] Case generated successfully: ${generatedCase.plot.title}")
             initializeGameState(generatedCase)
+            model.startTimer()
             onSuccess()
-        )
+          case Success(Left(error)) => onError(error.message)
+          case Failure(exception)   => onError(s"Unexpected error: ${exception.getMessage}")
 
     private def initializeGameState(generatedCase: Case): Unit = model.updateState(_ =>
       GameState.initialize(
@@ -38,23 +41,23 @@ object GameInitializationController:
         timer = Timer(
           totalDuration = 30.seconds,
           triggers = List(
-            Trigger(20.seconds, Triggers.sendHint),
-            Trigger(10.seconds, Triggers.sendHint)
+            Trigger(20.seconds, () => sendHint(stableDensity)),
+            Trigger(10.seconds, () => sendHint(increasingCoverage(generatedCase.solution.prerequisite)))
           )
         )
       )
     )
-    model.startTimer()
 
-    private object Triggers:
-
-      def sendHint(): Unit = for
-        history <- model.state.history.map(_.states.toList)
-        hintKind <- HintEngine.evaluate(history)(using stableDensity) // Not really the best, but okay for now...
-        investigativeCase <- model.state.investigativeCase
-        hint <- Hint(
-          hintKind,
-          Context(s"Case Plot: ${investigativeCase.plot.content}"),
-          Context(s"Player Knowledge Graph: ${history.last}")
-        ).toOption
-      do model.updateState(_.addHint(hint))
+    private def sendHint(rule: Rule[BaseOrientedGraph]): Unit = for
+      history <- model.state.history.map(_.states.toList)
+      hintKind <- HintEngine.evaluate(history)(using rule)
+      investigativeCase <- model.state.investigativeCase
+    do
+      summon[Producer[Hint]].produceAsync(
+        hintKind,
+        Context(s"Case Plot: ${investigativeCase.plot.content}"),
+        Context(s"Player Knowledge Graph: ${history.last}")
+      ).onComplete:
+        case Success(Right(hint)) => println(hint.description); model.updateState(_.addHint(hint))
+        case Success(Left(error)) => println(s"[Warning] Failed to generate hint: ${error.message}")
+        case Failure(exception)   => println(s"[Error] Unexpected error generating hint: ${exception.getMessage}")
