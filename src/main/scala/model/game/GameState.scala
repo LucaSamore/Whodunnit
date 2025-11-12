@@ -7,7 +7,8 @@ case class GameState(
     history: Option[History] = None,
     timeMachine: Option[TimeMachine[History]] = None,
     hints: Option[Seq[Hint]] = None,
-    timer: Option[Timer] = None
+    timer: Option[Timer] = None,
+    submissionState: Option[SubmissionState] = None
 ):
 
   def currentGraph: Option[CaseKnowledgeGraph] =
@@ -27,6 +28,9 @@ case class GameState(
 
   def withTimer(t: Timer): GameState =
     copy(timer = Some(t))
+
+  def withSubmissionState(state: SubmissionState): GameState =
+    copy(submissionState = Some(state))
 
   def addHint(hint: Hint): GameState =
     copy(hints = Some(hints.getOrElse(Seq.empty) :+ hint))
@@ -52,7 +56,7 @@ case class GameState(
 
 object GameState:
   def empty(): GameState =
-    GameState(None, None, None, None, None)
+    GameState(None, None, None, None, None, None)
 
   def initialize(
       gameCase: Case,
@@ -64,5 +68,6 @@ object GameState:
       Some(GameHistory(5).addState(initialGraph)),
       Some(GameTimeMachine[History](None)),
       Some(Seq.empty),
-      Some(timer)
+      Some(timer),
+      Some(SubmissionState.NotSubmitted)
     )
