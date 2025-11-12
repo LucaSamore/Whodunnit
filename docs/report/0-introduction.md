@@ -49,7 +49,3 @@ The system implements advanced features that enrich the gaming experience:
 Whodunnit is implemented in **Scala 3**, leveraging functional programming paradigms and a modular architecture based on the **Model-View-Controller (MVC)** pattern. The graphical interface is built with **ScalaFX**.
 
 Procedural case generation utilizes Large Language Models (LLMs) through external APIs, while game logic is based on immutable data structures that facilitate the implementation of features such as versioning and time-travel. The hint system uses an internal Domain-Specific Language (DSL) to define rules for analyzing investigative trends in a declarative and expressive manner.
-
----
-
-This introduction provides a general overview of the Whodunnit game without delving into implementation details, which will be addressed in subsequent chapters of the technical documentation.
