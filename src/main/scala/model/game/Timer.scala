@@ -73,6 +73,10 @@ class Timer(
     _state = TimerLogic.start(totalDuration, System.currentTimeMillis())
     startTicker()
 
+  def stop(): Unit =
+    _state = TimerState.Finished
+    stopTicker()
+
   private def onTick(): Unit =
     val oldRemaining = TimerLogic.getRemainingTime(_state)
     val (newState, newRemaining) =
