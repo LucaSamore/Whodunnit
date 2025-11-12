@@ -39,10 +39,10 @@ object GameInitializationController:
         gameCase = generatedCase,
         initialGraph = CaseKnowledgeGraph().withNodes(generatedCase.characters.toSeq*),
         timer = Timer(
-          totalDuration = 30.seconds,
+          totalDuration = 5.minutes,
           triggers = List(
-            Trigger(20.seconds, () => sendHint(stableDensity)),
-            Trigger(10.seconds, () => sendHint(increasingCoverage(generatedCase.solution.prerequisite)))
+            Trigger(3.minutes, () => sendHint(stableDensity)),
+            Trigger(2.seconds, () => sendHint(increasingCoverage(generatedCase.solution.prerequisite)))
           )
         )
       )
