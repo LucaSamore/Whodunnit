@@ -18,5 +18,11 @@ object Producers:
   import ResponseParser.given
   import PromptBuilder.given
 
-  given Producer[Case] = new GroqLLMProducer[Case](apiKey = GroqProvider.apiKey)
-  given Producer[Hint] = new GroqLLMProducer[Hint](apiKey = GroqProvider.apiKey)
+  given Producer[Case] = GroqProvider.apiKey match
+    case Some(key) => new GroqLLMProducer[Case](apiKey = key)
+    case None => FileBasedProducer.forCase
+
+  given Producer[Hint] = GroqProvider.apiKey match
+    case Some(key) => new GroqLLMProducer[Hint](apiKey = key)
+    case None => FileBasedProducer.forHint
+

@@ -1,0 +1,136 @@
+{
+  "plot": {
+    "title": "The Vanishing Sapphire",
+    "content": "During the Metropolitan Museum's gala on October 1, 2025, the priceless Sapphire Necklace vanished from its display after a sudden power outage. Emily Hart, the exhibit curator, discovered the loss when she resumed the inspection. Security logs show no badge swipe for the back‑door, yet only two staff members had spare keys: Lucas Reed, a junior security officer, and Maya Patel, a volunteer lobby attendant who was on duty that night. Emily, the victim, recalls hearing a hushed conversation between Lucas and Maya earlier in the evening. The investigation must determine who stole the necklace and why."
+  },
+  "characters": [
+    {
+      "$type": "Character",
+      "name": "Emily Hart",
+      "role": "Victim"
+    },
+    {
+      "$type": "Character",
+      "name": "Lucas Reed",
+      "role": "Suspect"
+    },
+    {
+      "$type": "Character",
+      "name": "Maya Patel",
+      "role": "Witness"
+    }
+  ],
+  "caseFiles": [
+    {
+      "$type": "CaseFile",
+      "title": "Email: Lucas to Maya",
+      "content": "Hey Maya, thanks for covering the lobby shift. Remember to keep the badge handy for the after‑hours tour. We'll need a quick exit after the gala.",
+      "kind": "Email",
+      "sender": {
+        "$type": "Character",
+        "name": "Lucas Reed",
+        "role": "Suspect"
+      },
+      "receiver": {
+        "$type": "Character",
+        "name": "Maya Patel",
+        "role": "Witness"
+      },
+      "date": "2025-10-01T09:15:00"
+    },
+    {
+      "$type": "CaseFile",
+      "title": "Message: Maya to Lucas",
+      "content": "Lucas, I just saw you lingering by the Sapphire Exhibit when the lights flickered. You looked nervous.",
+      "kind": "Message",
+      "sender": {
+        "$type": "Character",
+        "name": "Maya Patel",
+        "role": "Witness"
+      },
+      "receiver": {
+        "$type": "Character",
+        "name": "Lucas Reed",
+        "role": "Suspect"
+      },
+      "date": "2025-10-01T10:02:00"
+    },
+    {
+      "$type": "CaseFile",
+      "title": "Interview: Emily Hart",
+      "content": "The necklace was gone when I checked the display after the power outage. Security logs show no badge swipe for the backdoor, but I recall Lucas was the only staff member with a spare key.",
+      "kind": "Interview",
+      "sender": null,
+      "receiver": {
+        "$type": "Character",
+        "name": "Emily Hart",
+        "role": "Victim"
+      },
+      "date": "2025-10-02T14:30:00"
+    }
+  ],
+  "solution": {
+    "prerequisite": {
+      "nodes": [
+        {
+          "$type": "CaseFile",
+          "title": "Email: Lucas to Maya",
+          "content": "Hey Maya, thanks for covering the lobby shift. Remember to keep the badge handy for the after‑hours tour. We'll need a quick exit after the gala.",
+          "kind": "Email",
+          "sender": {
+            "$type": "Character",
+            "name": "Lucas Reed",
+            "role": "Suspect"
+          },
+          "receiver": {
+            "$type": "Character",
+            "name": "Maya Patel",
+            "role": "Witness"
+          },
+          "date": "2025-10-01T09:15:00"
+        },
+        {
+          "$type": "Character",
+          "name": "Lucas Reed",
+          "role": "Suspect"
+        }
+      ],
+      "edges": [
+        [
+          {
+            "$type": "Character",
+            "name": "Lucas Reed",
+            "role": "Suspect"
+          },
+          {
+            "semantic": "sent_email"
+          },
+          {
+            "$type": "CaseFile",
+            "title": "Email: Lucas to Maya",
+            "content": "Hey Maya, thanks for covering the lobby shift. Remember to keep the badge handy for the after‑hours tour. We'll need a quick exit after the gala.",
+            "kind": "Email",
+            "sender": {
+              "$type": "Character",
+              "name": "Lucas Reed",
+              "role": "Suspect"
+            },
+            "receiver": {
+              "$type": "Character",
+              "name": "Maya Patel",
+              "role": "Witness"
+            },
+            "date": "2025-10-01T09:15:00"
+          }
+        ]
+      ]
+    },
+    "culprit": {
+      "$type": "Character",
+      "name": "Lucas Reed",
+      "role": "Suspect"
+    },
+    "motive": "Lucas owed a large sum to a black‑market collector and stole the necklace to sell it and settle the debt."
+  }
+}
+
