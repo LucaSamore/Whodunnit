@@ -416,7 +416,9 @@ abstract class GameBoardScene extends Scene(1280, 720):
 
   // Update accuse button state based on canAccuse
   private def updateAccuseButton(): Unit =
-    println("Handle accuse button state update")
+    val canAccuse = controller.canAccuse
+    accuseButton.disable = !canAccuse
+    accuseButton.opacity = if canAccuse then 1.0 else 0.5
   private val undoButton = createIconButton(
     "Undo",
     undoIconImage,
