@@ -29,7 +29,7 @@ object GameInitializationController:
           case Success(Right(generatedCase)) =>
             println(s"[Controller] Case generated successfully: ${generatedCase.plot.title}")
             initializeGameState(generatedCase)
-            model.startTimer()
+            model.updateState(state => { state.timer.foreach(_.start()); state })
             onSuccess()
           case Success(Left(error)) => onError(error.message)
           case Failure(exception)   => onError(s"Unexpected error: ${exception.getMessage}")

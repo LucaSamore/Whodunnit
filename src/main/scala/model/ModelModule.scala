@@ -9,7 +9,6 @@ object ModelModule:
   trait Model:
     def state: GameState
     def updateState(updater: GameState => GameState): GameState
-    def startTimer(): Unit
     def getRemainingTime: Option[Duration]
 
   trait Provider:
@@ -27,11 +26,6 @@ object ModelModule:
         synchronized {
           currentState = updater(currentState)
           currentState
-        }
-
-      override def startTimer(): Unit =
-        synchronized {
-          currentState.timer.foreach(_.start())
         }
 
       override def getRemainingTime: Option[Duration] =
