@@ -61,7 +61,7 @@ export default withMermaid(defineConfig({
         ],
 
         socialLinks: [
-            {icon: 'github', link: 'https://github.com/vuejs/vitepress'}
+            {icon: 'github', link: 'https://github.com/LuciaCastellucci/PPS-24-whodunnit'}
         ]
     }
 }))
