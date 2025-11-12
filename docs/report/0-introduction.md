@@ -1,6 +1,6 @@
 # Introduction
 
-**Whodunnit** is an investigative game that places the player in the role of a detective tasked with solving procedurally generated mystery cases. The objective is to identify the culprit of a crime by analyzing clues, interrogations, documents, and relationships among the characters involved in the case.
+**Whodunnit** is an investigative game that places the player in the role of a detective tasked with solving automatically generated mystery cases. The objective is to identify the culprit of a crime by analyzing clues, interrogations, documents, and relationships among the characters involved in the case.
 
 ## Game Concept
 
@@ -22,7 +22,7 @@ The game is based on three fundamental pillars:
 
 A typical game session unfolds according to the following phases:
 
-1. **Case generation**: at the start of a new game, the system procedurally generates a complete investigative case, including plot, characters, documents, and solution. Generation occurs through a language model that respects constraints of narrative coherence and playability.
+1. **Case generation**: at the start of a new game, the system automatically generates a complete investigative case, including plot, characters, documents, and solution. Generation occurs through a language model that respects constraints of narrative coherence and playability.
 
 2. **Plot presentation**: the player receives a narrative description of the mystery to solve, introducing the main characters and outlining the investigative situation.
 
@@ -40,7 +40,7 @@ The system implements advanced features that enrich the gaming experience:
 
 **Undo/redo operations**: every graph modification can be undone or restored, offering the player freedom of experimentation without permanent consequences (with an action window limited to 5 moves).
 
-**Procedural generation with constraints**: the case generation system can operate with thematic constraints (e.g., historical setting, narrative genre) to create different experiences in each game, maintaining coherence and playability.
+**Automatic generation with constraints**: the case generation system can operate with thematic constraints (e.g., historical setting, narrative genre) to create different experiences in each game, maintaining coherence and playability.
 
 **Investigative behavior analysis**: the system monitors player actions and graph metrics over time, using this information to generate contextual hints that guide or challenge the player.
 
@@ -48,4 +48,4 @@ The system implements advanced features that enrich the gaming experience:
 
 Whodunnit is implemented in **Scala 3**, leveraging functional programming paradigms and a modular architecture based on the **Model-View-Controller (MVC)** pattern. The graphical interface is built with **ScalaFX**.
 
-Procedural case generation utilizes Large Language Models (LLMs) through external APIs, while game logic is based on immutable data structures that facilitate the implementation of features such as versioning and time-travel. The hint system uses an internal Domain-Specific Language (DSL) to define rules for analyzing investigative trends in a declarative and expressive manner.
+Automatic case generation utilizes Large Language Models (LLMs) through external APIs, while game logic is based on immutable data structures that facilitate the implementation of features such as versioning and time-travel. The hint system uses an internal Domain-Specific Language (DSL) to define rules for analyzing investigative trends in a declarative and expressive manner.
