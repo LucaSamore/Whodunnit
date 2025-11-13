@@ -1,7 +1,9 @@
 package controller
 
 import model.ModelModule
-import model.game.CaseKnowledgeGraph
+import model.game.ValidationResult.{CorrectSolution, IncorrectSolution}
+import model.game.{CaseKnowledgeGraph, CaseRole, Character, SolutionConfig, SubmissionState, ValidationResult}
+import model.hint.Metric.coverage
 
 trait GameBoardController extends ControllerModule.Controller:
   def undo(): Option[CaseKnowledgeGraph]
@@ -12,6 +14,9 @@ trait GameBoardController extends ControllerModule.Controller:
   def restoreSnapshot(): Option[CaseKnowledgeGraph]
   def hasSnapshot: Boolean
   def clearSnapshot(): Unit
+  def canAccuse: Boolean
+  def getAvailableSuspects: Set[Character]
+  def submitAccusation(character: Character): ValidationResult
 
 object GameBoardController:
   def apply(model: ModelModule.Model): GameBoardController =
@@ -69,3 +74,46 @@ object GameBoardController:
 
     def clearSnapshot(): Unit =
       model.state.timeMachine.foreach(_.clear())
+
+    override def canAccuse: Boolean =
+      (model.state.investigativeCase, model.state.currentGraph, model.state.timer) match
+        case (Some(currentCase), Some(graph), Some(timer)) =>
+          val prerequisitesMet =
+            graph.coverage(currentCase.solution.prerequisite) >= SolutionConfig.PrerequisiteCoverageThreshold
+          val timeThresholdMet = model.getRemainingTime match
+            case Some(remaining) =>
+              val elapsed = timer.totalDuration - remaining
+              val elapsedPercentage = elapsed.toMillis.toDouble / timer.totalDuration.toMillis.toDouble
+              elapsedPercentage >= SolutionConfig.TimeElapsedThreshold
+            case None => false
+
+          prerequisitesMet || timeThresholdMet
+        case _ => false
+
+    override def getAvailableSuspects: Set[Character] =
+      model.state.investigativeCase.map(_.characters).getOrElse(Set.empty).filter(character =>
+        !character.role.equals(CaseRole.Victim)
+      )
+
+    override def submitAccusation(character: Character): ValidationResult =
+      model.updateState(_.withSubmissionState(SubmissionState.Submitting(character)))
+
+      val result = if canAccuse then
+        validateSubmission(character)
+      else
+        ValidationResult.PrerequisitesNotMet
+
+      model.updateState(_.withSubmissionState(SubmissionState.Submitted(result)))
+      model.state.timer.foreach(_.stop())
+      result
+
+    private def validateSubmission(accusedCharacter: Character): ValidationResult =
+      model.state.investigativeCase match
+        case Some(caseData) =>
+          val solution = caseData.solution
+          if accusedCharacter == solution.culprit then
+            CorrectSolution(solution.culprit, solution.motive)
+          else
+            IncorrectSolution(accusedCharacter, solution.culprit, solution.motive)
+        case None =>
+          ValidationResult.PrerequisitesNotMet

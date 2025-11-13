@@ -29,7 +29,7 @@ object GameInitializationController:
           case Success(Right(generatedCase)) =>
             println(s"[Controller] Case generated successfully: ${generatedCase.plot.title}")
             initializeGameState(generatedCase)
-            model.startTimer()
+            model.updateState(state => { state.timer.foreach(_.start()); state })
             onSuccess()
           case Success(Left(error)) => onError(error.message)
           case Failure(exception)   => onError(s"Unexpected error: ${exception.getMessage}")
@@ -39,10 +39,10 @@ object GameInitializationController:
         gameCase = generatedCase,
         initialGraph = CaseKnowledgeGraph().withNodes(generatedCase.characters.toSeq*),
         timer = Timer(
-          totalDuration = 30.seconds,
+          totalDuration = 5.minutes,
           triggers = List(
-            Trigger(20.seconds, () => sendHint(stableDensity)),
-            Trigger(10.seconds, () => sendHint(increasingCoverage(generatedCase.solution.prerequisite)))
+            Trigger(3.minutes, () => sendHint(stableDensity)),
+            Trigger(2.seconds, () => sendHint(increasingCoverage(generatedCase.solution.prerequisite)))
           )
         )
       )

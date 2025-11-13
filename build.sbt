@@ -24,9 +24,7 @@ lazy val root = (project in file("."))
       "com.softwaremill.sttp.client3" %% "circe" % "3.11.0",
       "io.circe" %% "circe-generic" % "0.14.15",
       "io.circe" %% "circe-parser" % "0.14.15",
-      "io.github.cdimascio" % "dotenv-java" % "3.2.0",
-      "org.typelevel" %% "cats-core" % "2.13.0",
-      "org.typelevel" %% "cats-effect" % "3.6.3"
+      "io.github.cdimascio" % "dotenv-java" % "3.2.0"
     ),
     mainClass := Some("view.WhodunnitApp"),
     assembly / assemblyOutputPath := target.value / "scala-3" / "whodunnit.jar",

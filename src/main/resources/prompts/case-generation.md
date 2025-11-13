@@ -20,7 +20,7 @@ Every case must contain four interconnected elements:
 ## Character Requirements
 
 - Each character must have a unique name (no duplicates)
-- Each character must have one of these roles: Suspect, Victim, Witness, Investigator, Accomplice, Informant
+- Each character must have one of these roles: Suspect, Victim, Witness, Accomplice, Informant
 - Every character must appear in at least one case file (as sender, receiver, or mentioned in content)
 - The culprit must be either a Suspect or Accomplice
 

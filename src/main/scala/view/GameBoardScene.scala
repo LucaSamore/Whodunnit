@@ -5,7 +5,7 @@ import scalafx.Includes.eventClosureWrapperWithZeroParam
 import scalafx.application.Platform
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
-import scalafx.scene.control.{Button, ContentDisplay, Label, ScrollPane}
+import scalafx.scene.control.{Button, ComboBox, ContentDisplay, Label, ScrollPane}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
@@ -13,6 +13,9 @@ import scalafx.scene.text.{Font, FontWeight, TextAlignment}
 import scalafx.stage.{Modality, Stage}
 import scalafx.scene.shape.Circle
 import controller.GameBoardController
+import model.game.{Character, ValidationResult}
+import scalafx.util.StringConverter
+import scalafx.scene.Node;
 
 abstract class GameBoardScene extends Scene(1280, 720):
 
@@ -60,6 +63,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
     timer.onTimeUpdate = timeString =>
       Platform.runLater {
         timerLabel.text = timeString
+        updateAccuseButton() // Update accuse button on time change
       }
 
     timer.onTimeExpired = () =>
@@ -84,13 +88,13 @@ abstract class GameBoardScene extends Scene(1280, 720):
       isBold: Boolean = false
   ) extends PopupContent
 
-  private def showInfoPopup(config: PopupConfig): Unit =
+  private def showInfoPopup(popupConfig: PopupConfig): Unit =
     val popup = new Stage():
       initModality(Modality.ApplicationModal)
-      title = config.title
+      title = popupConfig.title
       resizable = false
 
-    val contentNodes = config.content.map {
+    val contentNodes = popupConfig.content.map {
       case TextContent(text, fontSize, color, isBold) =>
         new Label(text):
           font = Font.font(
@@ -101,7 +105,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
           textFill = color
           wrapText = true
           textAlignment = TextAlignment.Center
-          maxWidth = config.width - 40
+          maxWidth = popupConfig.width - 40
           alignment = Pos.Center
     }
 
@@ -119,15 +123,9 @@ abstract class GameBoardScene extends Scene(1280, 720):
       content = popupContent
       fitToWidth = true
 
-    val popupLayout = new BorderPane():
-      center = scrollPane
-      background = Background(Array(BackgroundFill(
-        Color.web(config.backgroundColor),
-        CornerRadii.Empty,
-        Insets.Empty
-      )))
+    val popupLayout = createPopupLayout(scrollPane)
 
-    popup.scene = new Scene(config.width, config.height):
+    popup.scene = new Scene(popupConfig.width, popupConfig.height):
       root = popupLayout
 
     // To ensure the scroll is at the top when shown (after rendering)
@@ -154,6 +152,64 @@ abstract class GameBoardScene extends Scene(1280, 720):
         )
       )
     )
+
+  private def showAccusationPopup(): Unit =
+    val popup = new Stage():
+      initModality(Modality.ApplicationModal)
+      title = "Make Your Accusation"
+      resizable = false
+
+    val suspects = controller.getAvailableSuspects.toSeq.sortBy(_.name)
+
+    val characterComboBox = new ComboBox[Character](suspects):
+      promptText = "Select a suspect..."
+      prefWidth = 300
+      converter = StringConverter.toStringConverter[Character](_.name)
+
+    val submitButton = new Button("Submit"):
+      font = iconsFont
+      prefWidth = 150
+      disable = true
+      onAction = _ =>
+        characterComboBox.value.value match
+          case character: Character =>
+            popup.close()
+            val result = controller.submitAccusation(character)
+            result match
+              case ValidationResult.CorrectSolution(culprit, motive) =>
+                showGameEndPopup(hasWon = true)
+              case ValidationResult.IncorrectSolution(accused, actualCulprit, motive) =>
+                showGameEndPopup(hasWon = false)
+              case _ =>
+                println("Unexpected validation result")
+          case null =>
+            println("No character selected")
+
+    characterComboBox.onAction = _ =>
+      submitButton.disable = characterComboBox.value.value == null
+
+    val popupContent = new VBox(20):
+      padding = Insets(30)
+      alignment = Pos.Center
+      children = Seq(
+        new Label("Who do you think is the culprit?"):
+          font = Font.font(
+            iconsFont.getFamily,
+            FontWeight.Bold,
+            16
+          )
+          textFill = Color.web("#1E1E1E")
+        ,
+        characterComboBox,
+        submitButton
+      )
+
+    val popupLayout = createPopupLayout(popupContent)
+
+    popup.scene = new Scene(400, 250):
+      root = popupLayout
+
+    popup.showAndWait()
 
   private def showGameEndPopup(hasWon: Boolean): Unit =
     controller.currentGameState.investigativeCase match
@@ -197,6 +253,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
         graphView.updateGraph(previousGraph)
         println(controller.state.history.toString)
         updateUndoRedoButtons()
+        updateAccuseButton()
         println(s"Undo executed - restored previous graph state")
       case None =>
         println("Undo failed unexpectedly")
@@ -211,6 +268,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
       case Some(nextGraph) =>
         graphView.updateGraph(nextGraph)
         updateUndoRedoButtons()
+        updateAccuseButton()
         println(s"Redo executed - restored next graph state")
       case None =>
         println("Redo failed unexpectedly")
@@ -330,6 +388,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
             graphView.updateGraph(restoredGraph)
             snapshotIconView.image = cameraIconImage
             updateUndoRedoButtons()
+            updateAccuseButton()
             println("Snapshot restored successfully")
           case None =>
             println("Failed to restore snapshot")
@@ -347,10 +406,19 @@ abstract class GameBoardScene extends Scene(1280, 720):
     60,
     60,
     () => {
-      println("Accuse button clicked")
-      showGameEndPopup(hasWon = true)
+      if controller.canAccuse then
+        println("Accuse button clicked")
+        showAccusationPopup()
+      else
+        println("Cannot accuse yet - prerequisites not met")
     }
   )
+
+  // Update accuse button state based on canAccuse
+  private def updateAccuseButton(): Unit =
+    val canAccuse = controller.canAccuse
+    accuseButton.disable = !canAccuse
+    accuseButton.opacity = if canAccuse then 1.0 else 0.5
   private val undoButton = createIconButton(
     "Undo",
     undoIconImage,
@@ -444,9 +512,13 @@ abstract class GameBoardScene extends Scene(1280, 720):
   // Initialize undo/redo button states
   updateUndoRedoButtons()
 
+  // Initialize accuse button state
+  updateAccuseButton()
+
   private object Config:
     val sceneWidth = 1280
     val sceneHeight = 720
+    val popupBackgroundColor: Color = Color.rgb(240, 235, 220, 0.95)
     private val gameboardImagesPath = "/images/gameboard/"
     val backgroundImage: Image = new Image(
       getClass.getResourceAsStream(gameboardImagesPath + "blackboard.png")
@@ -481,3 +553,11 @@ abstract class GameBoardScene extends Scene(1280, 720):
       getClass.getResourceAsStream("/fonts/GloriaHallelujah-Regular.ttf"),
       18
     )
+    def createPopupLayout(content: Node): BorderPane =
+      new BorderPane():
+        center = content
+        background = Background(Array(BackgroundFill(
+          popupBackgroundColor,
+          CornerRadii.Empty,
+          Insets.Empty
+        )))

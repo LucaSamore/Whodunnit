@@ -14,7 +14,7 @@ object Metric:
         edgesCardinality.toDouble / nodesCardinality * (nodesCardinality - 1)
       else 0.0
 
-    private def coverage(other: G): MetricValue =
+    def coverage(other: G): MetricValue =
       def ratio[A](source: Set[A], target: Set[A]): MetricValue =
         if source.isEmpty then 1.0
         else source.intersect(target).size.toDouble / source.size
