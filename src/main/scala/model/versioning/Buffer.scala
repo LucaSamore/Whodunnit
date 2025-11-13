@@ -211,8 +211,8 @@ trait InverseNavigability extends Navigability:
   * (starting from the most recent element). When an element is pushed while the cursor is not at position 0, the buffer
   * discards all elements "after" the cursor and adds the new element.
   *
-  * This is particularly useful for implementing undo/redo functionality where new actions should invalidate any "future"
-  * states.
+  * This is particularly useful for implementing undo/redo functionality where new actions should invalidate any
+  * "future" states.
   *
   * @tparam E
   *   the type of elements stored in the buffer (requires ClassTag for array creation)
