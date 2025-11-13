@@ -1,7 +1,9 @@
 package view
 
-import controller.CaseGenerationController
+import controller.GameInitializationController
+import model.generation.{Difficulty, Theme}
 import scalafx.application.Platform
+import scalafx.beans.property.BooleanProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
@@ -13,10 +15,10 @@ import scalafx.scene.text.{Font, Text, TextAlignment}
 
 abstract class GameConfigurationScene extends Scene(1280, 720):
 
-  protected def controller: CaseGenerationController
+  protected def controller: GameInitializationController
   protected def navigateTo(page: ScenePage): Unit
 
-  private object Theme:
+  private object SceneTheme:
     val primaryColor: Color = Color.rgb(30, 30, 30, 0.75)
     val primaryColorLight: Color = Color.rgb(30, 30, 30, 0.25)
     val backgroundColor: Color = Color.rgb(245, 225, 202)
@@ -38,7 +40,7 @@ abstract class GameConfigurationScene extends Scene(1280, 720):
     val subsectionFont: Font = loadFont(16)
 
   private object Styles:
-    def borderedBox(borderWidth: Int = Theme.borderWidth): String =
+    def borderedBox(borderWidth: Int = SceneTheme.borderWidth): String =
       s"""
         -fx-background-color: transparent;
         -fx-border-color: rgba(30, 30, 30, 0.75);
@@ -90,6 +92,14 @@ abstract class GameConfigurationScene extends Scene(1280, 720):
     createCustomRadioButton(difficultyToggleGroup)
   private val hardRadio: RadioButton =
     createCustomRadioButton(difficultyToggleGroup)
+
+  private val isConfigurationValid: BooleanProperty = BooleanProperty(false)
+
+  private def updateConfigurationValidity(): Unit =
+    val isThemeSelected = themeComboBox.value.value != null
+    val isDifficultySelected =
+      difficultyToggleGroup.selectedToggle.value != null
+    isConfigurationValid.value = isThemeSelected && isDifficultySelected
 
   private val loadingOverlay: StackPane = new StackPane:
     visible = false
@@ -153,8 +163,8 @@ abstract class GameConfigurationScene extends Scene(1280, 720):
   private def createContentBox(): Background =
     Background(Array(
       BackgroundFill(
-        fill = Theme.backgroundColor,
-        radii = Theme.cornerRadius,
+        fill = SceneTheme.backgroundColor,
+        radii = SceneTheme.cornerRadius,
         insets = Insets.Empty
       )
     ))
@@ -164,7 +174,7 @@ abstract class GameConfigurationScene extends Scene(1280, 720):
       prefHeight = 4
       minHeight = 4
       maxHeight = 4
-      style = Styles.borderedBox(Theme.smallBorderWidth)
+      style = Styles.borderedBox(SceneTheme.smallBorderWidth)
     }
 
   private def createStyledText(
@@ -175,7 +185,7 @@ abstract class GameConfigurationScene extends Scene(1280, 720):
     new Text(content) {
       font = textFont
       textAlignment = alignment
-      fill = Theme.primaryColor
+      fill = SceneTheme.primaryColor
     }
 
   private def createCustomRadioButton(group: ToggleGroup): RadioButton =
@@ -198,6 +208,7 @@ abstract class GameConfigurationScene extends Scene(1280, 720):
       val radioBox = radioButton.delegate.lookup(".radio")
       if radioBox != null then
         radioBox.setStyle(Styles.radioBox(isSelected))
+      updateConfigurationValidity()
     }
 
     radioButton
@@ -268,24 +279,24 @@ abstract class GameConfigurationScene extends Scene(1280, 720):
     navigateTo(ScenePage.Homepage)
 
   private def handlePlay(): Unit =
-    val selectedTheme = Option(themeComboBox.value.value).getOrElse("None")
+    val selectedTheme = themeComboBox.value.value
 
     val selectedDifficulty =
-      Option(difficultyToggleGroup.selectedToggle.value).flatMap { toggle =>
-        if toggle == easyRadio.delegate then Some("Easy")
-        else if toggle == mediumRadio.delegate then Some("Medium")
-        else if toggle == hardRadio.delegate then Some("Hard")
-        else None
-      }.getOrElse("Easy")
+      if difficultyToggleGroup.selectedToggle.value == easyRadio.delegate then
+        "Easy"
+      else if difficultyToggleGroup.selectedToggle.value == mediumRadio.delegate
+      then "Medium"
+      else "Hard"
 
     println(s"[View] Selected Theme: $selectedTheme")
     println(s"[View] Selected Difficulty: $selectedDifficulty")
 
     showLoadingState()
 
-    controller.onPlayClicked(
-      selectedDifficulty,
-      selectedTheme,
+    controller.initGame(
+      Theme(selectedTheme),
+      Difficulty.valueOf(selectedDifficulty)
+    )(
       onSuccess = () => {
         Platform.runLater {
           println(s"[View] Case generation successful, switching to Game Board")
@@ -313,14 +324,21 @@ abstract class GameConfigurationScene extends Scene(1280, 720):
     }
 
   private def createFooter(): HBox =
+    val playButton = createActionButton("Play", handlePlay())
+    playButton.disable <== !isConfigurationValid
+
     new HBox {
       spacing = 100
       alignment = Pos.Center
       children = Seq(
         createActionButton("Cancel", handleCancel()),
-        createActionButton("Play", handlePlay())
+        playButton
       )
     }
+
+  themeComboBox.value.onChange { (_, _, _) =>
+    updateConfigurationValidity()
+  }
 
   root = new StackPane {
     background = createBackground()

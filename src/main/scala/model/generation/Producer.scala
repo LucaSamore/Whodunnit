@@ -1,19 +1,27 @@
 package model.generation
 
-import model.game.Case
+import model.game.{Case, Hint}
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 
 trait Producer[T]:
+
+  given ExecutionContext = ExecutionContext.global
+
   def produce(constraints: Constraint*): Either[ProductionError, T]
 
-//TODO check if works
-//extension [T: Producer](companion: T.type)
-//  def apply(constraints: Constraint*): T =
-//    summon[Producer[T]].produce(constraints *)
+  def produceAsync(constraints: Constraint*): Future[Either[ProductionError, T]] = Future {
+    produce(constraints*)
+  }
 
 object Producers:
   import ResponseParser.given
   import PromptBuilder.given
 
-  given Producer[Case] = new GroqLLMProducer[Case](
-    apiKey = GroqProvider.apiKey
-  )
+  given Producer[Case] = GroqProvider.apiKey match
+    case Some(key) => new GroqLLMProducer[Case](apiKey = key)
+    case None      => FileBasedProducer.forCase
+
+  given Producer[Hint] = GroqProvider.apiKey match
+    case Some(key) => new GroqLLMProducer[Hint](apiKey = key)
+    case None      => FileBasedProducer.forHint

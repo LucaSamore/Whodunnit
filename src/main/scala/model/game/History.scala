@@ -65,6 +65,11 @@ case class GameHistory(
     (0 until timeline.currentPosition).foreach(_ => newBuffer.moveBackward())
     newBuffer
 
+  override def toString: String = {
+    val elements = timeline.elements.map(_.toString).mkString("\n")
+    s"GameHistory(size=$historySize, elementsize=${timeline.elements.size} ,currentPosition=${timeline.currentPosition}, elements=\n${elements}\n)"
+  }
+
 object GameHistory:
   def apply(historySize: Int): History =
     GameHistory(

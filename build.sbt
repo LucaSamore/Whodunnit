@@ -16,7 +16,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "PPS-24-whodunnit",
     libraryDependencies ++= Seq(
-      "org.scalafx" %% "scalafx" % "23.0.1-R34",
+      "org.scalafx" %% "scalafx" % "24.0.2-R36",
       "org.scalatest" %% "scalatest" % "3.2.19" % "test",
       "com.lihaoyi" %% "upickle" % "4.4.0",
       "org.scalamock" %% "scalamock" % "7.5.0" % Test,
@@ -24,9 +24,7 @@ lazy val root = (project in file("."))
       "com.softwaremill.sttp.client3" %% "circe" % "3.11.0",
       "io.circe" %% "circe-generic" % "0.14.15",
       "io.circe" %% "circe-parser" % "0.14.15",
-      "io.github.cdimascio" % "dotenv-java" % "3.2.0",
-      "org.typelevel" %% "cats-core" % "2.13.0",
-      "org.typelevel" %% "cats-effect" % "3.6.3"
+      "io.github.cdimascio" % "dotenv-java" % "3.2.0"
     ),
     mainClass := Some("view.WhodunnitApp"),
     assembly / assemblyOutputPath := target.value / "scala-3" / "whodunnit.jar",

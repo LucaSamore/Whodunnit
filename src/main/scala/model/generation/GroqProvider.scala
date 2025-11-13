@@ -52,9 +52,8 @@ object GroqProvider:
   private def getEnvVar(key: String): Option[String] =
     Option(dotenv.get(key)).orElse(sys.env.get(key))
 
-  def apiKey: String =
-    getEnvVar("GROQ_API_KEY")
-      .getOrElse(throw IllegalStateException("GROQ_API_KEY not found"))
+  def apiKey: Option[String] =
+    getEnvVar("GROQ_API_KEY").filter(_.trim.nonEmpty)
 
   def model: String =
     getEnvVar("GROQ_MODEL")

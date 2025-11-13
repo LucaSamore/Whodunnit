@@ -1,5 +1,6 @@
 package model.game
 
+import model.generation.{Constraint, Producer, ProductionError}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import utils.TestUtils.mockCase
@@ -8,7 +9,13 @@ import scala.concurrent.duration.*
 
 class GameStateTest extends AnyWordSpec with Matchers:
 
-  val emptyGameState = GameState()
+  private case class MockHint(override val description: String) extends Hint
+
+  private given Producer[Hint] with
+    override def produce(constraints: Constraint*): Either[ProductionError, Hint] =
+      Right(MockHint("Test Hint"))
+
+  val emptyGameState: GameState = GameState()
   val mockTimer = new Timer(3600.seconds, List.empty)
   val mockGraph = new CaseKnowledgeGraph()
   val initializedGameState: GameState = GameState.initialize(
@@ -55,9 +62,9 @@ class GameStateTest extends AnyWordSpec with Matchers:
         state.currentGraph shouldBe Some(mockGraph)
 
       "add hints immutably" in:
-        import model.hint.HintKind
-        val hint1 = Hint(HintKind.Helpful)
-        val hint2 = Hint(HintKind.Misleading)
+        import model.generation.HintKind
+        val hint1 = Hint(HintKind.Helpful).toOption.get
+        val hint2 = Hint(HintKind.Misleading).toOption.get
 
         val initial = GameState.empty()
         val withHint1 = initial.addHint(hint1)

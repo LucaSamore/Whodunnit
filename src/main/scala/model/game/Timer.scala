@@ -2,7 +2,7 @@ package model.game
 
 import scala.concurrent.duration.{Duration, DurationLong}
 
-case class TriggerEvent(triggerAtRemaining: Duration, message: String)
+case class Trigger(firesAtRemaining: Duration, body: () => Unit)
 
 enum TimerState:
   case Ready
@@ -51,15 +51,15 @@ object TimerLogic:
   def checkTriggers(
       currentTimeRemaining: Duration,
       previousTimeRemaining: Duration,
-      triggers: List[TriggerEvent]
-  ): List[TriggerEvent] =
+      triggers: List[Trigger]
+  ): List[Trigger] =
     triggers.filter: trigger =>
-      currentTimeRemaining <= trigger.triggerAtRemaining &&
-        previousTimeRemaining > trigger.triggerAtRemaining
+      currentTimeRemaining <= trigger.firesAtRemaining &&
+        previousTimeRemaining > trigger.firesAtRemaining
 
 class Timer(
     val totalDuration: Duration,
-    val triggers: List[TriggerEvent] = List.empty,
+    val triggers: List[Trigger] = List.empty,
     var onTimeUpdate: String => Unit = _ => (),
     var onTimeExpired: () => Unit = () => ()
 ):
@@ -72,6 +72,10 @@ class Timer(
   def start(): Unit =
     _state = TimerLogic.start(totalDuration, System.currentTimeMillis())
     startTicker()
+
+  def stop(): Unit =
+    _state = TimerState.Finished
+    stopTicker()
 
   private def onTick(): Unit =
     val oldRemaining = TimerLogic.getRemainingTime(_state)
@@ -87,7 +91,7 @@ class Timer(
           triggers
         )
         activatedTriggers.foreach { trigger =>
-          println(s"\n ${trigger.message}")
+          trigger.body()
         }
 
         val formattedTime = TimerLogic.formatDuration(currentTimeRemaining)

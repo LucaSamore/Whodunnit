@@ -108,24 +108,35 @@ The following tools were adopted to support the development process:
 
 **GitHub** was used as a platform for source code hosting, version control, project documentation management, and activity tracking through GitHub Projects.
 
-### **Continuous Integration / Continuous Delivery**
+### **Continuous Integration, Deployment, and Release**
 
-To ensure an efficient continuous integration and delivery pipeline, the project adopted an infrastructure based on **GitHub Actions**, configuring automated workflows to perform code quality checks, tests, and deployment.
+To ensure an efficient and automated development flow, the project adopted an infrastructure based on **GitHub Actions**, configuring workflows for quality checks, testing, documentation deployment, and artifact release.
 
 **Automated Workflows**
 
 1.  **Check for commit compliance**:
     - A workflow was configured to verify that commit messages respect the **Conventional Commits** conventions. This ensures a clear and structured repository history.
-    - The check is automatically triggered on every push or pull request to the main branches.
+    - The check is automatically triggered on every push or pull request to the `main` and `dev` branches.
+
 2.  **Build and deploy documentation with VitePress**:
-    - For generating and deploying the documentation, we used **VitePress**, with a workflow that automates its build and publication on **GitHub Pages**.
-    - The workflow ensures that the documentation is always up-to-date and accessible after every change.
-3.  **Run checks and tests**:
-    - A workflow was configured to run code formatting and linting checks (using **Scalafmt** and **Scalafix**) and to execute automated tests.
-    - These workflows are configured to trigger automatically in two cases:
-        - On every push to a feature branch or to `dev`
-        - On every opening or update of a Pull Request targeting `dev` or `main`
-    - **No code can be merged** if the formatting, linting, and test suite checks are not successfully passed.
-4.  **Coverage report**:
-    - A dedicated workflow for generating code coverage reports uses **sbt-scoverage** and sends the data to **Coveralls** for a centralized view of test coverage. ([https://coveralls.io/github/LuciaCastellucci/PPS-24-whodunnit](https://coveralls.io/github/LuciaCastellucci/PPS-24-whodunnit))
-    - This ensures visibility into the test coverage level of the various system components and allows for the identification of areas for improvement.
+    - For generating and deploying the documentation, is used **VitePress**, with a workflow that automates its build and publication on **GitHub Pages**.
+    - The workflow activates on every push to the `main` and `dev` branches, ensuring the documentation is always up-to-date and accessible.
+
+3.  **Run checks, tests, and coverage**:
+    - A main workflow was configured to run code quality checks and execute the test suite.
+    - This workflow is configured to trigger automatically in two cases:
+        - On every push to the `main` or `dev` branches (ignoring documentation files).
+        - On every opening or update of a Pull Request targeting `dev`.
+    - **No code can be merged** (via branch protection rules) if the formatting, linting, and test suite checks are not successfully passed.
+    - This workflow includes several *jobs*:
+        - **`code-checks`**: Runs formatting checks (with **Scalafmt**) and linting (with **Scalafix**).
+        - **`test`**: Executes automated tests on a matrix of different operating systems (Linux, Windows, macOS) and JDK versions (17, 21).
+        - **`coverage`**: (Executed after successful tests) Generates a code coverage report using **sbt-scoverage** and sends the data to **Coveralls** for a centralized view of test coverage. ([https://coveralls.io/github/LuciaCastellucci/PPS-24-whodunnit](https://coveralls.io/github/LuciaCastellucci/PPS-24-whodunnit))
+
+4.  **Automated Release Packaging**:
+    - A workflow was configured to automate the creation of application releases.
+    - It triggers automatically whenever a new **tag** (e.g., `v1.0.0`) is pushed to the repository.
+    - The workflow performs the following steps:
+        - Sets up the Java and SBT environment.
+        - Compiles the final executable JAR file (using `sbt clean assembly`).
+        - Automatically creates a new **GitHub Release**, attaching the generated `.jar` file as a downloadable artifact and using the tag name.

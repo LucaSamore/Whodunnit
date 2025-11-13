@@ -1,7 +1,8 @@
 package view
 
 import controller.{
-  CaseGenerationController,
+  GameInitializationController,
+  CluesManagementController,
   ControllerModule,
   GameBoardController,
   HomePageController
@@ -37,8 +38,8 @@ object ViewModule:
 
       private class GameConfigurationSceneImpl
           extends GameConfigurationScene:
-        override protected def controller: CaseGenerationController =
-          context.caseGenerationController
+        override protected def controller: GameInitializationController =
+          context.gameInitializationController
         override protected def navigateTo(page: ScenePage): Unit =
           onNavigate(page)
 
@@ -49,8 +50,8 @@ object ViewModule:
           onNavigate(page)
 
       private class CluesManagementSceneImpl extends CluesManagementScene:
-        override protected def controller: ControllerModule.Controller =
-          context.caseGenerationController
+        override protected def controller: CluesManagementController =
+          context.cluesManagementController
         override protected def navigateTo(page: ScenePage): Unit =
           onNavigate(page)
 

@@ -23,8 +23,8 @@ class PromptBuilderTest extends AnyWordSpec with Matchers with EitherValues
 
       "replace constraints placeholder with formatted constraint descriptions" in:
         val result = PromptBuilder.given_PromptBuilder_Case.build(
-          Constraint.Theme("test"),
-          Constraint.CharactersRange(2, 4)
+          Theme("test"),
+          CharactersRange(2, 4)
         )
 
         result shouldBe a[Right[_, _]]
@@ -34,16 +34,16 @@ class PromptBuilderTest extends AnyWordSpec with Matchers with EitherValues
 
       "preserve template structure after substitution" in:
         val result =
-          PromptBuilder.given_PromptBuilder_Case.build(Constraint.Theme("test"))
+          PromptBuilder.given_PromptBuilder_Case.build(Theme("test"))
 
         result shouldBe a[Right[_, _]]
         val prompt = result.value
 
-        prompt should include("gioco investigativo")
-        prompt should include("La trama")
-        prompt should include("Vincoli da rispettare:")
-        prompt should include("Important rules:")
-        prompt should include("```json")
+        prompt should include("You are a procedural story generation engine for an investigative game.")
+        prompt should include("Contains all relevant entities in the case. Each node must have a `$type` field")
+        prompt should include("## Constraints")
+        prompt should include("Before returning your JSON, verify:")
+        prompt should include("## JSON Template")
 
       "handle empty constraints without errors" in:
         val result = PromptBuilder.given_PromptBuilder_Case.build()
