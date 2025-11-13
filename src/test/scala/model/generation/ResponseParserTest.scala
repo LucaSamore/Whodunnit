@@ -389,6 +389,13 @@ class ResponseParserTest extends AnyWordSpec with Matchers with EitherValues wit
 
     val emptyJson: String = """{}"""
 
+    val hintJson: String =
+      """
+      {
+        "description": "This is a mock hint"
+      }
+      """
+
   import CaseJsonFixtures.*
 
   "ResponseParser for Case" when:
@@ -552,3 +559,13 @@ class ResponseParserTest extends AnyWordSpec with Matchers with EitherValues wit
 
         result shouldBe a[Left[_, _]]
         result.left.value shouldBe a[ProductionError.ParseError]
+
+  "ResponseParser for Hint" when:
+    "parsing a valid hint" should:
+      "successfully parse all required fields" in:
+        val result = ResponseParser.given_ResponseParser_Hint.parse(hintJson)
+
+        result shouldBe a[Right[_, _]]
+        val hint = result.value
+
+        hint.description shouldBe "This is a mock hint"
