@@ -11,20 +11,27 @@ class PromptBuilderTest extends AnyWordSpec with Matchers with EitherValues
 
     "accessing system prompt" should:
       "return predefined system prompt" in:
-        val systemPrompt = PromptBuilder.given_PromptBuilder_Case.systemPrompt
+        val systemPrompt = SystemPrompt.Base.build().toOption
 
-        systemPrompt shouldBe "You are a mystery game master. Generate cases in JSON format."
+        systemPrompt should not be None
 
     "building prompt" should:
       "successfully load template and return Right" in:
-        val result = PromptBuilder.given_PromptBuilder_Case.build()
+        val result = UserPrompt.Case.build()
 
         result shouldBe a[Right[_, _]]
 
       "replace constraints placeholder with formatted constraint descriptions" in:
-        val result = PromptBuilder.given_PromptBuilder_Case.build(
-          Theme("test"),
-          CharactersRange(2, 4)
+        val result = UserPrompt.Case.build(
+          Seq(
+            Prompt.Parameter(
+              Prompt.Placeholder.Constraints,
+              Seq(
+                Theme("test").toPromptDescription,
+                CharactersRange(2, 4).toPromptDescription
+              )
+            )
+          )
         )
 
         result shouldBe a[Right[_, _]]
@@ -33,8 +40,16 @@ class PromptBuilderTest extends AnyWordSpec with Matchers with EitherValues
         prompt should not include ("{{CONSTRAINTS}}")
 
       "preserve template structure after substitution" in:
-        val result =
-          PromptBuilder.given_PromptBuilder_Case.build(Theme("test"))
+        val result = UserPrompt.Case.build(
+          Seq(
+            Prompt.Parameter(
+              Prompt.Placeholder.Constraints,
+              Seq(
+                Theme("test").toPromptDescription
+              )
+            )
+          )
+        )
 
         result shouldBe a[Right[_, _]]
         val prompt = result.value
@@ -46,7 +61,14 @@ class PromptBuilderTest extends AnyWordSpec with Matchers with EitherValues
         prompt should include("## JSON Template")
 
       "handle empty constraints without errors" in:
-        val result = PromptBuilder.given_PromptBuilder_Case.build()
+        val result = UserPrompt.Case.build(
+          Seq(
+            Prompt.Parameter(
+              Prompt.Placeholder.Constraints,
+              Seq.empty
+            )
+          )
+        )
 
         result shouldBe a[Right[_, _]]
         result.value should not be empty

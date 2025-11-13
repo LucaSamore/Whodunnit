@@ -1,10 +1,10 @@
 package view
 
 import controller.{
-  GameInitializationController,
   CluesManagementController,
   ControllerModule,
   GameBoardController,
+  GameInitializationController,
   HomePageController
 }
 import scalafx.application.Platform

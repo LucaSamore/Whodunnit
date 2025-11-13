@@ -34,7 +34,7 @@ class ConstraintTest extends AnyWordSpec with Matchers:
 
   "DifficultyPresets.easy" should:
     "return Constraint for easy difficulty" in:
-      val constraints = DifficultyPresets.easy()
+      val constraints = DifficultyPresets.easy
 
       constraints should contain(CharactersRange(2, 4))
       constraints should contain(CaseFilesRange(2, 5))
@@ -44,7 +44,7 @@ class ConstraintTest extends AnyWordSpec with Matchers:
 
   "DifficultyPresets.medium" should:
     "return Constraint for medium difficulty" in:
-      val constraints = DifficultyPresets.medium()
+      val constraints = DifficultyPresets.medium
 
       constraints should contain(CharactersRange(3, 5))
       constraints should contain(CaseFilesRange(4, 8))
@@ -53,7 +53,7 @@ class ConstraintTest extends AnyWordSpec with Matchers:
 
   "DifficultyPresets.hard" should:
     "return Constraint for hard difficulty" in:
-      val constraints = DifficultyPresets.hard()
+      val constraints = DifficultyPresets.hard
 
       constraints should contain(CharactersRange(4, 6))
       constraints should contain(CaseFilesRange(7, 10))
@@ -77,42 +77,42 @@ class ConstraintTest extends AnyWordSpec with Matchers:
       val range = PrerequisitesRange(1, 3)
       range.toPromptDescription shouldBe "Solution prerequisites: between 1 and 3"
 
-  "Constraint.expandConstraints" should:
-    "expand Easy difficulty to easy preset constraints without theme" in:
-      import Difficulty.Easy
+    "describe Helpful Hint constraint" in:
+      val hint = HintKind.Helpful
 
-      val result = Constraint.expandConstraints(Seq(Theme("Murder"), Easy))
+      hint.toPromptDescription shouldBe "The hint to be generated must be Helpful"
 
-      result should contain(Theme("Murder"))
-      result should contain(CharactersRange(2, 4))
-      result should contain(CaseFilesRange(2, 5))
-      result should contain(PrerequisitesRange(1, 2))
-      result should have size 4
+    "describe Misleading Hint constraint" in:
+      val hint = HintKind.Misleading
 
-    "expand Medium difficulty to medium preset constraints" in:
-      import Difficulty.Medium
+      hint.toPromptDescription shouldBe "The hint to be generated must be Misleading"
 
-      val result = Constraint.expandConstraints(Seq(Medium))
+    "describe Easy difficulty constraint" in:
+      val easy = Difficulty.Easy
 
-      result should contain(CharactersRange(3, 5))
-      result should contain(CaseFilesRange(4, 8))
-      result should contain(PrerequisitesRange(1, 3))
-      result should have size 3
+      easy.toPromptDescription shouldBe "Difficulty: Easy\n" +
+        "Number of characters: between 2 and 4\n" +
+        "Number of case files: between 2 and 5\n" +
+        "Solution prerequisites: between 1 and 2"
 
-    "expand Hard difficulty to hard preset constraints" in:
-      import Difficulty.Hard
+    "describe Medium difficulty constraint" in:
+      val easy = Difficulty.Medium
 
-      val result = Constraint.expandConstraints(Seq(Hard))
+      easy.toPromptDescription shouldBe "Difficulty: Medium\n" +
+        "Number of characters: between 3 and 5\n" +
+        "Number of case files: between 4 and 8\n" +
+        "Solution prerequisites: between 1 and 3"
 
-      result should contain(CharactersRange(4, 6))
-      result should contain(CaseFilesRange(7, 10))
-      result should contain(PrerequisitesRange(2, 5))
-      result should have size 3
+    "describe Hard difficulty constraint" in:
+      val easy = Difficulty.Hard
+
+      easy.toPromptDescription shouldBe "Difficulty: Hard\n" +
+        "Number of characters: between 4 and 6\n" +
+        "Number of case files: between 7 and 10\n" +
+        "Solution prerequisites: between 2 and 5"
 
     "return only explicit constraints when no difficulty is provided" in:
-      val result = Constraint.expandConstraints(
-        Seq(Theme("Mystery"), CharactersRange(3, 5))
-      )
+      val result = Seq(Theme("Mystery"), CharactersRange(3, 5))
 
       result should contain only (Theme("Mystery"), CharactersRange(3, 5))
       result should have size 2

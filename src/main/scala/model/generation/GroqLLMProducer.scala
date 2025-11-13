@@ -2,7 +2,7 @@ package model.generation
 
 import model.generation.SystemPrompt.Base
 
-final class GroqLLMProducer[T](apiKey: String)(systemPrompt: SystemPrompt = Base, userPrompt: UserPrompt)(using
+class GroqLLMProducer[T](apiKey: String)(systemPrompt: SystemPrompt = Base, userPrompt: UserPrompt)(using
     parser: ResponseParser[T]
 ) extends BaseLLMClient(apiKey) with GroqProvider with Producer[T]:
 

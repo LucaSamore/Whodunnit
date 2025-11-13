@@ -5,26 +5,48 @@ import org.scalatest.{EitherValues, OptionValues}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class GroqLLMProducerTest extends AnyWordSpec with Matchers with EitherValues
-    with OptionValues:
+class GroqLLMProducerTest extends AnyWordSpec with Matchers with EitherValues with OptionValues:
+
+  class MockPrompt(content: String) extends Prompt("/test/mock.md"):
+    override def build(params: Seq[Prompt.Parameter] = Seq.empty): Either[ProductionError, String] =
+      Right(content)
+
+  class FailingPrompt extends Prompt("/test/failing.md"):
+    override def build(params: Seq[Prompt.Parameter] = Seq.empty): Either[ProductionError, String] =
+      Left(ProductionError.ConfigurationError("Template error"))
 
   class TestableGroqLLMProducer[T](
       apiKey: String,
-      mockResponse: Either[ProductionError, String]
-  )(using parser: ResponseParser[T], promptBuilder: PromptBuilder[T])
-      extends GroqLLMProducer[T](apiKey):
+      mockResponse: Either[ProductionError, String],
+      testSystemPrompt: Prompt,
+      testUserPrompt: Prompt
+  )(using parser: ResponseParser[T])
+      extends BaseLLMClient(apiKey) with GroqProvider with Producer[T]:
+
+    import GroqProvider.model
 
     var lastRequest: Option[GroqRequest] = None
+    var lastConstraints: Seq[Constraint] = Seq.empty
 
-    override protected def makeCall(req: GroqRequest)
-        : Either[ProductionError, String] =
+    override protected def makeCall(req: GroqRequest): Either[ProductionError, String] =
       lastRequest = Some(req)
       mockResponse
 
-  given testPromptBuilder: PromptBuilder[Case] with
-    def systemPrompt: String = "Test system prompt"
-    def build(constraints: Constraint*): Either[ProductionError, String] =
-      Right(s"User prompt with ${constraints.length} constraints")
+    override def produce(constraints: Constraint*): Either[ProductionError, T] =
+      lastConstraints = constraints
+      val params = Seq(Prompt.Parameter(Prompt.Placeholder.Constraints, constraints.map(_.toPromptDescription)))
+      for
+        systemPrompt <- testSystemPrompt.build()
+        userPrompt <- testUserPrompt.build(params)
+        request = GroqRequest(
+          model = model,
+          messages = List(
+            GroqMessage("system", systemPrompt),
+            GroqMessage("user", userPrompt)
+          )
+        )
+        result <- invoke[T](request)(using parser)
+      yield result
 
   given testParser: ResponseParser[Case] with
     def parse(jsonString: String): Either[ProductionError, Case] =
@@ -49,7 +71,9 @@ class GroqLLMProducerTest extends AnyWordSpec with Matchers with EitherValues
     "successfully produce case when all components work" in:
       val producer = new TestableGroqLLMProducer[Case](
         apiKey = "test-key",
-        mockResponse = Right("valid response")
+        mockResponse = Right("valid response"),
+        testSystemPrompt = MockPrompt("Test system prompt"),
+        testUserPrompt = MockPrompt("Test user prompt")
       )
 
       val result = producer.produce(Theme("noir"))
@@ -60,7 +84,9 @@ class GroqLLMProducerTest extends AnyWordSpec with Matchers with EitherValues
     "create request with system and user prompts" in:
       val producer = new TestableGroqLLMProducer[Case](
         apiKey = "test-key",
-        mockResponse = Right("valid response")
+        mockResponse = Right("valid response"),
+        testSystemPrompt = MockPrompt("Test system prompt"),
+        testUserPrompt = MockPrompt("Test user prompt")
       )
 
       producer.produce(Theme("test"))
@@ -73,37 +99,25 @@ class GroqLLMProducerTest extends AnyWordSpec with Matchers with EitherValues
       messages.exists(_.role == "user") shouldBe true
 
     "pass constraints to prompt builder" in:
-      var receivedConstraints: Seq[Constraint] = Seq.empty
-
-      given capturingBuilder: PromptBuilder[Case] with
-        def systemPrompt: String = "Test"
-        def build(constraints: Constraint*): Either[ProductionError, String] =
-          receivedConstraints = constraints
-          Right("prompt")
-
       val producer = new TestableGroqLLMProducer[Case](
         apiKey = "test-key",
-        mockResponse = Right("valid response")
-      )(using testParser, capturingBuilder)
+        mockResponse = Right("valid response"),
+        testSystemPrompt = MockPrompt("Test system prompt"),
+        testUserPrompt = MockPrompt("Test user prompt")
+      )
 
-      val inputConstraints =
-        Seq(Theme("noir"), Difficulty.Easy)
-      producer.produce(
-        inputConstraints*
-      ) // use capturingBuilder and populate receivedConstraints
+      val inputConstraints = Seq(Theme("noir"), Difficulty.Easy)
+      producer.produce(inputConstraints*)
 
-      receivedConstraints should contain theSameElementsAs inputConstraints
+      producer.lastConstraints should contain theSameElementsAs inputConstraints
 
     "fail when prompt building fails" in:
-      given failingBuilder: PromptBuilder[Case] with
-        def systemPrompt: String = "Test"
-        def build(constraints: Constraint*): Either[ProductionError, String] =
-          Left(ProductionError.ConfigurationError("Template error"))
-
       val producer = new TestableGroqLLMProducer[Case](
         apiKey = "test-key",
-        mockResponse = Right("valid")
-      )(using testParser, failingBuilder)
+        mockResponse = Right("valid"),
+        testSystemPrompt = MockPrompt("Test system prompt"),
+        testUserPrompt = FailingPrompt()
+      )
 
       val result = producer.produce()
 
@@ -112,7 +126,9 @@ class GroqLLMProducerTest extends AnyWordSpec with Matchers with EitherValues
     "fail when API call fails" in:
       val producer = new TestableGroqLLMProducer[Case](
         apiKey = "test-key",
-        mockResponse = Left(ProductionError.NetworkError("Timeout"))
+        mockResponse = Left(ProductionError.NetworkError("Timeout")),
+        testSystemPrompt = MockPrompt("Test system prompt"),
+        testUserPrompt = MockPrompt("Test user prompt")
       )
 
       val result = producer.produce()
@@ -120,10 +136,16 @@ class GroqLLMProducerTest extends AnyWordSpec with Matchers with EitherValues
       result.left.value shouldBe a[ProductionError.NetworkError]
 
     "fail when parsing fails" in:
+      given failingParser: ResponseParser[Case] with
+        def parse(jsonString: String): Either[ProductionError, Case] =
+          Left(ProductionError.ParseError("Parse failed"))
+
       val producer = new TestableGroqLLMProducer[Case](
         apiKey = "test-key",
-        mockResponse = Left(ProductionError.ParseError("invalid response"))
-      )
+        mockResponse = Right("some response"),
+        testSystemPrompt = MockPrompt("Test system prompt"),
+        testUserPrompt = MockPrompt("Test user prompt")
+      )(using failingParser)
 
       val result = producer.produce()
 

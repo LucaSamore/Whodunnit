@@ -1,13 +1,13 @@
 package model.generation
 
-sealed trait Prompt(path: String):
+trait Prompt(path: String):
   import scala.io.Source
   import scala.util.{Try, Using}
 
   def build(params: Seq[Prompt.Parameter] = Seq.empty): Either[ProductionError, String] = loadTemplate(path).map {
     template =>
       params.foldLeft(template) { case (acc, parameter) =>
-        acc.replace(parameter.placeholder.placeholder, parameter.values.mkString("\n"))
+        acc.replace(parameter.placeholder.tag, parameter.values.mkString("\n"))
       }
   }
 
@@ -29,6 +29,6 @@ enum UserPrompt(path: String) extends Prompt(path):
 object Prompt:
   final case class Parameter(placeholder: Placeholder, values: Seq[String])
 
-  enum Placeholder(val placeholder: String):
+  enum Placeholder(val tag: String):
     case Constraints extends Placeholder("{{CONSTRAINTS}}")
     case None extends Placeholder("")
