@@ -22,12 +22,10 @@ object GameInitializationController:
     private given ExecutionContext = ExecutionContext.global
 
     override def initGame(theme: Theme, difficulty: Difficulty)(onSuccess: () => Unit, onError: String => Unit): Unit =
-      println(s"[Controller] Play clicked with difficulty: $difficulty and theme: $theme")
       summon[Producer[Case]]
         .produceAsync(theme, difficulty)
         .onComplete:
           case Success(Right(generatedCase)) =>
-            println(s"[Controller] Case generated successfully: ${generatedCase.plot.title}")
             initializeGameState(generatedCase)
             model.updateState(state => { state.timer.foreach(_.start()); state })
             onSuccess()

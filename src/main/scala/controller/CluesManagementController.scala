@@ -9,24 +9,17 @@ trait CluesManagementController extends ControllerModule.Controller:
   def addAndSaveRelationship(from: Entity, link: Link, to: Entity): Unit
   def removeAndSaveRelationship(from: Entity, link: Link, to: Entity): Unit
   def findOrCreateEntity(name: String): Entity
-  def modifyRelationship(
-      oldRel: (Entity, Link, Entity),
-      newRel: (Entity, Link, Entity)
-  ): Unit
+  def modifyRelationship(oldRel: (Entity, Link, Entity), newRel: (Entity, Link, Entity)): Unit
   def getEntityDisplayName(entity: Entity): String
 
 object CluesManagementController:
-  def apply(model: ModelModule.Model): CluesManagementController =
-    new CluesManagementControllerImpl(model)
+  def apply(model: ModelModule.Model): CluesManagementController = new CluesManagementControllerImpl(model)
 
-  private class CluesManagementControllerImpl(model: ModelModule.Model)
-      extends ControllerModule.AbstractController(model)
-      with CluesManagementController:
+  private final class CluesManagementControllerImpl(model: ModelModule.Model)
+      extends ControllerModule.AbstractController(model) with CluesManagementController:
 
-    private def knowledgeGraph: CaseKnowledgeGraph =
-      model.state.currentGraph.getOrElse(
-        throw new IllegalStateException("Knowledge graph not initialized")
-      )
+    private val knowledgeGraph: CaseKnowledgeGraph =
+      model.state.currentGraph.getOrElse(throw new IllegalStateException("Knowledge graph not initialized"))
 
     override def getEntities: Seq[Entity] =
       val graphEntities = knowledgeGraph.nodes.toSeq
@@ -34,21 +27,12 @@ object CluesManagementController:
         investigativeCase.characters.toSeq ++ investigativeCase.caseFiles.toSeq
       (graphEntities ++ caseEntities).distinct
 
-    override def getRelationships: Seq[(Entity, Link, Entity)] =
-      knowledgeGraph.edges.toSeq
-
-    private def addRelationship(graph: CaseKnowledgeGraph, from: Entity, link: Link, to: Entity): Unit =
-      if !graph.nodes.contains(from) then graph.addNode(from)
-      if !graph.nodes.contains(to) then graph.addNode(to)
-      graph.addEdge(from, link, to)
+    override def getRelationships: Seq[(Entity, Link, Entity)] = knowledgeGraph.edges.toSeq
 
     override def addAndSaveRelationship(from: Entity, link: Link, to: Entity): Unit =
       val graph = knowledgeGraph.deepCopy()
       addRelationship(graph, from, link, to)
       saveGraph(graph)
-
-    private def removeRelationship(graph: CaseKnowledgeGraph, from: Entity, link: Link, to: Entity): Unit =
-      graph.removeEdge(from, link, to)
 
     override def removeAndSaveRelationship(from: Entity, link: Link, to: Entity): Unit =
       val graph = knowledgeGraph.deepCopy()
@@ -57,8 +41,7 @@ object CluesManagementController:
       saveGraph(graph)
 
     override def findOrCreateEntity(name: String): Entity =
-      getEntities.find(entity => getEntityDisplayName(entity) == name)
-        .getOrElse(CustomEntity(entityType = name))
+      getEntities.find(entity => getEntityDisplayName(entity) == name).getOrElse(CustomEntity(entityType = name))
 
     override def modifyRelationship(
         oldRelationship: (Entity, Link, Entity),
@@ -71,6 +54,19 @@ object CluesManagementController:
       addRelationship(graph, newFrom, newLink, newTo)
       cleanOrphansOnGraph(graph)
       saveGraph(graph)
+
+    override def getEntityDisplayName(entity: Entity): String = entity match
+      case Character(characterName, _)        => characterName
+      case CaseFile(fileTitle, _, _, _, _, _) => fileTitle
+      case CustomEntity(entityType)           => entityType
+
+    private def addRelationship(graph: CaseKnowledgeGraph, from: Entity, link: Link, to: Entity): Unit =
+      if !graph.nodes.contains(from) then graph.addNode(from)
+      if !graph.nodes.contains(to) then graph.addNode(to)
+      graph.addEdge(from, link, to)
+
+    private def removeRelationship(graph: CaseKnowledgeGraph, from: Entity, link: Link, to: Entity): Unit =
+      graph.removeEdge(from, link, to)
 
     private def cleanOrphansOnGraph(graph: CaseKnowledgeGraph): Unit =
       val entitiesUsedInRelationships = graph.edges.flatMap: (fromEntity, _, toEntity) =>
@@ -87,11 +83,6 @@ object CluesManagementController:
         isUsedInRelationship || isCaseCharacter
 
       orphanNodes.foreach(orphanNode => graph.removeNode(orphanNode))
-
-    override def getEntityDisplayName(entity: Entity): String = entity match
-      case Character(characterName, _)        => characterName
-      case CaseFile(fileTitle, _, _, _, _, _) => fileTitle
-      case CustomEntity(entityType)           => entityType
 
     private def saveGraph(graph: CaseKnowledgeGraph): Unit =
       model.updateState(_.addGraphToHistory(graph.deepCopy()))
