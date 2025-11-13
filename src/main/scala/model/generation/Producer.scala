@@ -16,12 +16,11 @@ trait Producer[T]:
 
 object Producers:
   import ResponseParser.given
-  import PromptBuilder.given
 
   given Producer[Case] = GroqProvider.apiKey match
-    case Some(key) => new GroqLLMProducer[Case](apiKey = key)
+    case Some(key) => new GroqLLMProducer[Case](apiKey = key)(userPrompt = UserPrompt.Case)
     case None      => FileBasedProducer.forCase
 
   given Producer[Hint] = GroqProvider.apiKey match
-    case Some(key) => new GroqLLMProducer[Hint](apiKey = key)
+    case Some(key) => new GroqLLMProducer[Hint](apiKey = key)(userPrompt = UserPrompt.Hint)
     case None      => FileBasedProducer.forHint
