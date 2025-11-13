@@ -1,30 +1,70 @@
 package view
 
 import controller.{
-  GameInitializationController,
   CluesManagementController,
   ControllerModule,
   GameBoardController,
+  GameInitializationController,
   HomePageController
 }
 import scalafx.application.Platform
 import scalafx.scene.Scene
 
+/** Module providing the View layer of the application architecture.
+  *
+  * This module follows the Cake Pattern for dependency injection and manages the creation and navigation between
+  * different scenes in the application. It requires the ControllerModule to function.
+  */
 object ViewModule:
 
+  /** Interface for the application's view layer.
+    *
+    * Manages scene navigation and display in the JavaFX application.
+    */
   trait View:
+    /** Displays the specified page by creating and showing its scene.
+      *
+      * @param page
+      *   the page to display
+      */
     def showPage(page: ScenePage): Unit
+
+    /** Displays the specified JavaFX scene.
+      *
+      * This operation is executed on the JavaFX Application Thread.
+      *
+      * @param scene
+      *   the scene to display
+      */
     def showScene(scene: Scene): Unit
 
+  /** Provides access to the View instance. */
   trait Provider:
     def view: View
 
+  /** Dependencies required by this module.
+    *
+    * The ViewModule requires access to controllers for scene creation.
+    */
   type Requirements = controller.ControllerModule.Provider
 
+  /** Component providing the View implementation.
+    *
+    * This component creates scenes based on page types and manages navigation. It requires access to controllers
+    * through the Requirements context.
+    */
   trait Component:
     context: Requirements =>
 
+    /** Internal interface for composing and creating scenes. */
     private trait SceneComposer:
+      /** Creates a JavaFX Scene for the specified page.
+        *
+        * @param page
+        *   the page type to create a scene for
+        * @return
+        *   the created Scene
+        */
       def create(page: ScenePage): Scene
 
     private class SceneComposerImpl(onNavigate: ScenePage => Unit)
@@ -78,6 +118,10 @@ object ViewModule:
           WhodunnitApp.changeScene(scene)
         }
 
+  /** Complete module interface combining Provider, Component, and Requirements.
+    *
+    * This trait provides a fully configured View instance ready to use.
+    */
   trait Interface extends Provider with Component:
     self: Requirements =>
     override lazy val view: View = createView()
