@@ -2,7 +2,7 @@ package model.generation
 
 import model.generation.SystemPrompt.Base
 
-class GroqLLMProducer[T](apiKey: String)(systemPrompt: SystemPrompt = Base, userPrompt: UserPrompt)(using
+final class GroqLLMProducer[T](apiKey: String)(systemPrompt: SystemPrompt = Base, userPrompt: UserPrompt)(using
     parser: ResponseParser[T]
 ) extends BaseLLMClient(apiKey) with GroqProvider with Producer[T]:
 
@@ -20,8 +20,5 @@ class GroqLLMProducer[T](apiKey: String)(systemPrompt: SystemPrompt = Base, user
           GroqMessage("user", userPrompt)
         )
       )
-      result <- {
-        println(userPrompt)
-        invoke[T](request)(using parser)
-      }
+      result <- invoke[T](request)(using parser)
     yield result

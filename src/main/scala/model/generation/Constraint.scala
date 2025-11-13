@@ -1,5 +1,7 @@
 package model.generation
 
+import model.generation.Difficulty.{Easy, Hard, Medium}
+
 sealed trait Constraint
 
 enum Difficulty(val difficulty: String) extends Constraint:
@@ -11,15 +13,15 @@ enum HintKind extends Constraint:
   case Helpful
   case Misleading
 
-case class Theme(value: String) extends Constraint
+final case class Theme(value: String) extends Constraint
 
-case class CharactersRange(min: Int, max: Int) extends Constraint
+final case class CharactersRange(min: Int, max: Int) extends Constraint
 
-case class CaseFilesRange(min: Int, max: Int) extends Constraint
+final case class CaseFilesRange(min: Int, max: Int) extends Constraint
 
-case class PrerequisitesRange(min: Int, max: Int) extends Constraint
+final case class PrerequisitesRange(min: Int, max: Int) extends Constraint
 
-case class Context(content: String) extends Constraint
+final case class Context(content: String) extends Constraint
 
 object Constraint:
   extension (c: Constraint)
@@ -31,45 +33,33 @@ object Constraint:
       case HintKind.Helpful             => s"The hint to be generated must be ${HintKind.Helpful.toString}"
       case HintKind.Misleading          => s"The hint to be generated must be ${HintKind.Misleading.toString}"
       case Context(content)             => s"Additional context:\n\n $content"
-      case _: Difficulty                => ""
+      case difficulty: Difficulty       => formatDifficultyConstraints(difficulty)
 
-  def expandConstraints(constraints: Seq[Constraint]): Seq[Constraint] =
-    val (difficulties, others) = constraints.partition {
-      case _: Difficulty => true
-      case _             => false
-    }
-    val expandedFromDifficulty = difficulties.headOption match
-      case Some(Difficulty.Easy) =>
-        DifficultyPresets.easy()
-      case Some(Difficulty.Medium) =>
-        DifficultyPresets.medium()
-      case Some(Difficulty.Hard) =>
-        DifficultyPresets.hard()
-      case _ =>
-        Set.empty[Constraint]
-    val explicitConstraints = others.toSet
-    val uniqueDerivedConstraints = expandedFromDifficulty.filterNot { dc =>
-      explicitConstraints.exists(_.getClass == dc.getClass)
-    }
-    (explicitConstraints ++ uniqueDerivedConstraints).toSeq
+  private def formatDifficultyConstraints(difficulty: Difficulty): String =
+    val constraints = difficulty match
+      case Easy   => DifficultyPresets.easy
+      case Medium => DifficultyPresets.medium
+      case Hard   => DifficultyPresets.hard
+    val descriptions = constraints.map(_.toPromptDescription).mkString("\n")
+    s"Difficulty: ${difficulty.difficulty}\n$descriptions"
 
 object DifficultyPresets:
 
-  def easy(): Set[Constraint] =
+  val easy: Set[Constraint] =
     Set(
       CharactersRange(2, 4),
       CaseFilesRange(2, 5),
       PrerequisitesRange(1, 2)
     )
 
-  def medium(): Set[Constraint] =
+  val medium: Set[Constraint] =
     Set(
       CharactersRange(3, 5),
       CaseFilesRange(4, 8),
       PrerequisitesRange(1, 3)
     )
 
-  def hard(): Set[Constraint] =
+  val hard: Set[Constraint] =
     Set(
       CharactersRange(4, 6),
       CaseFilesRange(7, 10),
