@@ -195,6 +195,20 @@ class TimerTest extends AnyWordSpec with Matchers:
         Thread.sleep(1000)
         timer.state shouldBe a[TimerState.Running]
 
+    "stopping" should:
+      "transition to Finished when timer stopped" in:
+        val timer2 = Timer(totalDuration = 10.seconds)
+        @volatile var expiredCalled = false
+        timer2.onTimeExpired = () => expiredCalled = true
+
+        timer2.start()
+        timer2.stop()
+
+        timer2.state shouldBe TimerState.Finished
+
+        Thread.sleep(1500)
+        expiredCalled shouldBe false
+
     "completing" should:
       "transition to Finished state when time expires" in:
         val timer3 = Timer(totalDuration = 5.seconds)
