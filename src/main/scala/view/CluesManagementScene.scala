@@ -67,7 +67,7 @@ class CluesVisualization(controller: CluesManagementController):
   import CluesManagementSceneConfig.*
 
   private val selectedDocument = ObjectProperty[Option[CaseFile]]:
-    controller.currentGameState.investigativeCase.flatMap(
+    controller.state.investigativeCase.flatMap(
       _.caseFiles.headOption
     )
 
@@ -142,7 +142,7 @@ class CluesVisualization(controller: CluesManagementController):
     refreshDocumentsList()
 
   private def refreshDocumentsList(): Unit =
-    val caseFiles = controller.currentGameState.investigativeCase
+    val caseFiles = controller.state.investigativeCase
       .map(_.caseFiles)
       .getOrElse(Seq.empty)
     documentsBox.children = caseFiles.map(createDocumentButton)

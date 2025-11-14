@@ -25,7 +25,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
   import Config.*
 
   private val graphView = KnowledgeGraphView(
-    controller.currentGameState.currentGraph.getOrElse(
+    controller.state.currentGraph.getOrElse(
       new CaseKnowledgeGraph()
     ),
     viewDimensions = (sceneWidth, sceneHeight)
@@ -59,7 +59,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
       ))
     )
 
-  controller.currentGameState.timer.foreach { timer =>
+  controller.state.timer.foreach { timer =>
     timer.onTimeUpdate = timeString =>
       Platform.runLater {
         timerLabel.text = timeString
@@ -137,7 +137,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
 
   private def showPlotPopup(): Unit =
     val (plotTitle, plotContent) =
-      controller.currentGameState.investigativeCase match
+      controller.state.investigativeCase match
         case Some(currentCase) =>
           (currentCase.plot.title, currentCase.plot.content)
         case None =>
@@ -212,7 +212,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
     popup.showAndWait()
 
   private def showGameEndPopup(hasWon: Boolean): Unit =
-    controller.currentGameState.investigativeCase match
+    controller.state.investigativeCase match
       case Some(currentCase) =>
         val mainMessage = if hasWon then "YOU WON!" else "YOU LOSE!"
         val messageColor = if hasWon then Color.Green else Color.Red
@@ -279,7 +279,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
     undoButton.opacity = if controller.canUndo then 1.0 else 0.5
     redoButton.opacity = if controller.canRedo then 1.0 else 0.5
 
-  private val notificationsPanel = NotificationsPanel(iconsFont, controller.currentGameState.hints)
+  private val notificationsPanel = NotificationsPanel(iconsFont, controller.state.hints)
 
   private val notificationBadge = new StackPane:
     prefWidth = 22

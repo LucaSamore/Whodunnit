@@ -22,15 +22,6 @@ object ControllerModule:
       */
     def state: GameState
 
-    /** Returns the current game state.
-      *
-      * This is an alias for the state method for clarity in some contexts.
-      *
-      * @return
-      *   the current GameState
-      */
-    def currentGameState: GameState = state
-
   /** Abstract base implementation for controllers.
     *
     * Provides common functionality for accessing the model's state.
