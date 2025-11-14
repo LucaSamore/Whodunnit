@@ -154,16 +154,6 @@ case class GameHistory(
     (0 until timeline.currentPosition).foreach(_ => newBuffer.moveBackward())
     newBuffer
 
-  /** Returns a string representation of this history.
-    *
-    * @return
-    *   a string showing the history size, element count, cursor position, and all elements
-    */
-  override def toString: String = {
-    val elements = timeline.elements.map(_.toString).mkString("\n")
-    s"GameHistory(size=$historySize, elementsize=${timeline.elements.size} ,currentPosition=${timeline.currentPosition}, elements=\n${elements}\n)"
-  }
-
 /** Companion object providing factory methods for creating GameHistory instances. */
 object GameHistory:
   /** Creates a new empty GameHistory with the specified capacity.
