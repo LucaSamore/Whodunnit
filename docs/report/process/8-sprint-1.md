@@ -7,19 +7,19 @@ Furthermore, this sprint will focus on the user interface by producing mockups a
 Finally, a preliminary design for the case generation logic will be explored and defined.
 
 ## Sprint Backlog
-| Priority | Product Backlog Item | Sprint Task        |     Assignee      | Initial Estimate of Effort | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
-|:--------:|:--------------------:|:-------------------|:-----------------:|:--------------------------:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-|    1     |        Setup         | Project            | Lucia Castellucci |             5              | 1 | - | - | - | - | - | - |
-|    1     |        Setup         | CI                 |    Luca Samorè    |             3              | 1 | - | - | - | - | - | - |
-|    1     |        Setup         | Test               |    Luca Samorè    |             3              | 1 | - | - | - | - | - | - |
-|    1     |        Setup         | Documentation      | Lucia Castellucci |             2              | 1 | - | - | - | - | - | - |
-|    1     |        Setup         | GUI Engine         | Lucia Castellucci |             -              | 1 | - | - | - | - | - | - |
-|    2     |        Mockup        | Home Page          | Lucia Castellucci |             5              | 1 | - | - | - | - | - | - |
-|    2     |        Mockup        | Main Game Page     | Lucia Castellucci |             5              | 1 | - | - | - | - | - | - |
-|    2     |         View         | Home Page          | Lucia Castellucci |             5              | 1 | - | - | - | - | - | - |
-|    2     |        Mockup        | Game Configuration |    Luca Samorè    |             5              | 1 | - | - | - | - | - | - |
-|    2     |         View         | Game Configuration |    Luca Samorè    |             5              | 1 | - | - | - | - | - | - |
-|    3     |   Case Generation    | Logic Design       |  Roberto Mitugno  |             5              | 1 | - | - | - | - | - | - |
+| Priority | Product Backlog Item  | Sprint Task                 |     Assignee      | Initial Estimate of Effort | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|:--------:|:---------------------:|:----------------------------|:-----------------:|:--------------------------:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+|    1     |         Setup         | Project (#1)                | Lucia Castellucci |             1              | 1 | - | - | - | - | - | - |
+|    1     |         Setup         | Documentation (#11)         | Lucia Castellucci |             1              | - | - | 1 | - | - | - | - |
+|    1     |         Setup         | GUI Engine (#50)            | Lucia Castellucci |             -              | - | - | - | - | - | - | - |
+|    1     |        Mockup         | Home Page (#33)             | Lucia Castellucci |             2              | - | 2 | - | - | - | - | - |
+|    1     |        Mockup         | Main Game Page (#46 -> #35) | Lucia Castellucci |             2              | - | - | - | 2 | - | - | - |
+|    1     |         View          | Home Page (#33)             | Lucia Castellucci |             3              | - | - | - | - | 3 | - | - |
+|    1     | FR1 - Case Generation | Logic Design (#13)          |  Roberto Mitugno  |             14             | 2 | - | 3 | - | - | - | - |
+|    1     | GUI - Game Generation | Configuration Page (#34)    |    Luca Samorè    |             5              | - | - | - | - | - | 3 | 6 |
+|    1     |         Setup         | CI (#2)                     |    Luca Samorè    |             3              | - | - | 2 | - | - | - | - |
+|    1     |         Setup         | Test Suite (#32)            |    Luca Samorè    |             1              | - | - | - | 1 | - | - | - |
+|    1     |     Documentation     | Sprint 1 Report (#55)       |    Luca Samorè    |             3              | - | 2 | - | - | - | - | - |
 
 ## Review
 The setup tasks for this sprint were successfully completed.

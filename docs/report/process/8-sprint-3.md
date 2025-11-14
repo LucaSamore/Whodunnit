@@ -8,14 +8,14 @@ On the UI side, we will complete the clues management interface and refine the m
 Additionally, we will establish the Continuous Deployment pipeline to streamline the release process.
 
 ## Sprint Backlog
-| Priority | Product Backlog Item | Sprint Task              | Assignee            | Initial Estimate of Effort | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
-|:--------:|:--------------------:|:------------------------:|:-------------------:|:--------------------------:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-|    1     |   Case Generation    | Complete Implementation  | Roberto Mitugno     |             5              | 1 | - | - | - | - | - | - |
-|    1     |         View         | Graph Representation     | Roberto Mitugno     |             5              | 1 | - | - | - | - | - | - |
-|    1     |         View         | Clues Management         | Lucia Castellucci   |             5              | 1 | - | - | - | - | - | - |
-|    1     |         View         | Main Game Page           | Lucia Castellucci   |             5              | 1 | - | - | - | - | - | - |
-|    1     |         View         | Game Blackboard          | Lucia Castellucci   |             5              | 1 | - | - | - | - | - | - |
-|    2     |         Setup        | CD                       | Luca Samorè         |             3              | 1 | - | - | - | - | - | - |
+| Priority | Product Backlog Item  | Sprint Task                            |     Assignee      | Initial Estimate of Effort | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|:--------:|:---------------------:|:---------------------------------------|:-----------------:|:--------------------------:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+|    3     |   FR3 - Versioning    | Logic Design (#20)                     | Lucia Castellucci |             12             | 3 | 2 | 3 | 2 | 2 | - | - |
+|    3     | FR1 - Case Generation | Test and Implementation (#14) - Finish |  Roberto Mitugno  |             14             | 2 | - | 4 | 1 | - | - | - |
+|    3     |         View          | Graph Representation (#36)             |  Roberto Mitugno  |             3              | - | - | - | - | - | 2 | 1 |
+|    3     |         Setup         | CD (#3)                                |    Luca Samorè    |             5              | - | - | - | - | - | 3 | - |
+
+
 
 ## Review
 The case generation feature, originally planned for Sprint 1, has been successfully completed during this sprint.

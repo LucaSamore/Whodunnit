@@ -8,15 +8,16 @@ Additionally, we will begin documenting the development process and continue UI 
 On the architectural side, the Cake Pattern design for the controller will be established to ensure proper separation of concerns and modularity.
 
 ## Sprint Backlog
-| Priority | Product Backlog Item | Sprint Task                        | Assignee            | Initial Estimate of Effort | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
-|:--------:|:--------------------:|:-----------------------------------|:-------------------:|:--------------------------:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-|    1     |        Timer         | Design                             | Roberto Mitugno     |             5              | 1 | - | - | - | - | - | - |
-|    1     |        Timer         | Test and Implementation (TDD)      | Roberto Mitugno     |             5              | 1 | - | - | - | - | - | - |
-|    1     |    Documentation     | Development Process                | Roberto Mitugno     |             3              | 1 | - | - | - | - | - | - |
-|    1     |         View         | Timer                              | Roberto Mitugno     |             5              | 1 | - | - | - | - | - | - |
-|    1     |      Controller      | Cake Pattern Design                | Lucia Castellucci   |             5              | 1 | - | - | - | - | - | - |
-|    1     |        Trigger       | Design                             | Luca Samorè         |             5              | 1 | - | - | - | - | - | - |
-|    1     |        Trigger       | Test and Implementation (TDD)      | Luca Samorè         |             5              | 1 | - | - | - | - | - | - |
+| Priority |    Product Backlog Item    | Sprint Task                                  |     Assignee      | Initial Estimate of Effort | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|:--------:|:--------------------------:|:---------------------------------------------|:-----------------:|:--------------------------:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+|    4     |      FR3 - Versioning      | Logic Implementation (#29)                   | Lucia Castellucci |             5              | 2 | 3 | - | - | - | - | - |
+|    4     |        Architecture        | Architecture Design & Implementation (#39)   | Lucia Castellucci |             10             | - | - | 2 | 3 | 2 | 3 | - |
+|    4     |            View            | Loading Page (#44)                           | Lucia Castellucci |             2              | - | - | - | - | - | - | 2 |
+|    4     |           Timer            | Design (#65)                                 |  Roberto Mitugno  |             10             | 3 | - | - | - | - | - | - |
+|    4     |           Timer            | Test and Implementation (TDD loop) (#65)     |  Roberto Mitugno  |             10             | - | 2 | 2 | 3 | - | - | - |
+|    4     |       Documentation        | Development Process (#52)                    |  Roberto Mitugno  |             2              | - | - | - | - | - | - | 2 |
+|    4     | FR4 - Trigger/In-game hint | Logic Design and Documentation (#24) - Start |    Luca Samorè    |             12             | - | - | 2 | 2 | - | 1 | 1 |
+
 
 ## Review
 
