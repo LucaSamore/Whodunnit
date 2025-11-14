@@ -1,38 +1,41 @@
-# **Testing**
+# Testing
 The project's testing approach was fundamental in ensuring the correctness and maintainability of the software. The strategy adopted focused primarily on the core components of the application domain, following the principles of **Test-Driven Development (TDD)** wherever possible, as described in the development process.
 
 This allowed us to build a solid base of verified code, especially for the business logic and complex data structures that form the core of the system.
 
-## **Testing Technologies Adopted**
+## Testing Technologies Adopted
 Specific tools from the Scala ecosystem were used to implement the automated test suite, chosen for their expressiveness and integration with the SBT build tool.
 
 - **ScalaTest**: This was selected as the main testing framework due to its flexibility, which allowed us to write clear and readable tests tailored to different contexts. Specifically, we utilized a hybrid approach by employing two distinct styles: **`AnyWordSpec`** was used for its BDD (Behaviour-Driven Development) capabilities, enabling tests to be written in a descriptive, almost textual format (e.g., “A component” should “produce a result” when “performing an action”), making the tests highly readable and self-documenting. **`AnyFlatSpec`** was adopted for its concise, which is ideal for more straightforward, example-based test cases.
 - **ScalaMock**: As indicated in the project dependencies, ScalaMock was integrated for the creation of mock objects. This tool was essential for isolating components during unit testing, especially for simulating the behaviour of external or complex dependencies (such as the `Producer`) and verifying that interactions occurred as expected.
 - **sbt-scoverage**: The sbt-scoverage plugin was used to measure code coverage. This tool, integrated into the Continuous Integration pipeline, generates detailed reports on which parts of the code were actually executed by the test suite. The team defined a target threshold of 75% to consider the test coverage satisfactory; this goal was successfully achieved and exceeded, _reaching a final coverage of 84%_. In addition, using the Coveralls tool, the coverage results were aggregated and made accessible online for easy consultation via [Coveralls](https://coveralls.io/github/LuciaCastellucci/PPS-24-whodunnit).
 
-## **Test Examples**
+## Test Examples
 
 The following examples illustrate the testing approach adopted in the project, showing how ScalaTest with the `AnyWordSpec` and `AnyFlatSpec` styles were used to verify the behaviour of key components.
 
-### **Testing Domain Constraints**
+### Testing Domain Constraints
 
-The `ConstraintTest` suite demonstrates how the application validates game generation constraints. This example shows the testing of the `expandConstraints` method, which is responsible for transforming difficulty presets into concrete constraint values:
+The `CaseTest` suite verifies the factory method (`apply`) for the `Case` object. This example demonstrates how **mocking** is used to isolate business logic from the external `Producer` service, ensuring the factory behaves correctly when the (mocked) producer succeeds.
+
 ```scala
-"Constraint.expandConstraints" should:
-    "expand Easy difficulty to easy preset constraints without theme" in:
-        import Difficulty.Easy
-        
-            val result = Constraint.expandConstraints(Seq(Theme("Murder"), Easy))
-        
-            result should contain(Theme("Murder"))
-            result should contain(CharactersRange(2, 4))
-            result should contain(CaseFilesRange(2, 5))
-            result should contain(PrerequisitesRange(1, 2))
-            result should have size 4
-```    
-This test verifies that the system correctly expands a difficulty level into its corresponding constraints while preserving user-defined constraints like the theme.
+"Case.apply" when:
+  "producer succeeds" should:
+    "return the produced case" in:
+      // Helper functions (not shown) create a mock case and producer
+      val expectedCase = createTestCase()
 
-### **Testing Trend Analysis**
+      given testProducer: Producer[Case] =
+      new MockProducer(Right(expectedCase))
+
+      val result = Case.apply(Theme("noir"))
+
+      result shouldBe a[Right[_, _]]
+      result.value shouldBe expectedCase
+```
+This test ensures that the Case.apply method correctly manages the Producer's lifecycle and returns the expected result, isolating the test from network errors or LLM failures.
+
+### Testing Trend Analysis
 
 The `TrendAnalyzerTest` suite validate trend detection logic (in this case detecting increasing, worsening or stable trends in sequences of values):
 
@@ -60,7 +63,7 @@ it should "detect worsening trends" in:
 
 This example validates the logic of the `TrendAnalyzer`, verifying that the system correctly identifies trends (such as 'Increasing' or 'Worsening') based on a given sequence of numerical values.
 
-### **Testing Time Machine Functionality**
+### Testing Time Machine Functionality
 The `TimeMachineTest` suite validates the snapshot and restore mechanism used for game state management. This example demonstrates testing the restore functionality:
 
 ```scala

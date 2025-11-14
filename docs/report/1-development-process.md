@@ -1,10 +1,10 @@
-# **Development Process**
+# Development Process
 
 For the project's development, an **Agile** approach inspired by the **Scrum** framework was adopted, adapted to the specific needs of the university context and the small size of the team.
 
 The work was organized into weekly iterative cycles called *sprints*, through which the system was developed incrementally, progressively adding new functionalities or refining existing ones.
 
-## **Roles and Team Organization**
+## Roles and Team Organization
 
 Given the nature of the project and the team's composition, the members took on multiple roles:
 
@@ -14,7 +14,7 @@ Given the nature of the project and the team's composition, the members took on 
 
 This overlap of roles, despite representing a deviation from the pure Scrum model (which specifies that the Product Owner should not develop), was a necessary and conscious choice dictated by the group's size, allowing for a more flexible distribution of the workload.
 
-## **Planning and Sprint Cycle**
+## Planning and Sprint Cycle
 
 The initial phase saw the definition of the system's general architecture through requirements analysis and modeling using UML class diagrams.
 
@@ -35,9 +35,7 @@ At the end of each sprint, in addition to the Sprint Review, the following were 
 
 The goal of each sprint was to produce a *Potentially Shippable Product Increment*, ensuring that the developed functionalities were complete and working.
 
----
-
-## **Definition of Done**
+## Definition of Done
 
 To ensure uniform quality standards, the team explicitly defined a **Definition of Done** that each task had to satisfy before being considered completed:
 
@@ -45,9 +43,7 @@ To ensure uniform quality standards, the team explicitly defined a **Definition 
 - A **collective code review** session was conducted, during which the entire team examined the produced code;
 - The code was **integrated into the development branch (`dev`)**, successfully passing all CI pipeline checks;
 
----
-
-## **Test-Driven Development**
+## Test-Driven Development
 
 During development, an attempt was made to apply, where possible, the **Test-Driven Development (TDD)** approach, a methodology that involves writing tests before implementation to anticipate correctness verification and reduce maintenance costs.
 
@@ -59,9 +55,7 @@ The cycle followed was *Red-Green-Refactor*:
 
 The application of TDD was prioritized for the *core* components of the system, where functional correctness was critical, while for less critical or experimental components, a more traditional post-implementation testing approach was sometimes used.
 
----
-
-## **Branching Strategy and Code Management**
+## Branching Strategy and Code Management
 
 For code versioning, we adopted a branching strategy inspired by **GitFlow**, simplified to fit our sprint cycle:
 
@@ -70,9 +64,7 @@ For code versioning, we adopted a branching strategy inspired by **GitFlow**, si
 - **Feature Branch**: For each significant task or functionality, we created a dedicated branch starting from `dev` (e.g., `feat/case-generation`). This allowed us to
   isolate work in progress, promote targeted code reviews, and keep `dev` always integrable.
 
----
-
-## **Meeting Organization**
+## Meeting Organization
 
 Team meetings were coordinated through the **Microsoft Teams** platform on a regular basis.
 
@@ -80,9 +72,7 @@ As previously described, the beginning of each week saw a combined *Sprint Revie
 
 During the week, additional meetings (2-3 per sprint) allowed the team members to synchronize on progress, discuss technical issues that arose, and reorganize tasks when necessary to maintain alignment with the sprint goals.
 
----
-
-## **Task Distribution**
+## Task Distribution
 
 At the beginning of each sprint, during *Sprint Planning*, the *Product Backlog* items were selected based on the priorities set by the Product Owner and broken down into operational tasks.
 
@@ -90,25 +80,23 @@ The distribution of tasks among team members was carried out collaboratively, re
 
 The task breakdown was tracked using **GitHub Projects**, which allowed us to visualize the overall progress of the sprint.
 
----
-
-## **Development Tools**
+## Development Tools
 
 The following tools were adopted to support the development process:
 
-### **Build Automation**
+### Build Automation
 
 **SBT (Simple Build Tool)** was used to automate the operations of source code compilation, dependency management, and test suite execution.
 
-### **Testing**
+### Testing
 
 **ScalaTest** was employed as a framework for defining and executing automated tests, supporting the application of *Test-Driven Development*.
 
-### **Version Control**
+### Version Control
 
 **GitHub** was used as a platform for source code hosting, version control, project documentation management, and activity tracking through GitHub Projects.
 
-### **Continuous Integration, Deployment, and Release**
+### Continuous Integration, Deployment, and Release
 
 To ensure an efficient and automated development flow, the project adopted an infrastructure based on **GitHub Actions**, configuring workflows for quality checks, testing, documentation deployment, and artifact release.
 
