@@ -2,10 +2,9 @@
 
 ## Goal
 
-In questo sprint l'obiettivo è implementare meccaniche di gioco fondamentali e definire la base architetturale del livello di controller.
-In particolar modo si lavorerà alla progettazione e all'implementazione del sistema di timer, elemento chiave per l'esperienza di gioco, e al meccanismo di trigger per la gestione degli eventi in-game.
-Si proseguirà inoltre lo sviluppo dell'interfaccia (con l'integrazione della visualizzazione del timer) e si avvierà la documentazione delle scelte architetturali.
-Dal punto di vista dell'architettura, sarà definito e applicato il Cake Pattern per i controller per migliorare modularità e testabilità.
+The central goal of this sprint is twofold: to establish the overall project architecture and implement the new Timer feature using a TDD approach. 
+Building on the previous sprint, work will continue with the implementation of the Versioning logic (FR3). 
+Additionally, this sprint will kick off the design phase for the game triggers and address minor priority tasks related to the view and documentation.
 
 ## Sprint Backlog
 | Priority |    Product Backlog Item    | Sprint Task                                  |     Assignee      | Initial Estimate of Effort | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
@@ -20,14 +19,10 @@ Dal punto di vista dell'architettura, sarà definito e applicato il Cake Pattern
 
 ## Review
 
-Il sistema di timer è stato progettato e implementato secondo i principi TDD: include la logica di base per la gestione del tempo e la relativa rappresentazione grafica nell'interfaccia, rendendo visibile l'avanzamento temporale durante le sessioni di gioco.
-Il meccanismo di trigger è stato sviluppato e consente ora alla macchina di gioco di reagire a eventi, gestendo transizioni di stato e azioni in-game in modo coerente.
-La definizione del Cake Pattern per il livello di controller è stata avviata, fornendo una struttura per la separazione delle responsabilità e per facilitare i test.
-È stata inoltre iniziata la documentazione del processo di sviluppo, con note sulle decisioni architetturali e sulle pratiche adottate.
+This sprint saw the successful definition and implementation of the core system architecture. A new feature, the Timer, was completed using a Test-Driven Development cycle. 
+The Versioning implementation phase was completed as planned. The initial design for the trigger/hint system was initiated, along with the completion of the view loading page and updates to the development process documentation.
 
 ## Retrospective
 
-L'approccio TDD si è dimostrato efficace per preservare qualità e stabilità nelle funzionalità critiche: timer e trigger hanno beneficiato della verifica continua tramite test.
-L'investimento in attività architetturali (Cake Pattern) è stato sensato: aver dedicato tempo alla progettazione ha reso più semplice la successiva implementazione e i test dei controller.
-Inserire attività di documentazione all'interno dello sprint si è rivelato utile per fissare le decisioni progettuali e ridurre il rischio di perdita di conoscenza.
-Per i prossimi cicli sarà importante consolidare l'integrazione tra questi componenti e verificare il comportamento complessivo tramite test di integrazione e sessioni di playtesting mirate.
+The TDD approach for the Timer functionality proved very effective, producing a robust component. However, the complexity of implementing the Architecture and Versioning concurrently was significant. 
+This intensive workload highlighted the need for a refactoring of the Versioning logic (planned for Sprint 5) to ensure maintainability before integrating new features such as Solution Management.
