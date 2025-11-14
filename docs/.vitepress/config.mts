@@ -39,7 +39,12 @@ export default withMermaid(defineConfig({
                                 link: `${implementationPath}/5-castellucci`
                             },
                             {text: 'Roberto Mitugno', link: `${implementationPath}/5-mitugno`},
-                            {text: 'Luca Samorè', link: `${implementationPath}/5-samore`},
+                            {
+                                text: 'Luca Samorè',
+                                items: [
+                                    { text: 'Knowledge Graph', link: `${implementationPath}/5-samore-kg` }
+                                ]
+                            },
                         ]
                     },
                     { text: 'Testing', link: `${reportPath}/6-testing` },
