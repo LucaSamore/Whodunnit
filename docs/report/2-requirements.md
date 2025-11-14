@@ -6,41 +6,63 @@ These requirements describe the high-level goals of the product and the value it
 - **Experience Personalization**: Allow the player to configure relevant game parameters (difficulty, theme) to tailor the challenge to individual preferences.
 - **Support for deductive thinking**: provide tools that help organize information and generate hypotheses.
 
+## Domain Model
+The domain model defines the core conceptual entities, their attributes, and the relationships between them, forming the conceptual backbone of the Whodunnit game.
+
+At the center of the domain there's the **Case**, which represents the static, generated mystery that the player must solve. This entity is the primary container for all narrative elements and the ground truth of the mystery. It includes:
+
+- **Plot**: The narrative setup of the mystery. This includes the title and the initial story/description of the events that are presented to the player to set the scene.
+- **Character**: An individual involved in the case (e.g., suspect, victim, witness). Each character has specific attributes, a backstory, and a defined role in the narrative.
+- **Document**: A piece of evidence or information (e.g., email, diary, interview transcript) that the player can analyze. Documents contain the clues necessary to solve the case.
+- **Solution**: The hidden "truth" of the case. This entity defines the actual culprit and the relationships or facts (the "solution graph") that must be identified to solve the mystery.
+
+Complementing the static case, the domain defines the primary dynamic entity built by the player during their investigation:
+
+- **KnowledgeGraph**: This represents the player's evolving mental model and set of hypotheses. It is a visual workspace separate from the **Case** (which is immutable) and is composed of:
+    - **Node**: A vertex in the graph. A node can represent a core entity from the case (like a **Character** or **CaseFile**) or a **Custom Entity** created by the player (like a specific location, object, or piece of information).
+    - **Edge**: A directed, semantic link between two **Nodes** (e.g., "met with," "is enemy of"). Each edge represents a specific hypothesis formulated by the player.
+
+Finally, several other key concepts govern the player's interaction with the case:
+
+- **Hint**: A single piece of information, guidance, or misdirection provided to the player dynamically. Its generation depends on the state of the player's **KnowledgeGraph** compared to the **Solution**.
+- **History**: A conceptual representation of the sequence of changes made to the **KnowledgeGraph** over time. This concept enables functionality like *undo* and *redo*.
+- **Timer**: The entity responsible for tracking the time elapsed during a single investigative session.
+
 ## Functional Requirements (FR)
 These requirements describe the observable behavior of the system from the users' point of view.
 ### User Functional Requirements
 
-| Requirement                        | Description                                                                                    |
-|:-----------------------------------|:-----------------------------------------------------------------------------------------------|
-| Set initial parameters             | User can set initial game parameters (difficulty and theme).                                   |
-| View plot                          | User can view the case plot at any time.                                                       |
-| Consult generated documents        | User can view case documents.                                                                  |
-| View knowledge graph               | User can view the Knowledge Graph with nodes and semantic links.                               |
-| Create custom entities             | User can create custom entities (locations, objects, etc.) to include in the graph.            |
-| Link entities/documents/characters | User can create semantic links between custom entities, documents and characters.              |
-| View timer                         | User can view the active timer.                                                                |
-| Receive notifications              | User receives notifications during gameplay (helpful or misleading).                           |
-| Undo / Redo recent actions         | User can undo and redo a limited window of recent actions.                                     |
-| Move graph elements (drag & drop)  | User can move graph nodes via drag & drop.                                                     |
-| Save and restore graph state       | User can save a snapshot of the Knowledge Graph and restore it later.                          |
-| Submit solution and view result    | User can submit a suspected character; after submission or timer expiry the solution is shown. |
-
+| Requirement                         | Description                                                                        |
+|:------------------------------------|:-----------------------------------------------------------------------------------|
+| Set initial parameters              | User can set initial game parameters (difficulty and theme).                       |
+| View plot                           | User can view the case plot at any time.                                           |
+| Consult case files                  | User can view case case files.                                                     |
+| View knowledge graph                | User can view the Knowledge Graph with nodes and semantic links.                   |
+| Create custom entities              | User can create custom entities to include in the graph.                           |
+| Link entities/case files/characters | User can create semantic links between custom entities, case files and characters. |
+| View timer                          | User can view the active timer.                                                    |
+| Receive notifications               | User receives notifications during gameplay (helpful or misleading).               |
+| Undo / Redo recent actions          | User can undo and redo into a limited window of recent actions.                    |
+| Move graph elements (drag & drop)   | User can move graph nodes via drag & drop.                                         |
+| Save and restore graph state        | User can save a snapshot of the Knowledge Graph and restore it later.              |
+| Submit solution                     | User can submit a suspected character                                              |
+| View result                         | User can view the solution after submission or timer expiry.                       |
 
 
 ### System Functional Requirements
 This section lists the system-level features and services that support user-facing functionality.
 
-| Requirement                            | Description                                                                                                                                                    |
-|:---------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Create new case from parameters        | Create a new investigative case to play using the parameters chosen by the user.                                                                               |
-| Show case characters                   | Always display all the case characters on the main board view.                                                                                                 |
-| Show relationships                     | Display the relationships created by the user through the Knowledge Graph on the main board view.                                                              |
-| Start timer                            | Automatically start a timer when a new investigative case is initialized                                                                                       |
-| Emit timed notifications               | Create notifications at predefined intervals, whether helpful or misleading.                                                                                   |
-| Maintain action history and versioning | Maintains a timeline of graph states to support undo/redo navigation for a window of moves performed.                                                          |
-| Restore snapshots                      | Save a state of the Knowledge Graph to be able to restore the snapshot taken by the user.                                                                      |
-| Solution submission policies           | Only allow the solution to be submitted after certain requirements have been met.                                                                              |
-| Verify submitted solution              | verify the solution submitted by the user through a check on the Knowledge Graph.                                                                              |
+| Requirement                            | Description                                                                                           |
+|:---------------------------------------|:------------------------------------------------------------------------------------------------------|
+| Create new case from parameters        | Create a new investigative case to play using the parameters chosen by the user.                      |
+| Show case characters                   | Always display all the case characters on the main board view.                                        |
+| Show relationships                     | Display the relationships created by the user through the Knowledge Graph on the main board view.     |
+| Start timer                            | Automatically start a timer when a new investigative case is create.                                  |
+| Emit timed notifications               | Create notifications at predefined intervals.                                                         |
+| Maintain action history and versioning | Maintains a timeline of graph states to support undo/redo navigation for a window of moves performed. |
+| Restore snapshots                      | Save a state of the Knowledge Graph to be able to restore the snapshot taken by the user.             |
+| Solution submission policies           | Only allow the solution to be submitted after certain requirements have been met.                     |
+| Verify submitted solution              | Verify the solution submitted by the user through a check on the Knowledge Graph.                     |
 
 
 ## Non Functional Requirements
