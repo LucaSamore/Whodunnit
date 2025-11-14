@@ -23,17 +23,3 @@ object Rules:
   def increasingCoverage(solution: BaseOrientedGraph): Rule[BaseOrientedGraph] =
     given rule: Rule[BaseOrientedGraph] = when(coverageAgainst(solution)) == Increasing hence Misleading
     rule
-
-  def decreasingCoverage(solution: BaseOrientedGraph): Rule[BaseOrientedGraph] =
-    given rule: Rule[BaseOrientedGraph] = when(coverageAgainst(solution)) == Worsening hence Helpful
-    rule
-
-  def stableCoverageAndIncreasingDensity(solution: BaseOrientedGraph): Rule[BaseOrientedGraph] =
-    given rule: Rule[BaseOrientedGraph] =
-      when(coverageAgainst(solution)) == Stable and when(density) == Increasing hence Helpful
-    rule
-
-  def increasingCoverageAndIncreasingDensity(solution: BaseOrientedGraph): Rule[BaseOrientedGraph] =
-    given rule: Rule[BaseOrientedGraph] =
-      when(coverageAgainst(solution)) == Increasing and when(density) == Increasing hence Misleading
-    rule
