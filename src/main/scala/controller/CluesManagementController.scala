@@ -86,4 +86,3 @@ object CluesManagementController:
 
     private def saveGraph(graph: CaseKnowledgeGraph): Unit =
       model.updateState(_.addGraphToHistory(graph.deepCopy()))
-      println(model.state.history.toString)
