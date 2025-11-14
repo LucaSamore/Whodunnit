@@ -7,13 +7,13 @@ The primary goal of this sprint is to finalize the core functional requirements,
 
 | Priority | Product Backlog Item | Sprint Task                  | Assignee          | Initial Estimate of Effort | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 |:--------:|:--------------------:|:-----------------------------|:------------------|:--------------------------:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-|    6     |    Documentation     | High Level Design            | Lucia Castellucci |             5              | 2 | 2 | 1 | - | - | - | - |
-|    6     |    Documentation     | Implementation - Castellucci | Lucia Castellucci |             5              | - | 2 | 3 | 1 | - | - | - |
-|    6     |    Documentation     | Sprint 6 Report (#60)        | Lucia Castellucci |             1              | - | - | - | - | 1 | - | - |
-|    6     |    Documentation     | Requirements (#53)           | Roberto Mitugno   |             2              | - | - | 1 | 1 | - | - | - |
-|    6     |    Documentation     | Testing (#69)                | Roberto Mitugno   |             2              | - | - | - | 1 | - | 1 | - |
-|    6     | Solution Submission  | Testing (#31)                | Roberto Mitugno   |             2              | - | - | 1 | 1 | - | - | - |
-|    6     |    Documentation     | Detailed Design (#68)        | Luca Samorè       |             5              | - | - | 4 | 2 | - | - | - |
+|    1     | Solution Submission  | Testing (#31)                | Roberto Mitugno   |             2              | - | - | 1 | 1 | - | - | - |
+|    2     |    Documentation     | Requirements (#53)           | Roberto Mitugno   |             2              | - | - | 1 | 1 | - | - | - |
+|    2     |    Documentation     | Testing (#69)                | Roberto Mitugno   |             2              | - | - | - | 1 | - | 1 | - |
+|    2     |    Documentation     | Detailed Design (#68)        | Luca Samorè       |             5              | - | - | 4 | 2 | - | - | - |
+|    2     |    Documentation     | High Level Design            | Lucia Castellucci |             5              | 2 | 2 | 1 | - | - | - | - |
+|    2     |    Documentation     | Implementation - Castellucci | Lucia Castellucci |             5              | - | 2 | 3 | 1 | - | - | - |
+|    3     |    Documentation     | Sprint 6 Report (#60)        | Lucia Castellucci |             1              | - | - | - | - | 1 | - | - |
 
 ## Review
 _To be completed at the end of the sprint_

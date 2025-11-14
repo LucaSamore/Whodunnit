@@ -12,14 +12,13 @@ Finally, a preliminary design for the case generation logic will be explored and
 |    1     |         Setup         | Project (#1)                | Lucia Castellucci |             1              | 1 | - | - | - | - | - | - |
 |    1     |         Setup         | Documentation (#11)         | Lucia Castellucci |             1              | - | - | 1 | - | - | - | - |
 |    1     |         Setup         | GUI Engine (#50)            | Lucia Castellucci |             -              | - | - | - | - | - | - | - |
-|    1     |        Mockup         | Home Page (#33)             | Lucia Castellucci |             2              | - | 2 | - | - | - | - | - |
-|    1     |        Mockup         | Main Game Page (#46 -> #35) | Lucia Castellucci |             2              | - | - | - | 2 | - | - | - |
-|    1     |         View          | Home Page (#33)             | Lucia Castellucci |             3              | - | - | - | - | 3 | - | - |
-|    1     | FR1 - Case Generation | Logic Design (#13)          |  Roberto Mitugno  |             14             | 2 | - | 3 | - | - | - | - |
-|    1     | GUI - Game Generation | Configuration Page (#34)    |    Luca Samorè    |             5              | - | - | - | - | - | 3 | 6 |
 |    1     |         Setup         | CI (#2)                     |    Luca Samorè    |             3              | - | - | 2 | - | - | - | - |
-|    1     |         Setup         | Test Suite (#32)            |    Luca Samorè    |             1              | - | - | - | 1 | - | - | - |
-|    1     |     Documentation     | Sprint 1 Report (#55)       |    Luca Samorè    |             3              | - | 2 | - | - | - | - | - |
+|    1     | FR1 - Case Generation | Logic Design (#13)          |  Roberto Mitugno  |             14             | 2 | - | 3 | - | - | - | - |
+|    2     |        Mockup         | Home Page (#33)             | Lucia Castellucci |             2              | - | 2 | - | - | - | - | - |
+|    2     |        Mockup         | Main Game Page (#46 -> #35) | Lucia Castellucci |             2              | - | - | - | 2 | - | - | - |
+|    2     |         View          | Home Page (#33)             | Lucia Castellucci |             3              | - | - | - | - | 3 | - | - |
+|    2     | GUI - Game Generation | Configuration Page (#34)    |    Luca Samorè    |             5              | - | - | - | - | - | 3 | 6 |
+|    2     |         Setup         | Test Suite (#32)            |    Luca Samorè    |             1              | - | - | - | 1 | - | - | - |
 
 ## Review
 The setup tasks for this sprint were successfully completed.

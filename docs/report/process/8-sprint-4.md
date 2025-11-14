@@ -2,33 +2,32 @@
 
 ## Goal
 
-The fourth sprint focuses on implementing critical game mechanics and establishing the architectural foundation for the controller layer.
-The primary objectives are to design and implement the timer system, which is essential for the gameplay experience, and to develop the trigger mechanism that will handle game events.
-Additionally, we will begin documenting the development process and continue UI development by integrating the timer visualization.
-On the architectural side, the Cake Pattern design for the controller will be established to ensure proper separation of concerns and modularity.
+In questo sprint l'obiettivo è implementare meccaniche di gioco fondamentali e definire la base architetturale del livello di controller.
+In particolar modo si lavorerà alla progettazione e all'implementazione del sistema di timer, elemento chiave per l'esperienza di gioco, e al meccanismo di trigger per la gestione degli eventi in-game.
+Si proseguirà inoltre lo sviluppo dell'interfaccia (con l'integrazione della visualizzazione del timer) e si avvierà la documentazione delle scelte architetturali.
+Dal punto di vista dell'architettura, sarà definito e applicato il Cake Pattern per i controller per migliorare modularità e testabilità.
 
 ## Sprint Backlog
 | Priority |    Product Backlog Item    | Sprint Task                                  |     Assignee      | Initial Estimate of Effort | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 |:--------:|:--------------------------:|:---------------------------------------------|:-----------------:|:--------------------------:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-|    4     |      FR3 - Versioning      | Logic Implementation (#29)                   | Lucia Castellucci |             5              | 2 | 3 | - | - | - | - | - |
-|    4     |        Architecture        | Architecture Design & Implementation (#39)   | Lucia Castellucci |             10             | - | - | 2 | 3 | 2 | 3 | - |
-|    4     |            View            | Loading Page (#44)                           | Lucia Castellucci |             2              | - | - | - | - | - | - | 2 |
-|    4     |           Timer            | Design (#65)                                 |  Roberto Mitugno  |             10             | 3 | - | - | - | - | - | - |
-|    4     |           Timer            | Test and Implementation (TDD loop) (#65)     |  Roberto Mitugno  |             10             | - | 2 | 2 | 3 | - | - | - |
+|    1     |      FR3 - Versioning      | Logic Implementation (#29)                   | Lucia Castellucci |             5              | 2 | 3 | - | - | - | - | - |
+|    2     |        Architecture        | Architecture Design & Implementation (#39)   | Lucia Castellucci |             10             | - | - | 2 | 3 | 2 | 3 | - |
+|    2     |           Timer            | Design (#65)                                 |  Roberto Mitugno  |             10             | 3 | - | - | - | - | - | - |
+|    2     |           Timer            | Test and Implementation (TDD loop) (#65)     |  Roberto Mitugno  |             10             | - | 2 | 2 | 3 | - | - | - |
+|    3     |            View            | Loading Page (#44)                           | Lucia Castellucci |             2              | - | - | - | - | - | - | 2 |
+|    3     | FR4 - Trigger/In-game hint | Logic Design and Documentation (#24) - Start |    Luca Samorè    |             12             | - | - | 2 | 2 | - | 1 | 1 |
 |    4     |       Documentation        | Development Process (#52)                    |  Roberto Mitugno  |             2              | - | - | - | - | - | - | 2 |
-|    4     | FR4 - Trigger/In-game hint | Logic Design and Documentation (#24) - Start |    Luca Samorè    |             12             | - | - | 2 | 2 | - | 1 | 1 |
-
 
 ## Review
 
-The timer system has been successfully designed and implemented following TDD principles. The implementation includes both the core timing logic and its visual representation in the game interface, providing players with a clear indication of time progression during gameplay.
-The trigger mechanism has been designed and developed, enabling the game to respond to various events and manage state transitions effectively. This component is fundamental for orchestrating game flow and interactions.
-Work on the controller architecture has progressed with the definition of the Cake Pattern design, which will provide a solid foundation for managing dependencies and ensuring testability across the controller layer.
-Documentation of the development process has been initiated, capturing key decisions and methodologies employed throughout the project.
+Il sistema di timer è stato progettato e implementato secondo i principi TDD: include la logica di base per la gestione del tempo e la relativa rappresentazione grafica nell'interfaccia, rendendo visibile l'avanzamento temporale durante le sessioni di gioco.
+Il meccanismo di trigger è stato sviluppato e consente ora alla macchina di gioco di reagire a eventi, gestendo transizioni di stato e azioni in-game in modo coerente.
+La definizione del Cake Pattern per il livello di controller è stata avviata, fornendo una struttura per la separazione delle responsabilità e per facilitare i test.
+È stata inoltre iniziata la documentazione del processo di sviluppo, con note sulle decisioni architetturali e sulle pratiche adottate.
 
 ## Retrospective
 
-The continued application of Test-Driven Development has proven valuable in maintaining code quality and ensuring the reliability of core game mechanics. The timer and trigger systems, being critical components, have benefited significantly from this disciplined approach.
-The team's decision to invest time in architectural design, particularly the Cake Pattern for the controller, reflects a mature understanding of the need for maintainability and scalability as the codebase grows.
-The initial integration of documentation tasks within the sprint has been beneficial, ensuring that knowledge and design decisions are captured while they are still fresh, rather than being deferred to the end of the project.
-As we move forward, the focus will shift toward integrating these newly developed components into a cohesive gameplay experience and continuing to bridge the gap between model, controller, and view layers.
+L'approccio TDD si è dimostrato efficace per preservare qualità e stabilità nelle funzionalità critiche: timer e trigger hanno beneficiato della verifica continua tramite test.
+L'investimento in attività architetturali (Cake Pattern) è stato sensato: aver dedicato tempo alla progettazione ha reso più semplice la successiva implementazione e i test dei controller.
+Inserire attività di documentazione all'interno dello sprint si è rivelato utile per fissare le decisioni progettuali e ridurre il rischio di perdita di conoscenza.
+Per i prossimi cicli sarà importante consolidare l'integrazione tra questi componenti e verificare il comportamento complessivo tramite test di integrazione e sessioni di playtesting mirate.
