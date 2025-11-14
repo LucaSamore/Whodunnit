@@ -44,6 +44,7 @@ export default withMermaid(defineConfig({
                                 items: [
                                     { text: 'Knowledge Graph', link: `${implementationPath}/5-samore-kg` },
                                     { text: 'Producer', link: `${implementationPath}/5-samore-producer` },
+                                    { text: 'Rule DSL', link: `${implementationPath}/5-samore-dsl` },
                                 ]
                             },
                         ]
