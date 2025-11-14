@@ -42,7 +42,8 @@ export default withMermaid(defineConfig({
                             {
                                 text: 'Luca Samorè',
                                 items: [
-                                    { text: 'Knowledge Graph', link: `${implementationPath}/5-samore-kg` }
+                                    { text: 'Knowledge Graph', link: `${implementationPath}/5-samore-kg` },
+                                    { text: 'Producer', link: `${implementationPath}/5-samore-producer` },
                                 ]
                             },
                         ]
