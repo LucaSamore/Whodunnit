@@ -80,8 +80,7 @@ object GroqProvider:
 
   private val dotenv = Dotenv.configure().ignoreIfMissing().load()
 
-  private def getEnvVar(key: String): Option[String] =
-    Option(dotenv.get(key)).orElse(sys.env.get(key))
+  private def getEnvVar(key: String): Option[String] = Option(dotenv.get(key)).orElse(sys.env.get(key))
 
   /** Retrieves the Groq API key from environment variables.
     *
@@ -90,14 +89,11 @@ object GroqProvider:
     * @return
     *   Some(api key) if found and non-empty, None otherwise
     */
-  def apiKey: Option[String] =
-    getEnvVar("GROQ_API_KEY").filter(_.trim.nonEmpty)
+  def apiKey: Option[String] = getEnvVar("GROQ_API_KEY").filter(_.trim.nonEmpty)
 
   /** Retrieves the Groq model name from environment variables.
     *
     * @return
-    *   the configured model name, or "llama-3.1-8b-instant" as default
+    *   the configured model name, or "openai/gpt-oss-120b" as default
     */
-  def model: String =
-    getEnvVar("GROQ_MODEL")
-      .getOrElse("llama-3.1-8b-instant")
+  def model: String = getEnvVar("GROQ_MODEL").getOrElse("openai/gpt-oss-120b")
