@@ -287,7 +287,8 @@ abstract class GameBoardScene extends Scene(1280, 720):
     translateX = 25
     translateY = -30
     mouseTransparent = true
-    visible = true
+    visible = controller.hasUnreadNotifications
+
     private val circle = new Circle:
       radius = 8
       fill = Color.Red
@@ -331,6 +332,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
     60,
     () => {
       notificationsPanel.toggleVisibility()
+      controller.markNotificationsAsRead()
       notificationBadge.visible = false
     }
   )

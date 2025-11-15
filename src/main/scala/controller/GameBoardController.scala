@@ -99,6 +99,19 @@ trait GameBoardController extends ControllerModule.Controller:
     */
   def submitAccusation(character: Character): ValidationResult
 
+  /** Checks if there are unread notifications.
+   *
+   * @return
+   * true if there are unread notifications, false otherwise
+   */
+  def hasUnreadNotifications: Boolean
+
+  /** Marks all notifications as read.
+   *
+   * This is called when the user opens the notifications panel.
+   */
+  def markNotificationsAsRead(): Unit
+
 /** Companion object providing factory methods for GameBoardController. */
 object GameBoardController:
   /** Creates a new GameBoardController instance.
@@ -186,3 +199,12 @@ object GameBoardController:
         else
           IncorrectSolution(accusedCharacter, solution.culprit, solution.motive)
       case _ => ValidationResult.PrerequisitesNotMet
+
+    private var lastSeenHintCount: Int = 0
+  
+    override def hasUnreadNotifications: Boolean =
+      val currentHintCount = model.state.hints.map(_.size).getOrElse(0)
+      currentHintCount > lastSeenHintCount
+  
+    override def markNotificationsAsRead(): Unit =
+      lastSeenHintCount = model.state.hints.map(_.size).getOrElse(0)
