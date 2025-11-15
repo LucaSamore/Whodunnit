@@ -7,15 +7,15 @@ Building on the previous sprint, work will continue with the implementation of t
 Additionally, this sprint will kick off the design phase for the game triggers and address minor priority tasks related to the view and documentation.
 
 ## Sprint Backlog
-| Priority |    Product Backlog Item    | Sprint Task                                  |     Assignee      | Initial Estimate of Effort | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
-|:--------:|:--------------------------:|:---------------------------------------------|:-----------------:|:--------------------------:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-|    1     |      FR3 - Versioning      | Logic Implementation (#29)                   | Lucia Castellucci |             5              | 2 | 3 | - | - | - | - | - |
-|    2     |        Architecture        | Architecture Design & Implementation (#39)   | Lucia Castellucci |             6              | - | - | 2 | 3 | 2 | 3 | - |
-|    2     |           Timer            | Design (#65)                                 |  Roberto Mitugno  |             10             | 3 | - | - | - | - | - | - |
-|    2     |           Timer            | Test and Implementation (TDD loop) (#65)     |  Roberto Mitugno  |             10             | - | 2 | 2 | 3 | - | - | - |
-|    3     |            View            | Loading Page (#44)                           | Lucia Castellucci |             2              | - | - | - | - | - | - | 2 |
-|    3     | FR4 - Trigger/In-game hint | Logic Design and Documentation (#24) - Start |    Luca Samorè    |             12             | - | - | 2 | 2 | - | 1 | 1 |
-|    4     |       Documentation        | Development Process (#52)                    |  Roberto Mitugno  |             2              | - | - | - | - | - | - | 2 |
+| Priority | Product Backlog Item | Sprint Task                                  |     Assignee      | Initial Estimate of Effort | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|:--------:|:--------------------:|:---------------------------------------------|:-----------------:|:--------------------------:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+|    1     |      Versioning      | Logic Implementation (#29)                   | Lucia Castellucci |             5              | 2 | 3 | - | - | - | - | - |
+|    2     |     Architecture     | Architecture Design & Implementation (#39)   | Lucia Castellucci |             6              | - | - | 2 | 3 | 2 | 3 | - |
+|    2     |        Timer         | Design (#65)                                 |  Roberto Mitugno  |             10             | 3 | - | - | - | - | - | - |
+|    2     |        Timer         | Test and Implementation (TDD loop) (#65)     |  Roberto Mitugno  |             10             | - | 2 | 2 | 3 | - | - | - |
+|    3     |         View         | Loading Page (#44)                           | Lucia Castellucci |             2              | - | - | - | - | - | - | 2 |
+|    3     | Trigger/In-game hint | Logic Design and Documentation (#24) - Start |    Luca Samorè    |             12             | - | - | 2 | 2 | - | 1 | 1 |
+|    4     |    Documentation     | Development Process (#52)                    |  Roberto Mitugno  |             2              | - | - | - | - | - | - | 2 |
 
 ## Review
 

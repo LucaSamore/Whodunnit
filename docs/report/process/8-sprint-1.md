@@ -13,7 +13,7 @@ Finally, a preliminary design for the case generation logic will be explored and
 |    1     |         Setup         | Documentation (#11)         | Lucia Castellucci |             1              | - | - | 1 | - | - | - | - |
 |    1     |         Setup         | GUI Engine (#50)            | Lucia Castellucci |             -              | - | - | - | - | - | - | - |
 |    1     |         Setup         | CI (#2)                     |    Luca Samorè    |             3              | - | - | 2 | - | - | - | - |
-|    1     | FR1 - Case Generation | Logic Design (#13)          |  Roberto Mitugno  |             14             | 2 | - | 3 | - | - | - | - |
+|    1     |   Case Generation     | Logic Design (#13)          |  Roberto Mitugno  |             14             | 2 | - | 3 | - | - | - | - |
 |    2     |        Mockup         | Home Page (#33)             | Lucia Castellucci |             2              | - | 2 | - | - | - | - | - |
 |    2     |        Mockup         | Main Game Page (#46 -> #35) | Lucia Castellucci |             2              | - | - | - | 2 | - | - | - |
 |    2     |         View          | Home Page (#33)             | Lucia Castellucci |             3              | - | - | - | - | 3 | - | - |
