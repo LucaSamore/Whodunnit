@@ -9,6 +9,8 @@ import scala.reflect.ClassTag
 
 final class FileBasedProducer[T]()(using parser: ResponseParser[T], ct: ClassTag[T]) extends Producer[T]:
 
+  private var hintIndex: Int = 1
+
   override def produce(constraints: Constraint*): Either[ProductionError, T] =
     val filename = determineFilename[T]
     val resourcePath = s"cases/$filename"
@@ -22,8 +24,11 @@ final class FileBasedProducer[T]()(using parser: ResponseParser[T], ct: ClassTag
   private def determineFilename[A](using ct: ClassTag[A]): String =
     ct.runtimeClass.getSimpleName match
       case "Case" => "case.json"
-      case "Hint" => "hints.json"
-      case other  => throw new IllegalArgumentException(s"Unknown type: $other")
+      case "Hint" =>
+        val filename = s"hint$hintIndex.json"
+        hintIndex += 1
+        filename
+      case other => throw new IllegalArgumentException(s"Unknown type: $other")
 
   private def loadResourceAsString(resourcePath: String): Option[String] =
     Try {

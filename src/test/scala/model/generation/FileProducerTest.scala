@@ -16,11 +16,11 @@ class FileProducerTest extends AnyWordSpec with Matchers with EitherValues with 
         result shouldBe a[Right[_, _]]
         val caseModel = result.value
 
-        caseModel.plot.title shouldBe "The Vanishing Sapphire"
+        caseModel.plot.title shouldBe "The Midnight Bloom Murder"
         caseModel.characters should not be empty
         caseModel.caseFiles should not be empty
-        caseModel.solution.culprit.name shouldBe "Lucas Reed"
-        caseModel.solution.motive should include("collector")
+        caseModel.solution.culprit.name shouldBe "Marcus Vale"
+        caseModel.solution.motive should include("sell the formula")
 
       "parse all characters correctly from case.json" in:
         val producer = FileBasedProducer.forCase
@@ -29,9 +29,9 @@ class FileProducerTest extends AnyWordSpec with Matchers with EitherValues with 
         result shouldBe a[Right[_, _]]
         val caseModel = result.value
 
-        caseModel.characters should have size 3
+        caseModel.characters should have size 4
         val characterNames = caseModel.characters.map(_.name)
-        characterNames should contain allOf ("Emily Hart", "Lucas Reed", "Maya Patel")
+        characterNames should contain allOf ("Dr. Evelyn Hart", "Marcus Vale", "Lena Ortiz", "Victor Sloan")
 
       "parse all case files correctly from case.json" in:
         val producer = FileBasedProducer.forCase
@@ -40,9 +40,15 @@ class FileProducerTest extends AnyWordSpec with Matchers with EitherValues with 
         result shouldBe a[Right[_, _]]
         val caseModel = result.value
 
-        caseModel.caseFiles should have size 3
+        caseModel.caseFiles should have size 5
         val fileTitles = caseModel.caseFiles.map(_.title)
-        fileTitles should contain allOf ("Email: Lucas to Maya", "Message: Maya to Lucas", "Interview: Emily Hart")
+        fileTitles should contain allOf (
+          "Lab Incident Report",
+          "Late Night Text",
+          "Security Log",
+          "Evelyn's Diary",
+          "Interview with Victor Sloan"
+        )
 
       "ignore constraints parameter (not used for file-based)" in:
         val producer = FileBasedProducer.forCase
@@ -52,18 +58,18 @@ class FileProducerTest extends AnyWordSpec with Matchers with EitherValues with 
 
         result shouldBe a[Right[_, _]]
         // Should still load from file, ignoring constraints
-        result.value.plot.title shouldBe "The Vanishing Sapphire"
+        result.value.plot.title shouldBe "The Midnight Bloom Murder"
 
   "FileBasedProducer for Hint" when:
     "producing a hint" should:
-      "successfully load and parse hints.json from resources" in:
+      "successfully load and parse hints from resources" in:
         val producer = FileBasedProducer.forHint
         val result = producer.produce()
 
         result shouldBe a[Right[_, _]]
         val hint = result.value
 
-        hint.description should include("spare‑key checkout log")
+        hint.description should include("toxin")
 
       "ignore constraints parameter" in:
         val producer = FileBasedProducer.forHint
