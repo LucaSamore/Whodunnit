@@ -71,10 +71,12 @@ Once the state-based approach was defined, it was necessary to select the optima
 
 ```mermaid
 graph LR
-    A[Stati Precedenti] --> B[STATO CORRENTE]
-    C[Stati Successivi] --> B
+    A[Previous States] --> B[CURRENT STATE]
+    C[Subsequent States] --> B
     style B fill:#4CAF50,stroke:#333,stroke-width:3px
 ```
+
+*Figure 1: State + Two Lists Structure*
 
 **Complexity analysis**:
 - **Current state access**: O(1)
@@ -98,9 +100,11 @@ graph LR
         S4 --> S5[s₅]
         S5 --> S6[s₆]
     end
-    P[Puntatore] -.-> S2
+    P[Pointer] -.-> S2
     style S2 fill:#FF9800,stroke:#333,stroke-width:3px
 ```
+
+*Figure 2: Deque + Pointer Structure*
 
 **Complexity analysis**:
 - **Head/tail insertion**: O(1)
@@ -115,16 +119,18 @@ graph LR
 
 ```mermaid
 graph LR
-    subgraph "Buffer Circolare (capacità = 5)"
+    subgraph "Circular Buffer (capacity = 5)"
         S0[s₀] --> S1[s₁]
         S1 --> S2[s₂]
         S2 --> S3[s₃]
         S3 --> S4[s₄]
-        S4 -.circolare.-> S0
+        S4 -.circular.-> S0
     end
-    C[Cursore] -.-> S2
+    C[Cursor] -.-> S2
     style S2 fill:#2196F3,stroke:#333,stroke-width:3px
 ```
+
+*Figure 3: Navigable Circular Buffer Structure*
 
 **Complexity analysis**:
 - **Push (state addition)**: O(1) amortized
@@ -167,6 +173,8 @@ This architecture attempts to use a **pragmatic design** approach that aims to a
 
 The `versioning` package contains the fundamental abstractions for managing snapshots and buffers, implemented using functional programming patterns.
 
+> **Note on UML Diagrams**: Throughout this document, UML class diagrams focus on the essential architectural elements and key methods that define the contracts between components. Helper methods, factory object methods, and internal implementation details are selectively omitted to emphasize the design patterns and polymorphic relationships. Complete method signatures and implementations can be found in the source code documentation.
+
 ### Snapshot
 
 The **snapshot** system uses **ad hoc polymorphism** implemented through **type classes**, leveraging Scala 3 features (`given`/`using`).
@@ -180,6 +188,47 @@ trait Snapshottable[-S]:
   def snap[T <: S](s: T): Snapshot[T]
   def restore[T <: S](snapshot: Snapshot[T]): T
 ```
+
+```mermaid
+classDiagram
+    class Snapshot~A~ {
+        <<trait covariant>>
+        +subject: A
+        +createdAt: LocalDateTime
+    }
+    
+    class SnapshotImpl~A~ {
+        +subject: A
+        +createdAt: LocalDateTime
+    }
+    
+    class Snapshottable~S~ {
+        <<trait contravariant>>
+        +snap(s: T) Snapshot~T~
+        +restore(snapshot: Snapshot~T~) T
+    }
+    
+    class SnapshotObject {
+        <<object>>
+        +apply(s: S, timestamp: LocalDateTime) Snapshot~S~
+        +restore(snapshot: Snapshot~S~) S
+    }
+    
+    class Snapshotters {
+        <<object>>
+        +given_Snapshottable_History: Snapshottable~History~
+    }
+    
+    SnapshotImpl ..|> Snapshot : implements
+    SnapshotObject ..> Snapshottable : uses (context bound)
+    Snapshotters ..> Snapshottable : provides instances
+    
+    note for Snapshot "Immutable snapshot with covariant type parameter"
+    note for Snapshottable "Type class defining snapshot/restore contract"
+    note for Snapshotters "Contains given instances for specific types"
+```
+
+*Figure 4: Snapshot system architecture using type classes*
 
 The architecture is based on two main components:
 
@@ -222,6 +271,79 @@ A crucial aspect of the implementation is the use of **deep copy** to guarantee 
 
 ### Buffer
 For the **buffer** system, the principles of **family polymorphism** were used through trait composition with **self-types** and **mixin linearization**.
+
+```mermaid
+classDiagram
+    class Buffer {
+        <<trait>>
+        +type Element
+        +capacity: Int
+        +isEmpty: Boolean
+        +elements: Seq~Element~
+        +push(element: Element) Unit
+        +replaceOnFull(element: Element) Unit
+        +contains(element: Element) Boolean
+        +size: Int
+        +set(index: Int, element: Element) Unit
+    }
+    
+    class BaseBuffer~E~ {
+        <<abstract>>
+        -buffer: Array~Option~E~~
+        #_size: Int
+        +type Element = E
+        +size: Int
+        +isEmpty: Boolean
+        +elements: Seq~E~
+        +set(index: Int, element: E) Unit
+        +push(element: E) Unit
+        +replaceOnFull(element: E) Unit
+        +contains(element: E) Boolean
+    }
+    
+    class CircularBuffer {
+        <<trait>>
+        #head: Int
+        +replaceOnFull(element: Element) Unit
+        +elements: Seq~Element~
+    }
+    
+    class Navigability {
+        <<trait>>
+        #cursor: Int
+        +currentPosition: Int
+        +resetCursor() Unit
+        +currentElement: Option~Element~
+        +moveForward() Boolean
+        +moveBackward() Boolean
+    }
+    
+    class InverseNavigability {
+        <<trait>>
+        +currentElement: Option~Element~
+        +moveForward() Boolean
+        +moveBackward() Boolean
+    }
+    
+    class RingNavigableBuffer~E~ {
+        <<abstract>>
+        +push(element: Element) Unit
+    }
+    
+    Buffer <|.. BaseBuffer : implements
+    Buffer <|.. CircularBuffer : extends (abstract override)
+    Buffer <|.. Navigability : extends (self: Buffer)
+    Navigability <|-- InverseNavigability : extends (self: Buffer)
+    BaseBuffer <|-- RingNavigableBuffer : extends
+    CircularBuffer <|.. RingNavigableBuffer : mixin
+    InverseNavigability <|.. RingNavigableBuffer : mixin
+    
+    note for CircularBuffer "Uses abstract override for mixin composition"
+    note for Navigability "Self-type requires Buffer"
+    note for RingNavigableBuffer "Combines circular behavior with inverse navigation"
+```
+
+*Figure 5: Buffer hierarchy using family polymorphism and mixin linearization*
 
 #### Modular Architecture
 
@@ -327,6 +449,56 @@ trait History:
   def deepCopy(): History
 ```
 
+```mermaid
+classDiagram
+    class History {
+        <<trait>>
+        +addState(kg: CaseKnowledgeGraph) History
+        +undo() (History, Option~CaseKnowledgeGraph~)
+        +redo() (History, Option~CaseKnowledgeGraph~)
+        +currentState: Option~CaseKnowledgeGraph~
+        +deepCopy() History
+        +states: Seq~CaseKnowledgeGraph~
+        +canUndo: Boolean
+        +canRedo: Boolean
+    }
+    
+    class GameHistory {
+        -historySize: Int
+        -timeline: RingNavigableBuffer~CaseKnowledgeGraph~
+        +addState(kg: CaseKnowledgeGraph) History
+        +undo() (History, Option~CaseKnowledgeGraph~)
+        +redo() (History, Option~CaseKnowledgeGraph~)
+        +currentState: Option~CaseKnowledgeGraph~
+        +deepCopy() History
+        +states: Seq~CaseKnowledgeGraph~
+        +canUndo: Boolean
+        +canRedo: Boolean
+        +equals(obj: Any) Boolean
+        -cloneBuffer() RingNavigableBuffer~CaseKnowledgeGraph~
+    }
+    
+    class RingNavigableBuffer~E~ {
+        <<abstract>>
+        +capacity: Int
+        +push(element: E) Unit
+        +currentElement: Option~E~
+        +moveForward() Boolean
+        +moveBackward() Boolean
+        +currentPosition: Int
+        +elements: Seq~E~
+        +size: Int
+    }
+    
+    GameHistory ..|> History : implements
+    GameHistory --> RingNavigableBuffer : uses
+    
+    note for History "Functional interface: all operations return new instances"
+    note for GameHistory "Encapsulates RingNavigableBuffer for state management"
+```
+
+*Figure 6: History component architecture*
+
 ### Immutability and Functional Transformations
 
 A fundamental aspect of `History` is respect for the principle of **immutability**: each operation (`addState`, `undo`, `redo`) does not modify the existing instance, but returns a **new** instance of `History`:
@@ -370,12 +542,54 @@ trait TimeMachine[S]:
   def snapshotTime: Option[LocalDateTime]
 ```
 
+```mermaid
+classDiagram
+    class TimeMachine~S~ {
+        <<trait>>
+        +save(state: S) Unit
+        +restore() Option~S~
+        +hasSnapshot: Boolean
+        +clear() Unit
+        +snapshotTime: Option~LocalDateTime~
+    }
+    
+    class GameTimeMachine~S~ {
+        -currentSnapshot: Option~Snapshot~S~~
+        +save(state: S) Unit
+        +restore() Option~S~
+        +hasSnapshot: Boolean
+        +clear() Unit
+        +snapshotTime: Option~LocalDateTime~
+    }
+    
+    class Snapshot~S~ {
+        <<trait>>
+        +subject: S
+        +createdAt: LocalDateTime
+    }
+    
+    class Snapshottable~S~ {
+        <<trait>>
+        +snap(s: T) Snapshot~T~
+        +restore(snapshot: Snapshot~T~) T
+    }
+    
+    GameTimeMachine ..|> TimeMachine : implements
+    GameTimeMachine --> Snapshot : uses
+    GameTimeMachine ..> Snapshottable : requires (context bound)
+    
+    note for TimeMachine "Generic interface for snapshot management"
+    note for GameTimeMachine "Context bound [S: Snapshottable] ensures type safety"
+```
+
+*Figure 7: TimeMachine component with type class constraints*
+
 ### Implementation with Type Classes
 
 ```scala
 case class GameTimeMachine[S: Snapshottable](
-  private var currentSnapshot: Option[Snapshot[S]] = None
-) extends TimeMachine[S]:
+                                              private var currentSnapshot: Option[Snapshot[S]] = None
+                                            ) extends TimeMachine[S]:
 
   override def save(state: S): Unit =
     currentSnapshot = Some(Snapshot(state))
@@ -407,7 +621,7 @@ Tests for `Snapshot` validate:
   history.add(3)
   val snapshot = Snapshot(history)
   history.add(3)
-  
+
   snapshot.subject.elements should contain only 3
 ```
 

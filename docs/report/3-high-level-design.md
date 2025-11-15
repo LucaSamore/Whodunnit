@@ -75,6 +75,8 @@ classDiagram
 
 *Figure 1: Cake Pattern structure and dependencies between modules*
 
+> **Note on UML Representations**: The UML diagrams in this document provide simplified views focused on the architectural patterns and key interfaces. Implementation details, utility methods, and internal helper functions are intentionally omitted to maintain clarity and emphasize the structural relationships between components. For complete method signatures and implementation details, refer to the source code documentation.
+
 ### Architectural Principles
 
 The architecture adopts a rigorous **separation of responsibilities** among the three MVC layers, ensuring that each component has a well-defined domain of competence without overlaps. Dependency management is entirely entrusted to the **Cake Pattern**, a Scala architectural pattern that leverages self-types and trait mixins to achieve complete compile-time type-safety.
@@ -124,22 +126,16 @@ object ModelModule:
 classDiagram
     class Model {
         <<interface>>
+        +state: GameState
         +updateState(updater: GameState => GameState) GameState
-        +getState() GameState
-        +addHint(hint: Hint) GameState
-        +updateHistory(f: History => History) GameState
-        +withCase(c: Case) GameState
-        +withTimer(timer: Timer) GameState
+        +getRemainingTime() Option~Duration~
     }
     
     class ModelImpl {
         -currentState: GameState
+        +state: GameState
         +updateState(updater: GameState => GameState) GameState
-        +getState() GameState
-        +addHint(hint: Hint) GameState
-        +updateHistory(f: History => History) GameState
-        +withCase(c: Case) GameState
-        +withTimer(timer: Timer) GameState
+        +getRemainingTime() Option~Duration~
     }
     
     class GameState {
@@ -149,6 +145,7 @@ classDiagram
         +timeMachine: Option~TimeMachine~
         +hints: Option~Seq~Hint~~
         +timer: Option~Timer~
+        +submissionState: Option~SubmissionState~
         +copy(...) GameState
     }
     
@@ -196,47 +193,57 @@ object ControllerModule:
 classDiagram
     class Controller {
         <<abstract>>
+        +state: GameState
+    }
+    
+    class AbstractController {
+        <<abstract>>
         #model: Model
-        #view: View
-        +initialize() Unit
+        +state: GameState
     }
     
     class HomePageController {
-        +handleStartNewGame() Unit
-        +handleLoadGame() Unit
-        +handleExit() Unit
+        +onPlayNowClicked() Unit
     }
     
-    class CaseGenerationController {
-        +generateCase() Unit
-        +handleGenerationComplete(case: Case) Unit
-        +handleGenerationError(error: String) Unit
+    class GameInitializationController {
+        +initGame(theme: Theme, difficulty: Difficulty)(onSuccess, onError) Unit
     }
     
     class GameBoardController {
-        +handleNodeClick(node: Node) Unit
-        +handleEdgeClick(edge: Edge) Unit
-        +handleUndo() Unit
-        +handleRedo() Unit
-        +handleTimeTravel() Unit
+        +undo() Option~CaseKnowledgeGraph~
+        +redo() Option~CaseKnowledgeGraph~
+        +canUndo: Boolean
+        +canRedo: Boolean
+        +saveSnapshot() Unit
+        +restoreSnapshot() Option~CaseKnowledgeGraph~
+        +hasSnapshot: Boolean
+        +clearSnapshot() Unit
+        +canAccuse: Boolean
+        +getAvailableSuspects: Set~Character~
+        +submitAccusation(character: Character) ValidationResult
     }
     
     class CluesManagementController {
-        +revealClue(clue: Clue) Unit
-        +requestHint() Unit
-        +validateSolution() Boolean
+        +getEntities() Seq~Entity~
+        +getRelationships() Seq~Tuple3~
+        +addAndSaveRelationship(from, link, to) Unit
+        +removeAndSaveRelationship(from, link, to) Unit
+        +findOrCreateEntity(name: String) Entity
+        +modifyRelationship(oldRel, newRel) Unit
+        +getEntityDisplayName(entity: Entity) String
     }
     
-    Controller <|-- HomePageController : extends
-    Controller <|-- CaseGenerationController : extends
-    Controller <|-- GameBoardController : extends
-    Controller <|-- CluesManagementController : extends
+    Controller <|-- AbstractController : extends
+    AbstractController <|-- HomePageController : extends
+    AbstractController <|-- GameInitializationController : extends
+    AbstractController <|-- GameBoardController : extends
+    AbstractController <|-- CluesManagementController : extends
     
-    Controller ..> Model : depends on
-    Controller ..> View : depends on
+    AbstractController ..> Model : depends on
     
-    note for Controller "Abstract class that defines the base trait for all specific controllers"
-    note for GameBoardController "Handles interactions with the knowledge graph and time-travel operations"
+    note for AbstractController "Abstract base providing access to the model"
+    note for GameBoardController "Handles undo/redo, time-travel, and accusation submission"
 ```
 
 *Figure 3: Controller hierarchy*
@@ -270,15 +277,14 @@ object ViewModule:
 classDiagram
     class View {
         <<interface>>
-        +start(stage: Stage) Unit
-        +navigateTo(page: ScenePage) Unit
+        +showPage(page: ScenePage) Unit
+        +showScene(scene: Scene) Unit
     }
     
     class ViewImpl {
         -sceneComposer: SceneComposer
-        -currentStage: Stage
-        +start(stage: Stage) Unit
-        +navigateTo(page: ScenePage) Unit
+        +showPage(page: ScenePage) Unit
+        +showScene(scene: Scene) Unit
     }
     
     class SceneComposer {
@@ -289,46 +295,52 @@ classDiagram
     class SceneComposerImpl {
         -onNavigate: ScenePage => Unit
         +create(page: ScenePage) Scene
-        -createHomepageScene() Scene
-        -createCaseGenerationScene() Scene
-        -createGameBoardScene() Scene
     }
     
     class HomepageScene {
         <<ScalaFX Scene>>
-        -controller: HomePageController
-        +initializeUI() Unit
+        #controller: HomePageController
+        #navigateTo(page: ScenePage) Unit
     }
     
-    class CaseGenerationScene {
+    class GameConfigurationScene {
         <<ScalaFX Scene>>
-        -controller: CaseGenerationController
-        +showProgress() Unit
+        #controller: GameInitializationController
+        #navigateTo(page: ScenePage) Unit
     }
     
     class GameBoardScene {
         <<ScalaFX Scene>>
-        -controller: GameBoardController
-        +renderGraph() Unit
-        +showClues() Unit
+        #controller: GameBoardController
+        #navigateTo(page: ScenePage) Unit
+    }
+    
+    class CluesManagementScene {
+        <<ScalaFX Scene>>
+        #controller: CluesManagementController
+        #navigateTo(page: ScenePage) Unit
     }
     
     ViewImpl ..|> View : implements
     ViewImpl --> SceneComposer : uses
     SceneComposerImpl ..|> SceneComposer : implements
     SceneComposerImpl ..> HomepageScene : creates
-    SceneComposerImpl ..> CaseGenerationScene : creates
+    SceneComposerImpl ..> GameConfigurationScene : creates
     SceneComposerImpl ..> GameBoardScene : creates
+    SceneComposerImpl ..> CluesManagementScene : creates
     
     HomepageScene ..> HomePageController : uses
-    CaseGenerationScene ..> CaseGenerationController : uses
+    GameConfigurationScene ..> GameInitializationController : uses
     GameBoardScene ..> GameBoardController : uses
+    CluesManagementScene ..> CluesManagementController : uses
     
     note for SceneComposer "Factory pattern for scene creation separating creation from navigation"
     note for ViewImpl "Manages the JavaFX application lifecycle"
 ```
 
 *Figure 4: View Module structure and composition pattern*
+
+> **Note on Scene Representations**: The UML diagram shows only the protected abstract members (`controller` and `navigateTo`) that define the contract for all scene implementations. Concrete UI elements, layout methods, and event handlers are implementation details omitted for clarity. Each scene class contains extensive UI implementation not shown in this architectural overview.
 
 The module depends solely on `ControllerModule.Provider`, requiring access to controllers but not to their internal state (in accordance with the **Dependency Inversion Principle**). Scene composition is delegated to an internal `SceneComposer` component that separates creation logic from navigation management (**Single Responsibility Principle**). The latter is encapsulated through callbacks passed to the composer, allowing management of JavaFX Scene lifecycle without exposing ScalaFX implementation details to other modules.
 
