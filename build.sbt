@@ -26,6 +26,15 @@ lazy val root = (project in file("."))
       "io.circe" %% "circe-parser" % "0.14.15",
       "io.github.cdimascio" % "dotenv-java" % "3.2.0"
     ),
+    libraryDependencies ++= {
+      val platforms = Seq("linux", "mac", "win")
+      val modules = Seq("base", "controls", "fxml", "graphics", "media", "swing", "web")
+
+      for {
+        platform <- platforms
+        module <- modules
+      } yield "org.openjfx" % s"javafx-$module" % "16" classifier platform
+    },
     mainClass := Some("view.WhodunnitApp"),
     assembly / assemblyOutputPath := target.value / "scala-3" / "whodunnit.jar",
     assembly / assemblyMergeStrategy := {
