@@ -17,8 +17,10 @@ Alongside this core development, we will continue to expand the user interface b
 |    2     |           View           | Clues Management Page (#37 -> #48)               | Lucia Castellucci |             5              | - | - | 3 | 2 | - | - | - |
 
 
-
-
 ## Review
+The development of the knowledge graph was successfully completed, adhering to a strict Test-Driven Development (TDD) methodology to ensure its correctness and robustness. 
+The implementation of the user interface views scheduled for this sprint was finalized, delivering the core screens for game configuration and gameplay.
+Foundational work on the generation component has begun, which will be responsible for creating the game's mystery elements.
 
 ## Retrospective
+The team's workload was well-balanced throughout the week, reflecting effective sprint planning and task allocation. The collaborative spirit and efficient communication channels established in previous sprints continue to foster a productive development environment.
