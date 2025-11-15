@@ -14,7 +14,7 @@ Alongside this core development, we will continue to expand the user interface b
 |    1     |  FR2 - Knowledge Graph   | Logic Implementation (TDD loop) (#17)            |    Luca Samorè    |             5              | - | - | - | - | - | - | 6 |
 |    1     |  FR2 - Knowledge Graph   | Test and Final Deploy (#18)                      |    Luca Samorè    |             1              | 1 | - | - | - | - | - | - |
 |    2     |           View           | Main Game Page (#46 -> #35)                      | Lucia Castellucci |             3              | 1 | 2 | - | - | - | - | - |
-|    2     |           View           | Clues Management Page (#37 -> #48)               | Lucia Castellucci |             5              | - | - | 3 | 2 | - | - | - |
+|    2     |           View           | Clues Management Page (#37 -> #48)               | Lucia Castellucci |             3              | - | - | 3 | 2 | - | - | - |
 
 
 ## Review

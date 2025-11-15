@@ -9,7 +9,7 @@ Finally, the sprint includes the implementation of the graph visualization.
 ## Sprint Backlog
 | Priority | Product Backlog Item  | Sprint Task                            |     Assignee      | Initial Estimate of Effort | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 |:--------:|:---------------------:|:---------------------------------------|:-----------------:|:--------------------------:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-|    1     |   FR3 - Versioning    | Logic Design (#20)                     | Lucia Castellucci |             12             | 3 | 2 | 3 | 2 | 2 | - | - |
+|    1     |   FR3 - Versioning    | Logic Design (#20)                     | Lucia Castellucci |             10             | 3 | 2 | 3 | 2 | 2 | - | - |
 |    1     | FR1 - Case Generation | Test and Implementation (#14) - Finish |  Roberto Mitugno  |             14             | 2 | - | 4 | 1 | - | - | - |
 |    2     |         View          | Graph Representation (#36)             |  Roberto Mitugno  |             3              | - | - | - | - | - | 2 | 1 |
 |    3     |         Setup         | CD (#3)                                |    Luca Samorè    |             5              | - | - | - | - | - | 3 | - |

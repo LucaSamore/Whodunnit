@@ -10,7 +10,7 @@ Additionally, this sprint will kick off the design phase for the game triggers a
 | Priority |    Product Backlog Item    | Sprint Task                                  |     Assignee      | Initial Estimate of Effort | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 |:--------:|:--------------------------:|:---------------------------------------------|:-----------------:|:--------------------------:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 |    1     |      FR3 - Versioning      | Logic Implementation (#29)                   | Lucia Castellucci |             5              | 2 | 3 | - | - | - | - | - |
-|    2     |        Architecture        | Architecture Design & Implementation (#39)   | Lucia Castellucci |             10             | - | - | 2 | 3 | 2 | 3 | - |
+|    2     |        Architecture        | Architecture Design & Implementation (#39)   | Lucia Castellucci |             6              | - | - | 2 | 3 | 2 | 3 | - |
 |    2     |           Timer            | Design (#65)                                 |  Roberto Mitugno  |             10             | 3 | - | - | - | - | - | - |
 |    2     |           Timer            | Test and Implementation (TDD loop) (#65)     |  Roberto Mitugno  |             10             | - | 2 | 2 | 3 | - | - | - |
 |    3     |            View            | Loading Page (#44)                           | Lucia Castellucci |             2              | - | - | - | - | - | - | 2 |
