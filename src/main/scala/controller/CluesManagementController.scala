@@ -18,24 +18,24 @@ object CluesManagementController:
   private final class CluesManagementControllerImpl(model: ModelModule.Model)
       extends ControllerModule.AbstractController(model) with CluesManagementController:
 
-    private val knowledgeGraph: CaseKnowledgeGraph =
+    private def currentGraph: CaseKnowledgeGraph =
       model.state.currentGraph.getOrElse(throw new IllegalStateException("Knowledge graph not initialized"))
 
     override def getEntities: Seq[Entity] =
-      val graphEntities = knowledgeGraph.nodes.toSeq
+      val graphEntities = currentGraph.nodes.toSeq
       val caseEntities = model.state.investigativeCase.fold(Seq.empty[Entity]): investigativeCase =>
         investigativeCase.characters.toSeq ++ investigativeCase.caseFiles.toSeq
       (graphEntities ++ caseEntities).distinct
 
-    override def getRelationships: Seq[(Entity, Link, Entity)] = knowledgeGraph.edges.toSeq
+    override def getRelationships: Seq[(Entity, Link, Entity)] = currentGraph.edges.toSeq
 
     override def addAndSaveRelationship(from: Entity, link: Link, to: Entity): Unit =
-      val graph = knowledgeGraph.deepCopy()
+      val graph = currentGraph.deepCopy()
       addRelationship(graph, from, link, to)
       saveGraph(graph)
 
     override def removeAndSaveRelationship(from: Entity, link: Link, to: Entity): Unit =
-      val graph = knowledgeGraph.deepCopy()
+      val graph = currentGraph.deepCopy()
       removeRelationship(graph, from, link, to)
       cleanOrphansOnGraph(graph)
       saveGraph(graph)
@@ -49,7 +49,7 @@ object CluesManagementController:
     ): Unit =
       val (oldFrom, oldLink, oldTo) = oldRelationship
       val (newFrom, newLink, newTo) = newRelationship
-      val graph = knowledgeGraph.deepCopy()
+      val graph = currentGraph.deepCopy()
       removeRelationship(graph, oldFrom, oldLink, oldTo)
       addRelationship(graph, newFrom, newLink, newTo)
       cleanOrphansOnGraph(graph)
