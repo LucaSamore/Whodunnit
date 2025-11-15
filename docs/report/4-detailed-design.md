@@ -126,7 +126,7 @@ classDiagram
     }
 
     class CaseKnowledgeGraph {
-        <<final>>
+        <<class>>
     }
 
     class Link {
@@ -249,13 +249,8 @@ classDiagram
         +push(element) Unit
     }
     
-    class CaseKnowledgeGraph {
-        <<class>>
-    }
-    
     %% Relationships - History
     History ..> RingNavigableBuffer~E~ : uses
-    History ..> CaseKnowledgeGraph : stores
     
     %% Relationships - Snapshot System
     Snapshottable~S~ ..> Snapshot~A~ : creates/restores
@@ -379,7 +374,7 @@ classDiagram
     }
     
     class GroqProvider {
-        <<trait - mixin>>
+        <<trait>>
         +type Request
         #makeCall(Request) Either
     }

@@ -1,7 +1,7 @@
-# Knowledge Graph
+# Case Knowledge Graph
 
-One of my main contributions to this project was the design and implementation of the `KnowledgeGraph`.
-As mentioned in the Detailed Design section, the implementation leverages **family polymorphism** to create a flexible design that supports various types of graphs.
+One of my main contributions to this project was the design and implementation of the `CaseKnowledgeGraph`.
+As mentioned in the [Detailed Design](../4-detailed-design.md) section, the implementation leverages **family polymorphism** to create a flexible design that supports various types of graphs.
 This choice was primarily driven by the need to represent the solution's prerequisite graph, which may not always be a semantic graph, while ensuring the user-constructed graph is always a concrete `CaseKnowledgeGraph`.
 
 The design is structured in layers, starting from a generic `Graph` trait and progressively adding constraints and concrete types:

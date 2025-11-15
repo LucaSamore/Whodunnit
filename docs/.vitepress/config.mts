@@ -32,9 +32,7 @@ export default withMermaid(defineConfig({
                                 text: 'Lucia Castellucci',
                                 items: [
                                     { text: 'Versioning System', link: `${implementationPath}/5-castellucci-versioning` },
-                                    { text: 'Architecture', link: `${implementationPath}/5-castellucci-architecture`},
-                                    { text: 'Controller', link: `${implementationPath}/5-castellucci-controller` },
-                                    { text: 'View', link: `${implementationPath}/5-castellucci-view` },
+                                    { text: 'Architecture', link: `${implementationPath}/5-castellucci-architecture`}
                                 ],
                                 link: `${implementationPath}/5-castellucci`
                             },
@@ -44,7 +42,7 @@ export default withMermaid(defineConfig({
                                 items: [
                                     { text: 'Knowledge Graph', link: `${implementationPath}/5-samore-kg` },
                                     { text: 'Producer', link: `${implementationPath}/5-samore-producer` },
-                                    { text: 'Rule DSL', link: `${implementationPath}/5-samore-dsl` },
+                                    { text: 'Rule DSL', link: `${implementationPath}/5-samore-dsl` }
                                 ]
                             },
                         ]
@@ -54,7 +52,6 @@ export default withMermaid(defineConfig({
                     {
                         text: 'Development Process Artifacts',
                         items: [
-                            { text: 'Kickoff meeting', link: `${processPath}/8-kickoff-meeting` },
                             { text: 'Sprint 1', link: `${processPath}/8-sprint-1` },
                             { text: 'Sprint 2', link: `${processPath}/8-sprint-2` },
                             { text: 'Sprint 3', link: `${processPath}/8-sprint-3` },
