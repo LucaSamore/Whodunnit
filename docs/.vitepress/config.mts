@@ -36,7 +36,13 @@ export default withMermaid(defineConfig({
                                     { text: 'Solution Submission', link: `${implementationPath}/5-castellucci-solution` }
                                 ],
                             },
-                            {text: 'Roberto Mitugno', link: `${implementationPath}/5-mitugno`},
+                            {
+                                text: 'Roberto Mitugno',
+                                items: [
+                                    {text: 'Case Generation', link: `${implementationPath}/5-mitugno-case-generation`},
+                                    {text: 'Timer', link: `${implementationPath}/5-mitugno-timer`}
+                                ],
+                            },
                             {
                                 text: 'Luca Samorè',
                                 items: [
