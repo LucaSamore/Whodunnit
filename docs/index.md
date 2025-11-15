@@ -15,10 +15,10 @@ hero:
       link: https://coveralls.io/github/LuciaCastellucci/PPS-24-whodunnit
 
 features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: 🔍 AI‑Generated Mysteries, Always Unique
+    details: Every game is a brand‑new case, automatically created by advanced Large Language Models. Players step into the role of detective, diving into unpredictable plots with fresh characters, documents, and secrets each time.
+  - title: 🕸️ Interactive Knowledge Graph
+    details: At the core of the experience lies a dynamic investigation graph where players connect people, events, and clues in a visual way. This tool helps uncover hidden patterns and build hypotheses just like a real investigator.
+  - title: 💡 Smart Clue System with Red Herrings
+    details: A rule‑based engine analyzes player actions and generates contextual hints. Some clues are helpful, others are clever misdirections—replicating the tension and uncertainty of real detective work and keeping every session thrilling.
 ---
