@@ -236,6 +236,7 @@ abstract class GameBoardScene extends Scene(1280, 720):
           )
         )
 
+        window.value.hide()
       case None =>
         println(
           "Warning: No investigative case available to show the solution."
