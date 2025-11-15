@@ -25,22 +25,6 @@ abstract class HomepageScene extends Scene(1280, 720):
     strokeWidth = 2
     effect = dropShadow
 
-  private val howToPlayButton = new Button("How To Play"):
-    minWidth = 250
-    minHeight = 100
-    alignment = Pos.Center
-    font = baseFont
-    textFill = Color.web("#F5DEB3")
-    effect = dropShadow
-    style =
-      """
-            -fx-background-color: transparent;
-      """
-    onAction = _ => {
-      println("How to Play clicked - Changing to Tutorial scene")
-      // WhodunnitApp.changeScene(new TutorialScene())
-    }
-
   private val playButton = new Button("Play Now\nas Investi-Gator"):
     minWidth = actionButtonsWidth
     minHeight = 100
@@ -60,46 +44,6 @@ abstract class HomepageScene extends Scene(1280, 720):
       println("[View] Play Now clicked - Changing to Game scene")
       controller.onPlayNowClicked()
       navigateTo(ScenePage.GameConfiguration)
-    }
-
-  private val resumeButton = new Button("Resume Game"):
-    minWidth = actionButtonsWidth
-    minHeight = 70
-    alignment = Pos.Center
-    font = baseFont
-    textFill = Color.web("#F5DEB3")
-    effect = dropShadow
-    style =
-      """
-        -fx-background-color: transparent;
-        -fx-border-color: #F5DEB3;
-        -fx-border-width: 3;
-        -fx-border-radius: 35;
-        -fx-background-radius: 35;
-      """
-    onAction = _ => {
-      println("Resume Game clicked - Changing to Game scene")
-      // WhodunnitApp.changeScene(new GameScene)
-    }
-
-  private val historyButton = new Button("History"):
-    minWidth = actionButtonsWidth
-    minHeight = 70
-    alignment = Pos.Center
-    font = baseFont
-    textFill = Color.web("#F5DEB3")
-    effect = dropShadow
-    style =
-      """
-        -fx-background-color: transparent;
-        -fx-border-color: #F5DEB3;
-        -fx-border-width: 3;
-        -fx-border-radius: 35;
-        -fx-background-radius: 35;
-      """
-    onAction = _ => {
-      println("History clicked - Changing to History scene")
-      // WhodunnitApp.changeScene(new HistoryScene
     }
 
   root = new HBox:
@@ -127,8 +71,6 @@ abstract class HomepageScene extends Scene(1280, 720):
         prefWidth = halfSceneWidth
         prefHeight = sceneHeight
 
-        top = howToPlayButton
-
         center = new ImageView:
           image = new Image(
             getClass.getResourceAsStream("/images/homepage/investi_gator.png")
@@ -146,19 +88,17 @@ abstract class HomepageScene extends Scene(1280, 720):
         children = Seq(
           new BorderPane:
             prefWidth = halfSceneWidth
-            prefHeight = thirdSceneHeight
+            prefHeight = quarterSceneHeight
             bottom = titleText
             BorderPane.setAlignment(titleText, Pos.Center)
           ,
           new VBox:
             prefWidth = halfSceneWidth
-            prefHeight = sceneHeight - thirdSceneHeight
+            prefHeight = sceneHeight - quarterSceneHeight
             spacing = 25
             alignment = Pos.Center
             children = Seq(
-              playButton,
-              resumeButton,
-              historyButton
+              playButton
             )
         )
     )
@@ -167,7 +107,7 @@ abstract class HomepageScene extends Scene(1280, 720):
     val sceneWidth: Int = 1280
     val sceneHeight: Int = 720
     val halfSceneWidth: Int = sceneWidth / 2
-    val thirdSceneHeight: Int = sceneHeight / 3
+    val quarterSceneHeight: Int = sceneHeight / 4
     val actionButtonsWidth: Int = 400
     val backgroundImage: Image = new Image(
       getClass.getResourceAsStream("/images/homepage/homepage_background.png")

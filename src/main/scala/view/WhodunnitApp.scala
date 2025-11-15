@@ -19,7 +19,7 @@ object WhodunnitApp extends JFXApp3:
   override def start(): Unit =
     stage = new JFXApp3.PrimaryStage:
       title = "Whodunnit"
-      resizable = true
+      resizable = false
       // 16:9 aspect ratio
       minWidth = 1280
       minHeight = 720
