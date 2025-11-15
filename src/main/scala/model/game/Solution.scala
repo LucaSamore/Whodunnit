@@ -18,8 +18,6 @@ enum SubmissionState:
 enum ValidationResult:
   case PrerequisitesNotMet
 
-  case PrerequisitesMet
-
   case CorrectSolution(culprit: Character, motive: String)
 
   case IncorrectSolution(
