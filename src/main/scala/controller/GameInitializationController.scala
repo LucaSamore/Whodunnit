@@ -10,10 +10,44 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.*
 import scala.util.{Failure, Success}
 
+/** Controller responsible for initializing new game sessions.
+  *
+  * This controller handles the complete game initialization workflow, including case generation, game state setup,
+  * timer configuration, and hint trigger registration.
+  *
+  * @see
+  *   [[model.game.Case]] for the case structure
+  * @see
+  *   [[model.generation.Producer]] for case generation mechanisms
+  * @see
+  *   [[model.game.GameState]] for game state management
+  */
 trait GameInitializationController extends ControllerModule.Controller:
+  /** Initializes a new game session with the specified theme and difficulty.
+    *
+    * This method triggers case generation, initializes the game state with a knowledge graph, configures the game timer
+    * with hint triggers, and invokes the appropriate callback based on the generation outcome.
+    *
+    * @param theme
+    *   the thematic constraint for case generation (e.g., "Murder", "Theft")
+    * @param difficulty
+    *   the difficulty level affecting case complexity
+    * @param onSuccess
+    *   callback invoked when initialization completes successfully
+    * @param onError
+    *   callback invoked with an error message if initialization fails
+    */
   def initGame(theme: Theme, difficulty: Difficulty)(onSuccess: () => Unit, onError: String => Unit): Unit
 
+/** Companion object providing factory methods for GameInitializationController. */
 object GameInitializationController:
+  /** Creates a new GameInitializationController instance.
+    *
+    * @param model
+    *   the model instance to use for state management
+    * @return
+    *   a new GameInitializationController
+    */
   def apply(model: ModelModule.Model): GameInitializationController = new CaseGenerationControllerImpl(model)
 
   private final class CaseGenerationControllerImpl(model: ModelModule.Model)
