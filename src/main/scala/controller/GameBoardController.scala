@@ -173,7 +173,7 @@ object GameBoardController:
 
     override def submitAccusation(character: Character): ValidationResult =
       model.updateState(_.withSubmissionState(SubmissionState.Submitting(character)))
-      val result = if canAccuse then validateSubmission(character) else ValidationResult.PrerequisitesNotMet
+      val result = validateSubmission(character)
       model.updateState(_.withSubmissionState(SubmissionState.Submitted(result)))
       model.state.timer.foreach(_.stop())
       result
