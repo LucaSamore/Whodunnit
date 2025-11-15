@@ -11,7 +11,7 @@ The objective is to identify the culprit of a crime by analyzing clues, interrog
 
 ### Prerequisites
 
-- Java 17 or higher
+- Java 22 or higher
 - A valid [Groq API](https://console.groq.com/) key
 
 ### Installation
@@ -38,8 +38,9 @@ The objective is to identify the culprit of a crime by analyzing clues, interrog
    ```powershell
    $env:GROQ_API_KEY="your-api-key-here"
    ```
-
-   For convenience on Linux/macOS, you can create a setup script based on [setup.example.sh](setup.example.sh):
+ > **Note**: If the `GROQ_API_KEY` environment variable is not set, the game will still start but it will always use the same case regardless of the game's parameterization.
+   
+For convenience on Linux/macOS, you can create a setup script based on [setup.example.sh](setup.example.sh):
 
    ```bash
    cp setup.example.sh setup.sh
