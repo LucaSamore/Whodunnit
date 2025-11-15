@@ -1,12 +1,13 @@
-package view
+package view.board
 
 import model.game.Hint
+import scalafx.beans.property.BooleanProperty
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.{Label, ScrollPane}
 import scalafx.scene.layout.{Priority, Region, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight}
-import scalafx.beans.property.BooleanProperty
+import view.board.NotificationsPanel
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

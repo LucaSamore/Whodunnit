@@ -1,21 +1,20 @@
-package view
+package view.board
 
-import model.game.CaseKnowledgeGraph
+import controller.GameBoardController
+import model.game.{CaseKnowledgeGraph, Character, ValidationResult}
 import scalafx.Includes.eventClosureWrapperWithZeroParam
 import scalafx.application.Platform
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.Scene
-import scalafx.scene.control.{Button, ComboBox, ContentDisplay, Label, ScrollPane}
+import scalafx.scene.{Node, Scene}
+import scalafx.scene.control.*
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
+import scalafx.scene.shape.Circle
 import scalafx.scene.text.{Font, FontWeight, TextAlignment}
 import scalafx.stage.{Modality, Stage}
-import scalafx.scene.shape.Circle
-import controller.GameBoardController
-import model.game.{Character, ValidationResult}
 import scalafx.util.StringConverter
-import scalafx.scene.Node;
+import view.ScenePage;
 
 abstract class GameBoardScene extends Scene(1280, 720):
 

@@ -1,4 +1,4 @@
-package view
+package view.configuration
 
 import controller.GameInitializationController
 import model.generation.{Difficulty, Theme}
@@ -12,6 +12,7 @@ import scalafx.scene.image.Image
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, Text, TextAlignment}
+import view.ScenePage
 
 abstract class GameConfigurationScene extends Scene(1280, 720):
 

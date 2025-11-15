@@ -1,30 +1,22 @@
-package view
+package view.home
 
+import controller.HomePageController
 import scalafx.geometry.Pos
 import scalafx.scene.Scene
 import scalafx.scene.control.Button
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.layout.{
-  Background,
-  BackgroundImage,
-  BackgroundPosition,
-  BackgroundRepeat,
-  BackgroundSize,
-  BorderPane,
-  HBox,
-  VBox
-}
+import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight, Text, TextAlignment}
-import controller.HomePageController
+import view.ScenePage
 
 abstract class HomepageScene extends Scene(1280, 720):
 
   protected def controller: HomePageController
   protected def navigateTo(page: ScenePage): Unit
 
-  import Config._
+  import Config.*
 
   private val titleText = new Text("Whodunnit?"):
     font = Font.font(titleFont.getFamily, FontWeight.Black, titleFont.getSize)

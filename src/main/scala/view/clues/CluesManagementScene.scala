@@ -1,17 +1,18 @@
-package view
+package view.clues
 
 import controller.CluesManagementController
 import model.game.{CaseFile, Entity, Link}
 import scalafx.beans.property.ObjectProperty
 import scalafx.collections.ObservableBuffer
+import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.control.*
+import scalafx.scene.image.Image
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Font
-import scalafx.scene.image.Image
-import scalafx.geometry.{Insets, Pos}
 import scalafx.stage.{Modality, Stage}
+import view.ScenePage
 
 abstract class CluesManagementScene extends Scene(1280, 720):
   import CluesManagementSceneConfig.*

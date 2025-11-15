@@ -9,6 +9,10 @@ import controller.{
 }
 import scalafx.application.Platform
 import scalafx.scene.Scene
+import view.board.GameBoardScene
+import view.clues.CluesManagementScene
+import view.configuration.GameConfigurationScene
+import view.home.HomepageScene
 
 /** Module providing the View layer of the application architecture.
   *

@@ -1,4 +1,4 @@
-package view
+package view.board
 
 import model.game
 import model.game.{CaseFile, CaseFileType, CaseKnowledgeGraph, Character, CustomEntity, Entity, Link}
@@ -9,6 +9,7 @@ import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.{Pane, StackPane, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, Text, TextAlignment}
+import view.board.{DragState, GraphEdge, GraphNode, KnowledgeGraphView}
 
 case class DragState(startPosition: Point2D, startNodePosition: Point2D)
 
