@@ -1,4 +1,4 @@
-# Sprint 6 (10/11/2025 - 16/11/2025)
+# Sprint 6 (10/11/2025 - 15/11/2025)
 
 ## Goal
 With the core functionalities implemented, this final sprint focuses on project consolidation through codebase-wide refactoring, comprehensive testing, and final documentation. The primary objectives are to enhance overall code quality for delivery, ensure thorough testing of the Solution submission feature, and produce a complete project documentation suite. This sprint represents the transition from active development to project finalization and delivery preparation.
