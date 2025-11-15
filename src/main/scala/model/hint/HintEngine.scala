@@ -4,7 +4,7 @@ import model.game.BaseOrientedGraph
 import model.generation.HintKind
 import model.generation.HintKind.{Helpful, Misleading}
 import model.hint.Metric.{coverageAgainst, density}
-import model.hint.Trend.{Increasing, Stable, Worsening}
+import model.hint.Trend.{Increasing, Stable}
 
 /** Engine for evaluating hint generation rules against player history.
   *
@@ -43,7 +43,6 @@ object HintEngine extends HintEngine:
 object Rules:
 
   import model.hint.TrendAnalyzers.simpleTrendAnalyzer
-  import model.generation.Producers.given
 
   /** Generates a Helpful hint when the player's graph density remains stable.
     *
