@@ -23,12 +23,12 @@ import model.versioning.Snapshot.Snapshotters.given_Snapshottable_History
   *   the current state of solution submission
   */
 case class GameState(
-    investigativeCase: Option[Case] = None,
-    history: Option[History] = None,
-    timeMachine: Option[TimeMachine[History]] = None,
-    hints: Option[Seq[Hint]] = None,
-    timer: Option[Timer] = None,
-    submissionState: Option[SubmissionState] = None
+                      investigativeCase: Option[Case] = None,
+                      history: Option[History] = None,
+                      timeMachine: Option[TimeMachine[History]] = None,
+                      hints: Option[Seq[Hint]] = None,
+                      timer: Option[TimerExecutor] = None,
+                      submissionState: Option[SubmissionState] = None
 ):
 
   /** Returns the current knowledge graph from the history.
@@ -86,7 +86,7 @@ case class GameState(
     * @return
     *   a new GameState with the updated timer
     */
-  def withTimer(t: Timer): GameState =
+  def withTimer(t: TimerExecutor): GameState =
     copy(timer = Some(t))
 
   /** Creates a new GameState with the specified submission state.
@@ -187,9 +187,9 @@ object GameState:
     *   a fully initialized GameState ready for play
     */
   def initialize(
-      gameCase: Case,
-      timer: Timer,
-      initialGraph: CaseKnowledgeGraph
+                  gameCase: Case,
+                  timer: TimerExecutor,
+                  initialGraph: CaseKnowledgeGraph
   ): GameState =
     GameState(
       Some(gameCase),

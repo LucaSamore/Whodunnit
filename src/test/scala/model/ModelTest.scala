@@ -1,6 +1,6 @@
 package model
 
-import model.game.{Case, CaseKnowledgeGraph, GameHistory, GameState, Timer}
+import model.game.{Case, CaseKnowledgeGraph, GameHistory, GameState, TimerExecutor}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import utils.TestUtils.mockCase
@@ -20,7 +20,7 @@ class ModelTest extends AnyWordSpec with Matchers:
         model.state shouldBe GameState.empty()
 
       "update state with updater function" in:
-        val timer = new Timer(3600.seconds, List.empty)
+        val timer = new TimerExecutor(3600.seconds, List.empty)
         val updatedState = model.updateState(_.withTimer(timer))
 
         updatedState.timer shouldBe Some(timer)
@@ -37,7 +37,7 @@ class ModelTest extends AnyWordSpec with Matchers:
         val newModule = new ModelModule.Interface {}
         val newModel = newModule.model
 
-        val timer = new Timer(3600.seconds, List.empty)
+        val timer = new TimerExecutor(3600.seconds, List.empty)
         val history = GameHistory(5)
 
         newModel.updateState(_.withTimer(timer))
@@ -54,7 +54,7 @@ class ModelTest extends AnyWordSpec with Matchers:
         val futures = (1 to 100).map { i =>
           Future {
             newModel.updateState { state =>
-              val timer = new Timer((3600 + i).seconds, List.empty)
+              val timer = new TimerExecutor((3600 + i).seconds, List.empty)
               state.withTimer(timer)
             }
           }
@@ -75,7 +75,7 @@ class ModelTest extends AnyWordSpec with Matchers:
         val newModule = new ModelModule.Interface {}
         val newModel = newModule.model
 
-        val timer = new Timer(3600.seconds, List.empty)
+        val timer = new TimerExecutor(3600.seconds, List.empty)
         newModel.updateState(_.withTimer(timer))
 
         // Timer not started, so should return None

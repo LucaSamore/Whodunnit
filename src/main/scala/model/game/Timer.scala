@@ -155,7 +155,7 @@ object TimerLogic:
   * @param onTimeExpired
   *   callback invoked when timer reaches zero
   */
-class Timer(
+class TimerExecutor(
     val totalDuration: Duration,
     val triggers: List[Trigger] = List.empty,
     var onTimeUpdate: String => Unit = _ => (),

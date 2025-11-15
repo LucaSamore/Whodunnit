@@ -17,7 +17,7 @@ class GameStateTest extends AnyWordSpec with Matchers:
       Right(MockHint("Test Hint"))
 
   val emptyGameState: GameState = GameState()
-  val mockTimer = new Timer(3600.seconds, List.empty)
+  val mockTimer = new TimerExecutor(3600.seconds, List.empty)
   val mockGraph = new CaseKnowledgeGraph()
   val initializedGameState: GameState = GameState.initialize(
     mockCase,

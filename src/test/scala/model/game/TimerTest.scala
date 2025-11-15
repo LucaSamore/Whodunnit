@@ -150,12 +150,12 @@ class TimerTest extends AnyWordSpec with Matchers:
         activated should contain only trigger6
 
   "Timer" when:
-    val timer = Timer(totalDuration = 10.seconds)
+    val timer = TimerExecutor(totalDuration = 10.seconds)
     timer.start()
 
     "starting" should:
       "transition from Ready to Running state" in:
-        val timer1 = Timer(totalDuration = 10.seconds)
+        val timer1 = TimerExecutor(totalDuration = 10.seconds)
 
         timer1.state shouldBe TimerState.Ready
 
@@ -197,7 +197,7 @@ class TimerTest extends AnyWordSpec with Matchers:
 
     "stopping" should:
       "transition to Finished when timer stopped" in:
-        val timer2 = Timer(totalDuration = 10.seconds)
+        val timer2 = TimerExecutor(totalDuration = 10.seconds)
         @volatile var expiredCalled = false
         timer2.onTimeExpired = () => expiredCalled = true
 
@@ -211,14 +211,14 @@ class TimerTest extends AnyWordSpec with Matchers:
 
     "completing" should:
       "transition to Finished state when time expires" in:
-        val timer3 = Timer(totalDuration = 5.seconds)
+        val timer3 = TimerExecutor(totalDuration = 5.seconds)
         timer3.start()
         timer3.state shouldBe a[TimerState.Running]
         Thread.sleep(6000)
         timer3.state shouldBe TimerState.Finished
 
       "have zero remaining time when Finished" in:
-        val timer4 = Timer(totalDuration = 5.seconds)
+        val timer4 = TimerExecutor(totalDuration = 5.seconds)
         timer4.start()
         Thread.sleep(6000)
         timer4.state shouldBe TimerState.Finished

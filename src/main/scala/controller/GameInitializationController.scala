@@ -70,7 +70,7 @@ object GameInitializationController:
       GameState.initialize(
         gameCase = generatedCase,
         initialGraph = CaseKnowledgeGraph().withNodes(generatedCase.characters.toSeq*),
-        timer = Timer(
+        timer = TimerExecutor(
           totalDuration = 5.minutes,
           triggers = List(
             Trigger(3.minutes, () => sendHint(stableDensity)),
