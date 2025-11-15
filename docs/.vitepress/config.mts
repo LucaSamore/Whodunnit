@@ -32,9 +32,9 @@ export default withMermaid(defineConfig({
                                 text: 'Lucia Castellucci',
                                 items: [
                                     { text: 'Versioning System', link: `${implementationPath}/5-castellucci-versioning` },
-                                    { text: 'Architecture', link: `${implementationPath}/5-castellucci-architecture`}
+                                    { text: 'Architecture', link: `${implementationPath}/5-castellucci-architecture`},
+                                    { text: 'Solution Submission', link: `${implementationPath}/5-castellucci-solution` }
                                 ],
-                                link: `${implementationPath}/5-castellucci`
                             },
                             {text: 'Roberto Mitugno', link: `${implementationPath}/5-mitugno`},
                             {
