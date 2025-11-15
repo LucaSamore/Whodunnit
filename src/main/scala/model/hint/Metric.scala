@@ -39,7 +39,9 @@ object Metric:
       val edgesCardinality = graph.edges.size
       val nodesCardinality = graph.nodes.size
       if (nodesCardinality > 0) then
-        edgesCardinality.toDouble / nodesCardinality * (nodesCardinality - 1)
+        val density = edgesCardinality.toDouble / nodesCardinality * (nodesCardinality - 1)
+        println(s"[Model] Density is: ${density}")
+        density
       else 0.0
 
     /** Computes the coverage of this graph relative to another reference graph.

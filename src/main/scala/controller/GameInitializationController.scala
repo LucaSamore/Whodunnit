@@ -71,10 +71,10 @@ object GameInitializationController:
         gameCase = generatedCase,
         initialGraph = CaseKnowledgeGraph().withNodes(generatedCase.characters.toSeq*),
         timer = TimerExecutor(
-          totalDuration = 5.minutes,
+          totalDuration = 30.minutes,
           triggers = List(
-            Trigger(3.minutes, () => sendHint(stableDensity)),
-            Trigger(2.seconds, () => sendHint(increasingCoverage(generatedCase.solution.prerequisite)))
+            Trigger(20.minutes, () => sendHint(stableDensity)),
+            Trigger(10.minutes, () => sendHint(increasingCoverage(generatedCase.solution.prerequisite)))
           )
         )
       )
@@ -90,6 +90,6 @@ object GameInitializationController:
         Context(s"Case Plot: ${investigativeCase.plot.content}"),
         Context(s"Player Knowledge Graph: ${history.last}")
       ).onComplete:
-        case Success(Right(hint)) => println(hint.description); model.updateState(_.addHint(hint))
+        case Success(Right(hint)) => println(s"[Controller] ${hint.description}"); model.updateState(_.addHint(hint))
         case Success(Left(error)) => println(s"[Warning] Failed to generate hint: ${error.message}")
         case Failure(exception)   => println(s"[Error] Unexpected error generating hint: ${exception.getMessage}")

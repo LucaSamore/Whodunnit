@@ -71,10 +71,10 @@ object TrendAnalyzers:
       (values.headOption, values.lastOption) match
         case (Some(first), Some(last)) if values.size > 1 =>
           Math.signum(last - first) match
-            case 1.0  => Trend.Increasing
-            case -1.0 => Trend.Worsening
-            case _    => Trend.Stable
-        case _ => Trend.Stable
+            case 1.0  => { println("[Model] Trend is Increasing"); Trend.Increasing }
+            case -1.0 => { println("[Model] Trend is Worsening"); Trend.Worsening }
+            case _    => { println("[Model] Trend is Stable"); Trend.Stable }
+        case _ => { println("[Model] Trend is Stable"); Trend.Stable }
 
   /** An advanced trend analyzer that uses sliding window analysis with a configurable threshold.
     *
@@ -115,6 +115,6 @@ object TrendAnalyzers:
           case (acc, _) => acc
         }
         val ratio = increasing.toDouble / total
-        if ratio >= threshold then Trend.Increasing
-        else if ratio <= 1 - threshold then Trend.Worsening
-        else Trend.Stable
+        if ratio >= threshold then { println("[Model] Trend is Increasing"); Trend.Increasing }
+        else if ratio <= 1 - threshold then { println("[Model] Trend is Worsening"); Trend.Worsening }
+        else { println("[Model] Trend is Stable"); Trend.Stable }
