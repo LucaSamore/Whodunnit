@@ -119,7 +119,7 @@ To ensure an efficient and automated development flow, the project adopted an in
     - This workflow includes several *jobs*:
         - **`code-checks`**: Runs formatting checks (with **Scalafmt**) and linting (with **Scalafix**).
         - **`test`**: Executes automated tests on a matrix of different operating systems (Linux, Windows, macOS) and JDK versions (17, 21).
-        - **`coverage`**: (Executed after successful tests) Generates a code coverage report using **sbt-scoverage** and sends the data to **Coveralls** for a centralized view of test coverage, for which **we consider an optimal threshold to be above 75%**. ([https://coveralls.io/github/LuciaCastellucci/PPS-24-whodunnit](https://coveralls.io/github/LuciaCastellucci/PPS-24-whodunnit))
+        - **`coverage`**: (Executed after successful tests) Generates a code coverage report using **sbt-scoverage** and sends the data to **Coveralls** for a centralized view of test coverage, for which **we consider an optimal threshold to be above 75%**. ([https://coveralls.io/github/LuciaCastellucci/Whodunnit](https://coveralls.io/github/LuciaCastellucci/Whodunnit))
 
 4.  **Automated Release Packaging**:
     - A workflow was configured to automate the creation of application releases.

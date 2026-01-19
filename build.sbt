@@ -14,7 +14,7 @@ inThisBuild(
 
 lazy val root = (project in file("."))
   .settings(
-    name := "PPS-24-whodunnit",
+    name := "Whodunnit",
     libraryDependencies ++= Seq(
       "org.scalafx" %% "scalafx" % "24.0.2-R36",
       "org.scalatest" %% "scalatest" % "3.2.19" % "test",

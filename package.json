@@ -1,4 +1,5 @@
 {
+  "name": "Whodunnit",
   "devDependencies": {
     "mermaid": "^11.12.1",
     "vitepress": "^1.6.4",

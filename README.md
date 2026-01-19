@@ -1,7 +1,7 @@
-# PPS-24-whodunnit
+# Whodunnit
 
-[![Coverage Status](https://coveralls.io/repos/github/LuciaCastellucci/PPS-24-whodunnit/badge.svg?branch=dev)](https://coveralls.io/github/LuciaCastellucci/PPS-24-whodunnit?branch=dev)
-[![Documentation](https://img.shields.io/badge/docs-online-blue)](https://luciacastellucci.github.io/PPS-24-whodunnit/)
+[![Coverage Status](https://coveralls.io/repos/github/LuciaCastellucci/Whodunnit/badge.svg?branch=dev)](https://coveralls.io/github/LuciaCastellucci/Whodunnit?branch=dev)
+[![Documentation](https://img.shields.io/badge/docs-online-blue)](https://luciacastellucci.github.io/Whodunnit/)
 
 ## About
 **Whodunnit** is an investigative game that places the player in the role of a detective tasked with solving automatically generated mystery cases. 
@@ -18,7 +18,7 @@ The objective is to identify the culprit of a crime by analyzing clues, interrog
 
 1. **Download the latest release**
 
-   Download the JAR file from the [Releases](https://github.com/LuciaCastellucci/PPS-24-whodunnit/releases) section.
+   Download the JAR file from the [Releases](https://github.com/LuciaCastellucci/Whodunnit/releases) section.
 
 2. **Configure environment variables**
 
@@ -51,7 +51,7 @@ The objective is to identify the culprit of a crime by analyzing clues, interrog
 3. **Run the application**
 
    ```bash
-   java -jar PPS-24-whodunnit.jar
+   java -jar Whodunnit.jar
    ```
 
 ## How to Play

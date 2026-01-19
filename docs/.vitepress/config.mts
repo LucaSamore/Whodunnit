@@ -7,7 +7,7 @@ const processPath = `${reportPath}/process`
 
 // https://vitepress.dev/reference/site-config
 export default withMermaid(defineConfig({
-    base: '/PPS-24-whodunnit/',
+    base: '/Whodunnit/',
     title: "Whodunnit",
     description: "A investigative game",
     themeConfig: {
@@ -71,7 +71,7 @@ export default withMermaid(defineConfig({
         ],
 
         socialLinks: [
-            {icon: 'github', link: 'https://github.com/LuciaCastellucci/PPS-24-whodunnit'}
+            {icon: 'github', link: 'https://github.com/LuciaCastellucci/Whodunnit'}
         ]
     }
 }))

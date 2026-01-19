@@ -3,7 +3,7 @@
 layout: home
 
 hero:
-  name: "PPS-24-whodunnit"
+  name: "Whodunnit"
   text: "Whodunnit"
   tagline: PPS Project
   actions:
@@ -12,7 +12,7 @@ hero:
       link: report/0-introduction
     - theme: alt
       text: Coverage
-      link: https://coveralls.io/github/LuciaCastellucci/PPS-24-whodunnit
+      link: https://coveralls.io/github/LuciaCastellucci/Whodunnit
 
 features:
   - title: 🔍 AI‑Generated Mysteries, Always Unique
