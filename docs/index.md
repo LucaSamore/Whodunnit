@@ -4,15 +4,14 @@ layout: home
 
 hero:
   name: "Whodunnit"
-  text: "Whodunnit"
-  tagline: PPS Project
+  text: "A detective game featuring AI generated cold cases"
   actions:
     - theme: brand
       text: Report
       link: report/0-introduction
     - theme: alt
       text: Coverage
-      link: https://coveralls.io/github/LuciaCastellucci/Whodunnit
+      link: https://coveralls.io/github/LuciaCastellucci/PPS-24-whodunnit
 
 features:
   - title: 🔍 AI‑Generated Mysteries, Always Unique
