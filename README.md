@@ -1,6 +1,6 @@
 # Whodunnit
 
-[![Coverage Status](https://coveralls.io/repos/github/LuciaCastellucci/Whodunnit/badge.svg?branch=dev)](https://coveralls.io/github/LuciaCastellucci/Whodunnit?branch=dev)
+[![Coverage Status](https://coveralls.io/repos/github/LuciaCastellucci/PPS-24-whodunnit/badge.svg?branch=dev)](https://coveralls.io/github/LuciaCastellucci/PPS-24-whodunnit?branch=dev)
 [![Documentation](https://img.shields.io/badge/docs-online-blue)](https://luciacastellucci.github.io/Whodunnit/)
 
 ## About
